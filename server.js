@@ -8,6 +8,9 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 
 function callOpenRouter(body) {
   return new Promise((resolve, reject) => {
+    // Garante modelo gratuito
+    if (!body.model || body.model === '') body.model = 'openrouter/auto';
+
     const json = JSON.stringify(body);
     const req = https.request({
       hostname: 'openrouter.ai',
@@ -16,7 +19,7 @@ function callOpenRouter(body) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': 'https://nexusstudy.up.railway.app',
+        'HTTP-Referer': 'https://nexusstudy1-production-f223.up.railway.app',
         'X-Title': 'Nexus Study',
         'Content-Length': Buffer.byteLength(json),
       },
@@ -24,8 +27,8 @@ function callOpenRouter(body) {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => {
-        try { resolve({ status: res.statusCode, data: JSON.parse(data) }); }
-        catch (e) { reject(new Error('Resposta inválida')); }
+        // Retorna exatamente o que o OpenRouter devolveu (formato OpenAI)
+        resolve({ status: res.statusCode, raw: data });
       });
     });
     req.on('error', reject);
@@ -51,18 +54,16 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  // Proxy para OpenRouter
+  // Proxy para OpenRouter — repassa resposta intacta
   if (req.method === 'POST' && req.url === '/api/chat') {
     let body = '';
     req.on('data', c => body += c);
     req.on('end', async () => {
       try {
         const parsed = JSON.parse(body);
-        // Garante que usa o modelo gratuito
-        parsed.model = parsed.model || 'openrouter/auto';
-        const { status, data } = await callOpenRouter(parsed);
+        const { status, raw } = await callOpenRouter(parsed);
         res.writeHead(status, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(data));
+        res.end(raw);
       } catch (e) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: { message: e.message } }));
