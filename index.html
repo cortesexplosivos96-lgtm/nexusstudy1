@@ -308,7 +308,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
 .mob-nav-item .mni{font-size:20px;line-height:1}
 #mob-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;backdrop-filter:blur(4px)}
 #mob-menu-overlay.open{display:block}
-#mob-menu-panel{position:fixed;bottom:0;left:0;right:0;z-index:260;background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border2);max-height:80vh;overflow-y:auto;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+#mob-menu-panel{position:fixed;bottom:0;left:0;right:0;z-index:260;background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border2);max-height:75vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(70px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
 #mob-menu-panel.open{transform:translateY(0)}
 .mob-menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .mob-menu-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:11px;color:var(--text2);text-align:center;transition:all .2s;line-height:1.2}
@@ -2444,26 +2444,102 @@ function saveAlarm(){
   const days=[...document.querySelectorAll('#modal-alarm input[type=checkbox]:checked')].map(x=>parseInt(x.value));
   S.alarms.push({time,title,days,active:true});save();closeModal('modal-alarm');renderAlarms();toast('Alarme criado! ⏰','success');
 }
-function checkAlarms(){
-  const now=new Date();
-  const cur=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const day=now.getDay();
-  S.alarms.filter(a=>a.active&&a.time===cur&&(!a.days.length||a.days.includes(day))).forEach(a=>{
-    sendBrowserNotif('⏰ Nexus Study',a.title);toast(`⏰ ${a.title}`,'success');
+// ── Sistema de alarme melhorado ──────────────────────────────────
+let _lastAlarmFired = {};
+
+function playAlarmSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const playBeep = (freq, start, duration) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, ctx.currentTime + start);
+      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + start + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration);
+    };
+    // 3 bipes melodicos
+    playBeep(880, 0, 0.3);
+    playBeep(1100, 0.4, 0.3);
+    playBeep(880, 0.8, 0.3);
+    playBeep(1320, 1.2, 0.5);
+  } catch(e) { console.warn('Som não disponível:', e); }
+}
+
+function sendBrowserNotif(title, body) {
+  if (Notification.permission === 'granted') {
+    try {
+      const n = new Notification(title, {
+        body,
+        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%230a0f1e"/><polygon points="300,60 180,280 256,280 212,452 340,220 260,220 300,60" fill="%2300cfff"/></svg>',
+        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%230a0f1e"/><polygon points="300,60 180,280 256,280 212,452 340,220 260,220 300,60" fill="%2300cfff"/></svg>',
+        vibrate: [200, 100, 200, 100, 200],
+        requireInteraction: true,
+        tag: 'nexus-alarm'
+      });
+      n.onclick = () => { window.focus(); n.close(); };
+    } catch(e) { console.warn('Notificação falhou:', e); }
+  }
+}
+
+function checkAlarms() {
+  if (!_sReady()) return;
+  const now = new Date();
+  const cur = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const day = now.getDay();
+  const key = cur + '_' + now.toDateString();
+  
+  S.alarms
+    .filter(a => a.active && a.time === cur && (!a.days || !a.days.length || a.days.includes(day)))
+    .forEach(a => {
+      const alarmKey = a.time + '_' + a.title + '_' + now.toDateString();
+      if (_lastAlarmFired[alarmKey]) return; // evita disparo duplo
+      _lastAlarmFired[alarmKey] = true;
+      playAlarmSound();
+      sendBrowserNotif('⏰ ' + a.title, 'Nexus Study — Hora do alarme!');
+      toast(`⏰ ${a.title}`, 'success');
+    });
+}
+setInterval(checkAlarms, 15000); // checa a cada 15s para maior precisão
+
+// ── Solicitar permissão de notificação imediatamente ──────────────
+function requestNotif() {
+  if (!('Notification' in window)) { toast('Notificações não suportadas neste navegador', 'error'); return; }
+  Notification.requestPermission().then(p => {
+    const status = document.getElementById('notif-status');
+    const btn = document.getElementById('notif-btn');
+    if (p === 'granted') {
+      if (status) status.textContent = '✅ Notificações ativas!';
+      if (btn) { btn.textContent = '✅ Ativo'; btn.disabled = true; }
+      toast('Notificações ativadas! Os alarmes vão funcionar. ✅', 'success');
+      // Teste imediato
+      setTimeout(() => sendBrowserNotif('✅ Nexus Study', 'Notificações funcionando! Seus alarmes estão ativos.'), 500);
+    } else if (p === 'denied') {
+      toast('Permissão negada. Ative nas configurações do navegador.', 'error');
+    }
   });
 }
-setInterval(checkAlarms,30000);
+
+// Atualiza UI de notificação ao carregar
+(function initNotifUI() {
+  const status = document.getElementById('notif-status');
+  const btn = document.getElementById('notif-btn');
+  if (Notification.permission === 'granted') {
+    if (status) status.textContent = '✅ Notificações ativas!';
+    if (btn) { btn.textContent = '✅ Ativo'; btn.disabled = true; }
+  } else if (Notification.permission === 'denied') {
+    if (status) status.textContent = '❌ Bloqueadas — ative nas configurações do navegador';
+    if (btn) { btn.textContent = 'Bloqueado'; btn.disabled = true; }
+  }
+})();
 
 // ══════════════ NOTIFICAÇÕES ══════════════
-function requestNotif(){
-  if(!('Notification'in window)){toast('Não suportado','error');return;}
-  Notification.requestPermission().then(p=>{
-    if(p==='granted'){document.getElementById('notif-status').textContent='✅ Ativas!';document.getElementById('notif-btn').textContent='Ativo';document.getElementById('notif-btn').disabled=true;toast('Notificações ativadas!','success');}
-    else toast('Permissão negada','error');
-  });
-}
-function sendBrowserNotif(title,body){if(Notification.permission==='granted')new Notification(title,{body});}
-if(Notification.permission==='granted'){document.getElementById('notif-status').textContent='✅ Ativas!';document.getElementById('notif-btn').textContent='Ativo';document.getElementById('notif-btn').disabled=true;}
+// notif functions movidas para checkAlarms block acima
 
 // ══════════════ INIT ══════════════
 // Restaura último perfil automaticamente
