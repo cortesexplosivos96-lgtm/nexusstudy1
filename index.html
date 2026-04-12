@@ -3346,7 +3346,7 @@ Responda SOMENTE JSON puro sem markdown:
     const txt=await callGemini(prompt);
     const exp=JSON.parse(txt.replace(/```json|```/g,'').trim());
     renderExperimento(exp,simId);
-    iniciarSimulacao(simId,area);
+    iniciarSimulacao(simId,area,expNome);
     toast('Experimento carregado!','success');
   }catch(e){document.getElementById('lab-resultado').innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
   btn.disabled=false;btn.innerHTML='🔬 Iniciar Experimento';
@@ -3374,11 +3374,11 @@ function renderExperimento(exp,simId){
   document.getElementById('lab-resultado').innerHTML=html;
 }
 
-function iniciarSimulacao(simId,area){
+function iniciarSimulacao(simId,area,expNome){
   if(labAnimFrame)cancelAnimationFrame(labAnimFrame);
   const canvas=document.getElementById('lab-canvas');
   const ctx=canvas.getContext('2d');
-  labSimAtual={simId,area,t:0,running:false,particles:[],expNome};
+  labSimAtual={simId,area,t:0,running:false,particles:[],expNome:expNome||simId};
   // Desenha estado inicial
   desenharSimulacao(ctx,labSimAtual);
 }
