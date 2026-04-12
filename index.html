@@ -30,8 +30,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
 /* SIDEBAR */
-#sidebar{position:fixed;left:0;top:0;width:72px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;z-index:200;transition:width .3s cubic-bezier(.4,0,.2,1)}
+#sidebar{position:fixed;left:0;top:0;width:72px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;z-index:200;transition:width .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;overflow-x:hidden}
+#sidebar::-webkit-scrollbar{width:2px}#sidebar::-webkit-scrollbar-thumb{background:var(--border2)}
 #sidebar:hover{width:224px}
+#sidebar:hover~#main{margin-left:240px;transition:margin-left .3s cubic-bezier(.4,0,.2,1)}
 .logo-wrap{width:100%;padding:8px 16px;margin-bottom:20px;overflow:hidden;white-space:nowrap}
 .logo-icon{font-family:var(--font2);font-size:22px;font-weight:800;color:var(--blue2);letter-spacing:1px}
 .logo-text{font-family:var(--font2);font-size:14px;font-weight:700;color:var(--text2);margin-left:6px;opacity:0;transition:opacity .2s}
@@ -50,7 +52,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 #sidebar:hover .streak-badge{display:block}
 
 /* MAIN */
-#main{margin-left:72px;padding:28px 32px;min-height:100vh;transition:margin .3s}
+#main{margin-left:88px;padding:28px 32px 28px 16px;min-height:100vh;transition:margin-left .3s cubic-bezier(.4,0,.2,1)}
 .page{display:none;animation:fadeIn .2s ease}
 .page.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -387,7 +389,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
 }
 
 @media(min-width:1025px){
-  #sidebar:hover~#main{margin-left:224px}
+  #sidebar:hover~#main{margin-left:240px}
 }
 
 </style>
@@ -440,6 +442,16 @@ tr:hover td{background:rgba(30,144,255,.04)}
     <div class="nav-item" data-page="redacaoguia"><span class="nav-icon">🖊️</span><span class="nav-label">Guia de Redação</span></div>
     <div class="nav-item" data-page="laboratorio"><span class="nav-icon">🧪</span><span class="nav-label">Laboratório Virtual</span></div>
     <div class="nav-item" data-page="noturno"><span class="nav-icon">🌙</span><span class="nav-label">Revisão Noturna</span></div>
+    <div class="nav-item" data-page="calendario"><span class="nav-icon">📅</span><span class="nav-label">Calendário de Provas</span></div>
+    <div class="nav-item" data-page="estatisticas"><span class="nav-icon">📊</span><span class="nav-label">Estatísticas</span></div>
+    <div class="nav-item" data-page="desafios"><span class="nav-icon">🏆</span><span class="nav-label">Desafios</span></div>
+    <div class="nav-item" data-page="noticias"><span class="nav-icon">📰</span><span class="nav-label">Notícias ENEM</span></div>
+    <div class="nav-item" data-page="tutor"><span class="nav-icon">🤖</span><span class="nav-label">Tutor IA</span></div>
+    <div class="nav-item" data-page="revisao-inteligente"><span class="nav-icon">🔍</span><span class="nav-label">Revisão Inteligente</span></div>
+    <div class="nav-item" data-page="gerador-provas"><span class="nav-icon">📋</span><span class="nav-label">Gerador de Provas</span></div>
+    <div class="nav-item" data-page="scanner-questoes"><span class="nav-icon">📷</span><span class="nav-label">Scanner de Questões</span></div>
+    <div class="nav-item" data-page="simulador-nota"><span class="nav-icon">📈</span><span class="nav-label">Simulador de Nota</span></div>
+    <div class="nav-item" data-page="chances-faculdade"><span class="nav-icon">🎓</span><span class="nav-label">Chances na Faculdade</span></div>
     <div class="nav-item sidebar-bottom" data-page="alarmes"><span class="nav-icon">🔔</span><span class="nav-label">Alarmes</span></div>
   </div>
   <div class="streak-badge" id="sidebar-streak">🔥 0 dias seguidos</div>
@@ -536,6 +548,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-primary" style="flex:1" onclick="salvarDiario()">💾 Salvar entrada</button>
           <button class="btn btn-ghost btn-sm" onclick="resumirSemana()">🤖 Resumo da semana com IA</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportarDiarioPDF()">📥 Exportar PDF</button>
         </div>
         <div id="resumo-ia" style="display:none;margin-top:14px;background:var(--bg3);border-radius:10px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;border:1px solid var(--blue3)"></div>
       </div>
@@ -699,38 +712,26 @@ tr:hover td{background:rgba(30,144,255,.04)}
     <div class="card" style="max-width:800px">
       <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📄 Provas Completas por Ano</h3>
       <p style="font-size:12px;color:var(--text3);margin-bottom:12px">Clique para acessar a prova oficial no site do INEP</p>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2009_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2009 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2009_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2009 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2010_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2010 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2010_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2010 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2011_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2011 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2011_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2011 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2012_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2012 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2012_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2012 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2013_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2013 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2013_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2013 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2014_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2014 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2014_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2014 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2015_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2015 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2015_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2015 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2016_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2016 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2016_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2016 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2017_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2017 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2017_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2017 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2018_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2018 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2018_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2018 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2019_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2019 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2019_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2019 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2020_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2020 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2020_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2020 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2021_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2021 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2021_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2021 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2022_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2022 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2022_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2022 — Dia 2</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2023_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2023 — Dia 1</a>
-        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2023_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2023 — Dia 2</a>
+      <div style="background:rgba(30,144,255,.07);border:1px solid rgba(30,144,255,.2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.7">
+        🔍 <strong style="color:var(--blue2)">Links dinâmicos</strong> — ao clicar, busca a prova diretamente no Google com os termos certos. Assim nunca quebra mesmo se o governo mudar o domínio!
       </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="provas-lista"></div>
+      <script>
+      (function renderProvas(){
+        const anos=[2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+        const el=document.getElementById('provas-lista');
+        if(!el)return;
+        const html=anos.flatMap(a=>[1,2].map(d=>{
+          const q=encodeURIComponent(`ENEM ${a} prova dia ${d} PDF filetype:pdf`);
+          const google=`https://www.google.com/search?q=${q}`;
+          return `<div style="display:flex;gap:8px">
+            <a href="${google}" target="_blank" class="prova-link" style="flex:1">📄 ENEM ${a} — Dia ${d}</a>
+            <a href="https://www.qconcursos.com/questoes-do-enem" target="_blank" class="prova-link" style="flex:0;white-space:nowrap;font-size:11px">💻 Resolver online</a>
+          </div>`;
+        })).join('');
+        el.innerHTML=html;
+      })();
+      </script>
     </div>
     <div class="card" style="max-width:800px;margin-top:16px">
       <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📈 Histórico de Simulados</h3>
@@ -817,7 +818,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
       <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📝 Rascunho da Redação</h3>
       <textarea id="redacao-text" rows="14" placeholder="Escreva sua redação aqui..." style="resize:vertical"></textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--text2);flex-wrap:wrap;gap:8px">
-        <span>Palavras: <strong id="word-count" style="color:var(--blue2)">0</strong> · Recomendado: 25–30 linhas</span>
+        <span id="redacao-linha-info" style="color:var(--text2);font-size:12px">0 linhas (~0 palavras) · Ideal: 25–30 linhas</span>
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost btn-sm" onclick="copyRedacao()">📋 Copiar</button>
           <button class="btn btn-primary btn-sm" onclick="corrigirRedacao()">🤖 Corrigir com IA</button>
@@ -1039,7 +1040,8 @@ tr:hover td{background:rgba(30,144,255,.04)}
         <div class="form-group"><label>Estilo</label>
           <select id="mm-estilo"><option value="estudo">Estudo / revisão</option><option value="resumo">Resumo rápido</option><option value="enem">ENEM / vestibular</option></select>
         </div>
-        <button class="btn btn-primary" style="width:100%" onclick="gerarMapaMental()" id="mm-btn">🗺️ Gerar Mapa Mental</button>
+        <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="gerarMapaMental()" id="mm-btn">🗺️ Gerar Mapa Mental (texto)</button>
+      <button class="btn btn-ghost" style="width:100%" onclick="gerarMapaMentalVisual()" id="mm-btn-visual">🎨 Gerar Mapa Visual (desenho)</button>
       </div>
       <div class="card">
         <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">📚 Mapas Salvos</h3>
@@ -1197,6 +1199,198 @@ tr:hover td{background:rgba(30,144,255,.04)}
   </div>
 </div>
 
+
+<!-- ══════════════ CALENDÁRIO DE PROVAS ══════════════ -->
+<div class="page" id="page-calendario">
+  <div class="page-header">
+    <div><h1>📅 Calendário de Provas</h1><p>ENEM, vestibulares e provas escolares — nunca perca uma data</p></div>
+    <button class="btn btn-primary" onclick="openModal('modal-cal-evento')">+ Adicionar Prova</button>
+  </div>
+  <!-- Busca de vestibular -->
+  <div class="card" style="margin-bottom:18px">
+    <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🔍 Buscar Vestibular</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="text" id="cal-busca" placeholder="Ex: FUVEST, UNICAMP, UEL, UERJ..." style="flex:1;min-width:200px" oninput="filtrarVestibulares()">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('cal-busca').value='';filtrarVestibulares()">✕ Limpar</button>
+    </div>
+    <div id="cal-vestibulares-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+  </div>
+  <!-- Grade do calendário -->
+  <div class="grid2" style="align-items:start">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <button class="btn btn-ghost btn-sm" onclick="calNavMes(-1)">‹ Anterior</button>
+          <h3 style="font-size:14px;font-weight:700" id="cal-mes-label"></h3>
+          <button class="btn btn-ghost btn-sm" onclick="calNavMes(1)">Próximo ›</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px">
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Dom</div>
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Seg</div>
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Ter</div>
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Qua</div>
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Qui</div>
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Sex</div>
+          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Sáb</div>
+        </div>
+        <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;border-color:var(--blue3)">
+        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">⏳ Contagem Regressiva</h3>
+        <div id="cal-countdown"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📋 Próximas Provas</h3>
+        <div id="cal-proximas"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ESTATÍSTICAS ══════════════ -->
+<div class="page" id="page-estatisticas">
+  <div class="page-header"><div><h1>📊 Estatísticas Avançadas</h1><p>Visualize seu progresso e evolução detalhada</p></div></div>
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📈 Flashcards por Semana</h3>
+      <canvas id="chart-cards" height="120"></canvas>
+    </div>
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">⏱️ Pomodoros por Semana</h3>
+      <canvas id="chart-pomo" height="120"></canvas>
+    </div>
+  </div>
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🎯 Acerto por Área do ENEM</h3>
+      <div id="stats-enem-area"></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🔥 Streaks e Recordes</h3>
+      <div id="stats-streaks"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🧠 Análise de Desempenho com IA</h3>
+    <button class="btn btn-primary btn-sm" onclick="gerarAnaliseIA()" id="btn-analise-ia">🤖 Gerar análise personalizada</button>
+    <div id="stats-analise-ia" style="margin-top:14px;display:none;background:var(--bg3);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;border:1px solid var(--blue3)"></div>
+  </div>
+</div>
+
+<!-- ══════════════ DESAFIOS ══════════════ -->
+<div class="page" id="page-desafios">
+  <div class="page-header"><div><h1>🏆 Desafios e Conquistas</h1><p>Complete desafios, ganhe pontos e suba de nível</p></div></div>
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="card glow-card" style="border-color:var(--yellow);text-align:center">
+      <div style="font-size:48px;margin-bottom:6px" id="desafio-nivel-icon">🥉</div>
+      <div style="font-family:var(--font2);font-size:22px;font-weight:800" id="desafio-nivel">Nível 1</div>
+      <div style="font-size:12px;color:var(--text2);margin:6px 0" id="desafio-titulo-nivel">Estudante Iniciante</div>
+      <div class="progress" style="margin:10px 0"><div class="progress-bar" id="desafio-xp-bar" style="width:0%;background:var(--yellow)"></div></div>
+      <div style="font-size:11px;color:var(--text2)"><span id="desafio-xp-atual">0</span> / <span id="desafio-xp-prox">100</span> XP</div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">⚡ Desafios de Hoje</h3>
+      <div id="desafios-diarios"></div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="gerarDesafioIA()">🤖 Gerar desafio personalizado</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🎯 Desafios Semanais</h3>
+    <div id="desafios-semanais"></div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🏅 Conquistas Desbloqueadas</h3>
+    <div id="desafios-conquistas" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+  </div>
+</div>
+
+<!-- ══════════════ NOTÍCIAS ENEM ══════════════ -->
+<div class="page" id="page-noticias">
+  <div class="page-header"><div><h1>📰 Notícias e Atualidades</h1><p>Temas quentes para redação e informações dos vestibulares</p></div></div>
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="form-group" style="margin:0"><label>Filtrar por tema</label>
+      <select id="noticias-filtro" onchange="carregarNoticias()">
+        <option value="geral">Todas as notícias</option>
+        <option value="enem">ENEM e vestibulares</option>
+        <option value="redacao">Temas de redação</option>
+        <option value="ciencia">Ciência e tecnologia</option>
+        <option value="social">Questões sociais</option>
+        <option value="politica">Política e economia</option>
+        <option value="ambiental">Meio ambiente</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="carregarNoticias()" style="width:100%">🔄 Atualizar com IA</button></div>
+  </div>
+  <div id="noticias-grid" style="display:grid;gap:12px"></div>
+</div>
+
+<!-- ══════════════ TUTOR IA ══════════════ -->
+<div class="page" id="page-tutor">
+  <div class="page-header"><div><h1>🤖 Tutor IA</h1><p>Tire dúvidas sobre qualquer matéria — seu professor particular 24h</p></div></div>
+  <div style="max-width:800px;margin:0 auto">
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <span style="font-size:12px;color:var(--text2);align-self:center">Matéria:</span>
+        <select id="tutor-materia" style="width:auto;flex:1;min-width:140px">
+          <option value="geral">Geral</option>
+          <option value="matematica">Matemática</option>
+          <option value="portugues">Português</option>
+          <option value="historia">História</option>
+          <option value="geografia">Geografia</option>
+          <option value="biologia">Biologia</option>
+          <option value="quimica">Química</option>
+          <option value="fisica">Física</option>
+          <option value="ingles">Inglês</option>
+          <option value="redacao">Redação</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="limparTutor()">🗑 Limpar chat</button>
+      </div>
+      <div id="tutor-chat" style="min-height:300px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px;margin-bottom:12px;border-radius:10px;background:var(--bg3);padding:12px"></div>
+      <div style="display:flex;gap:8px">
+        <textarea id="tutor-input" rows="2" placeholder="Digite sua dúvida... Ex: Explique mitose, Como resolver equação do 2° grau, O que é ironia?" style="flex:1;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarTutor();}"></textarea>
+        <button class="btn btn-primary" onclick="enviarTutor()" style="align-self:flex-end">Enviar →</button>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:6px">Enter para enviar · Shift+Enter para nova linha</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">💡 Perguntas rápidas</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="tutor-sugestoes"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CALENDÁRIO -->
+<div class="modal-overlay" id="modal-cal-evento">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-cal-evento')">✕</button>
+    <h2>📅 Adicionar Prova/Evento</h2>
+    <div class="form-group"><label>Nome do evento</label><input type="text" id="cal-ev-nome" placeholder="Ex: Prova de Física, FUVEST 1ª Fase..."></div>
+    <div class="form-group"><label>Data</label><input type="date" id="cal-ev-data"></div>
+    <div class="form-group"><label>Tipo</label>
+      <select id="cal-ev-tipo">
+        <option value="vestibular">🎓 Vestibular</option>
+        <option value="enem">📝 ENEM</option>
+        <option value="escolar">🏫 Prova Escolar</option>
+        <option value="concurso">📋 Concurso</option>
+        <option value="outro">📌 Outro</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Cor</label>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <div class="cal-cor-opt" data-cor="#1e90ff" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#1e90ff;cursor:pointer;border:3px solid #1e90ff"></div>
+        <div class="cal-cor-opt" data-cor="#00e676" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#00e676;cursor:pointer"></div>
+        <div class="cal-cor-opt" data-cor="#ffab40" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#ffab40;cursor:pointer"></div>
+        <div class="cal-cor-opt" data-cor="#ff5252" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#ff5252;cursor:pointer"></div>
+        <div class="cal-cor-opt" data-cor="#b388ff" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#b388ff;cursor:pointer"></div>
+        <div class="cal-cor-opt" data-cor="#ffd740" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#ffd740;cursor:pointer"></div>
+      </div>
+    </div>
+    <div class="form-group"><label>Observação (opcional)</label><textarea id="cal-ev-obs" rows="2" placeholder="Local, horário, o que vai cair..."></textarea></div>
+    <button class="btn btn-primary" style="width:100%" onclick="salvarEventoCal()">💾 Salvar</button>
+  </div>
+</div>
 <!-- MODAL DETALHE DIA EXERCÍCIO -->
 <div class="modal-overlay" id="modal-ex-dia">
   <div class="modal" style="max-width:600px">
@@ -1300,7 +1494,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
 // ══ CONFIG ══════════════════════════════════════════
 // 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
 const OPENROUTER_KEY = '';  // chave no servidor
-const AI_MODEL = 'openrouter/auto';
+const AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1437,6 +1631,7 @@ function applyDef(d){
   s('temasSalvos',[]);s('enemHistory',[]);s('correcoes',[]);
   s('exPerfil',null);s('exPlano',null);s('exLog',{});s('exDiaAtual',0);
   s('mmSalvos',[]);s('livrosHistorico',[]);s('streak',0);s('lastStudyDate','');
+  s('calEventos',[]);s('desafios',null);
   return d;
 }
 function getProfiles(){return JSON.parse(localStorage.getItem('nx_profiles')||'[]');}
@@ -1605,8 +1800,13 @@ function navigate(page){
     flashcards:loadFcDeckSelect,alarmes:renderAlarms,enem:renderEnemHistory,
     redacao:renderTemasSalvos,calorias:()=>{renderCalLog();initAgua();},noturno:renderNoturno,
     exercicios:initExercicios,mapamental:initMapaMental,livros:initLivros,
-    redacaoguia:()=>{},laboratorio:initLaboratorio};
+    redacaoguia:()=>{},laboratorio:initLaboratorio,
+    calendario:initCalendario,estatisticas:initEstatisticas,
+    desafios:initDesafios,noticias:()=>{if(!noticiasSessao.length)carregarNoticias();else renderNoticias();},
+    tutor:initTutor};
   if(fns[page])fns[page]();
+  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('main').scrollTop=0;
 }
 document.querySelectorAll('.nav-item').forEach(n=>{n.addEventListener('click',()=>navigate(n.dataset.page));});
 
@@ -2412,11 +2612,22 @@ function initAgua(){
 }
 
 // ══════════════ REVISÃO NOTURNA ══════════════
-const DICAS_NOTURNAS=["Revisar o que aprendeu antes de dormir consolida a memória 3x mais rápido 🧠","Dormir pelo menos 7h após estudar é essencial para fixar o conteúdo 💤","Evite telas 30min antes de dormir — use esse tempo para flashcards 📱","A repetição espaçada é mais eficiente do que estudar tudo de uma vez 🔄","Anote 3 coisas que você aprendeu hoje — isso ativa a memória de longo prazo ✍️","Água e sono são tão importantes quanto horas de estudo 💧🌙"];
-function renderNoturno(){
+async function renderNoturno(){
   if(!_sReady())return;
-  const dica=DICAS_NOTURNAS[new Date().getDay()%DICAS_NOTURNAS.length];
-  document.getElementById('dica-noturna').textContent=dica;
+  const el=document.getElementById('dica-noturna');
+  if(!el)return;
+  el.innerHTML='<span class="loading"></span> Gerando dica personalizada...';
+  const temas=['memória e retenção','sono e consolidação','técnicas de revisão noturna','alimentação e foco','motivação e consistência','organização do estudo','saúde mental do estudante','produtividade','técnica Feynman','espaçamento e repetição','mindset de crescimento','gerenciamento de tempo'];
+  const tema=temas[Math.floor(Math.random()*temas.length)];
+  const hora=new Date().getHours();
+  const periodo=hora<12?'manhã':hora<18?'tarde':'noite';
+  try{
+    const dica=await callGemini(`Você é um especialista em neurociência da aprendizagem. Dê UMA dica prática, surpreendente e pouco conhecida sobre "${tema}" para um estudante que está estudando agora à ${periodo}. A dica deve ser específica, acionável e diferente das dicas comuns. Inclua um emoji no início. Máximo 2 frases. Em português.`);
+    el.textContent=dica;
+  }catch(e){
+    const fallback=['🧠 Ensine o conteúdo para alguém (ou para o espelho) — quem ensina aprende o dobro.','💡 Escreva 3 perguntas sobre o que estudou hoje — amanhã tente respondê-las sem consultar.','🎯 Associe cada conceito novo a algo que já conhece — seu cérebro adora conexões.','⚡ Estude por 25min e descanse 5min — ritmo ultradian é o segredo da elite acadêmica.','🌊 Após estudar, faça uma caminhada de 10min — o movimento consolida memórias.'];
+    el.textContent=fallback[Math.floor(Math.random()*fallback.length)];
+  }
 }
 function iniciarRevisaoNoturna(tipo){
   if(tipo==='flashcards'){navigate('flashcards');toast('Modo revisão noturna — 10 cards rápidos! 🌙','info');}
@@ -3056,8 +3267,8 @@ async function gerarDicaEx() {
   if (!el) return;
   el.innerHTML = '<span class="loading"></span>';
   const perfil = S.exPerfil ? Object.values(S.exPerfil).join(', ') : 'iniciante';
-  const dicas_temas = ['recuperação muscular','alimentação pré-treino','motivação','hidratação','sono e descanso','progressão de carga','respiração','postura'];
-  const tema = dicas_temas[new Date().getDate() % dicas_temas.length];
+  const dicas_temas = ['recuperação muscular','alimentação pré-treino','motivação e consistência','hidratação e performance','sono e hormônios','progressão de carga e overload','respiração durante o exercício','postura e prevenção de lesões','aquecimento e mobilidade','suplementação natural','mente e exercício','periodização do treino','treino em jejum','HIIT vs cardio moderado','importância do descanso ativo'];
+  const tema = dicas_temas[Math.floor(Math.random()*dicas_temas.length)];
   try {
     const txt = await callGemini(`Dê uma dica prática e motivadora sobre "${tema}" para alguém com este perfil: ${perfil}. Máximo 3 frases, direto ao ponto, em português.`);
     el.innerHTML = txt || 'Continue firme! Cada treino te deixa mais próximo do seu objetivo. 💪';
@@ -3346,7 +3557,15 @@ Responda SOMENTE JSON puro sem markdown:
     const txt=await callGemini(prompt);
     const exp=JSON.parse(txt.replace(/```json|```/g,'').trim());
     renderExperimento(exp,simId);
-    iniciarSimulacao(simId,area,expNome);
+    // Para experimentos customizados, pede animação à IA
+    if(custom){
+      toast('Gerando animação personalizada com IA...','info');
+      gerarAnimacaoCustom(expNome).then(anim=>{
+        iniciarSimulacao(simId,area,expNome,anim);
+      });
+    } else {
+      iniciarSimulacao(simId,area,expNome,null);
+    }
     toast('Experimento carregado!','success');
   }catch(e){document.getElementById('lab-resultado').innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
   btn.disabled=false;btn.innerHTML='🔬 Iniciar Experimento';
@@ -3374,11 +3593,11 @@ function renderExperimento(exp,simId){
   document.getElementById('lab-resultado').innerHTML=html;
 }
 
-function iniciarSimulacao(simId,area,expNome){
+function iniciarSimulacao(simId,area,expNome,customAnim){
   if(labAnimFrame)cancelAnimationFrame(labAnimFrame);
   const canvas=document.getElementById('lab-canvas');
   const ctx=canvas.getContext('2d');
-  labSimAtual={simId,area,t:0,running:false,particles:[],expNome:expNome||simId};
+  labSimAtual={simId,area,t:0,running:false,particles:[],expNome:expNome||simId,customAnim:customAnim||null};
   // Desenha estado inicial
   desenharSimulacao(ctx,labSimAtual);
 }
@@ -4024,7 +4243,11 @@ function desenharSimulacao(ctx,state){
     if(status)status.textContent=run?'Leveduras convertendo glicose em etanol + CO₂':'▶ Execute para ver a fermentação';
 
   } else {
-    // ── GENÉRICO: desenha animação baseada no nome do experimento ──────────
+    // ── PERSONALIZADO: usa labCustomAnim se disponível, senão genérico ─────
+    if(state.customAnim){
+      desenharCustomAnim(ctx,state);
+      return;
+    }
     const nome=(state.expNome||'').toLowerCase();
     const t2=t*0.04;
     if(nome.includes('calor')||nome.includes('temperatura')){
@@ -4094,6 +4317,867 @@ function desenharSimulacao(ctx,state){
   }
 }
 
+
+// ══════════════ MAPA MENTAL VISUAL (canvas) ══════════════
+async function gerarMapaMentalVisual(){
+  const tema=document.getElementById('mm-tema').value.trim();
+  if(!tema){toast('Digite um tema','error');return;}
+  const btn=document.getElementById('mm-btn-visual');
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando desenho...';
+
+  try{
+    const txt=await callGemini(`Crie um mapa mental sobre "${tema}" com no máximo 6 ramos.
+Responda SOMENTE JSON puro sem markdown:
+{"tema":"${tema}","ramos":[{"label":"Ramo","cor":"#1e90ff","filhos":["filho1","filho2","filho3"]}]}`);
+    const mm=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    renderMapaMentalCanvas(mm);
+    toast('Mapa visual gerado! 🎨','success');
+  }catch(e){toast('Erro: '+e.message,'error');}
+  btn.disabled=false;btn.innerHTML='🎨 Gerar Mapa Visual (desenho)';
+}
+
+function renderMapaMentalCanvas(mm){
+  // Cria canvas acima do resultado texto
+  const container=document.getElementById('mm-resultado');
+  const cores=['#1e90ff','#00e676','#ffab40','#b388ff','#ff5252','#00cfff','#ffd740'];
+  const W=700,H=480;
+  let svg=`<div class="card glow-card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="font-size:13px;color:var(--text2)">🎨 Mapa Mental Visual</h3>
+      <button class="btn btn-ghost btn-sm" onclick="downloadMapaSVG()">⬇ Salvar SVG</button>
+    </div>
+    <div style="overflow-x:auto;border-radius:12px;background:#060d1f;border:1px solid var(--border)">
+    <svg id="mm-svg" viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="min-width:340px;display:block">
+    <defs>
+      <radialGradient id="cgrd" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#1e3a6e"/>
+        <stop offset="100%" stop-color="#0a1628"/>
+      </radialGradient>
+    </defs>
+    <rect width="${W}" height="${H}" fill="#060d1f"/>`;
+
+  const cx=W/2,cy=H/2;
+  const ramos=mm.ramos||[];
+  const n=ramos.length||1;
+  const R_branch=150,R_child=85;
+
+  // Nó central
+  const cw=Math.min(160,mm.tema.length*8+40);
+  svg+=`<ellipse cx="${cx}" cy="${cy}" rx="${cw/2}" ry="32" fill="url(#cgrd)" stroke="#1e90ff" stroke-width="2"/>`;
+  svg+=`<text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#e8f0fe" font-size="13" font-weight="bold" font-family="sans-serif">${mm.tema}</text>`;
+
+  ramos.forEach((r,i)=>{
+    const ang=(2*Math.PI/n)*i - Math.PI/2;
+    const bx=cx+Math.cos(ang)*R_branch;
+    const by=cy+Math.sin(ang)*R_branch;
+    const cor=r.cor||cores[i%cores.length];
+    // Linha centro→ramo
+    svg+=`<line x1="${cx}" y1="${cy}" x2="${bx}" y2="${by}" stroke="${cor}" stroke-width="2.5" stroke-opacity="0.6"/>`;
+    // Nó do ramo
+    const bw=Math.min(120,r.label.length*7+28);
+    svg+=`<rect x="${bx-bw/2}" y="${by-18}" width="${bw}" height="36" rx="10" fill="${cor}22" stroke="${cor}" stroke-width="1.5"/>`;
+    svg+=`<text x="${bx}" y="${by+5}" text-anchor="middle" fill="${cor}" font-size="11" font-weight="bold" font-family="sans-serif">${r.label}</text>`;
+
+    const filhos=r.filhos||[];
+    const nf=filhos.length||1;
+    const spread=Math.min(Math.PI*0.7,nf*0.38);
+    filhos.forEach((f,j)=>{
+      const fang=filhos.length===1?ang:ang-spread/2+(spread/(nf-1||1))*j;
+      const dist=R_child+Math.max(0,(nf-2)*12);
+      const fx=bx+Math.cos(fang)*dist,fy=by+Math.sin(fang)*dist;
+      const fw=Math.min(110,String(f).length*6.5+20);
+      svg+=`<line x1="${bx}" y1="${by}" x2="${fx}" y2="${fy}" stroke="${cor}" stroke-width="1.2" stroke-opacity="0.35"/>`;
+      svg+=`<rect x="${fx-fw/2}" y="${fy-12}" width="${fw}" height="24" rx="6" fill="#0a1628" stroke="${cor}" stroke-width="1" stroke-opacity="0.5"/>`;
+      svg+=`<text x="${fx}" y="${fy+4}" text-anchor="middle" fill="#8ab4d4" font-size="10" font-family="sans-serif">${String(f).slice(0,18)}</text>`;
+    });
+  });
+  svg+=`</svg></div></div>`;
+
+  // Prepend visual antes do resultado texto
+  const existing=container.querySelector('#mm-visual-card');
+  if(existing)existing.remove();
+  const div=document.createElement('div');div.id='mm-visual-card';div.innerHTML=svg;
+  container.prepend(div);
+}
+
+function downloadMapaSVG(){
+  const svg=document.getElementById('mm-svg');
+  if(!svg)return;
+  const blob=new Blob([svg.outerHTML],{type:'image/svg+xml'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mapa-mental.svg';a.click();
+  toast('SVG salvo!','success');
+}
+
+// ══════════════ LABORATÓRIO — ANIMAÇÃO PERSONALIZADA COM IA ══════════════
+async function gerarAnimacaoCustom(expNome){
+  // Pede à IA uma descrição de animação em formato estruturado
+  try{
+    const txt=await callGemini(`Para o experimento científico "${expNome}", descreva uma animação simples em formato JSON para ser renderizada num canvas 400x220.
+Responda SOMENTE JSON puro sem markdown:
+{
+  "tipo": "reacao|ondas|particulas|termico|eletrico",
+  "cor_principal": "#hexcolor",
+  "cor_secundaria": "#hexcolor",
+  "descricao_curta": "O que acontece visualmente",
+  "elementos": [
+    {"tipo": "recipiente|particula|seta|onda|termometro|chama", "label": "nome", "x": 200, "y": 110}
+  ],
+  "status_texto": "O que mostrar no status durante animação"
+}`);
+    const anim=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    return anim;
+  }catch(e){return null;}
+}
+
+function desenharCustomAnim(ctx,state){
+  const w=ctx.canvas.width,h=ctx.canvas.height;
+  const anim=state.customAnim;
+  const t=state.t||0;
+  const run=state.running;
+  const cor1=anim.cor_principal||'#1e90ff';
+  const cor2=anim.cor_secundaria||'#00cfff';
+  const status=document.getElementById('lab-sim-status');
+
+  if(anim.tipo==='reacao'){
+    // Béquer com reação colorida
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(130,40);ctx.lineTo(110,185);ctx.lineTo(290,185);ctx.lineTo(270,40);ctx.stroke();
+    const nivel=run?Math.min(130,t*0.6):60;
+    ctx.fillStyle=cor1+'88';ctx.fillRect(111,185-nivel,178,nivel);
+    if(run){
+      for(let i=0;i<6;i++){
+        ctx.beginPath();ctx.arc(130+i*28,(185-nivel/2)-(t*1.5+i*22)%nivel,3+i%2,0,Math.PI*2);
+        ctx.fillStyle=cor2+'99';ctx.fill();
+      }
+      ctx.fillStyle=cor2;ctx.font='bold 13px sans-serif';
+      ctx.fillText(anim.descricao_curta||'Reação...',80,210);
+    }
+    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';
+    ctx.fillText(anim.elementos?.[0]?.label||expNome,155,205);
+  } else if(anim.tipo==='particulas'){
+    if(!state._pts){state._pts=Array.from({length:25},()=>({x:80+Math.random()*240,y:30+Math.random()*150,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3}));}
+    ctx.strokeStyle='#334155';ctx.lineWidth=2;ctx.strokeRect(70,20,260,165);
+    state._pts.forEach(p=>{
+      if(run){p.x+=p.vx;p.y+=p.vy;if(p.x<75||p.x>325)p.vx*=-1;if(p.y<25||p.y>180)p.vy*=-1;}
+      ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);
+      ctx.fillStyle=cor1+'cc';ctx.fill();
+    });
+    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';
+    ctx.fillText(anim.descricao_curta||state.expNome,80,210);
+  } else if(anim.tipo==='termico'){
+    // Termômetro
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.beginPath();ctx.rect(185,20,30,155);ctx.stroke();
+    ctx.beginPath();ctx.arc(200,180,18,0,Math.PI*2);ctx.fillStyle=cor1+'33';ctx.fill();ctx.stroke();
+    const temp=run?Math.min(140,t*0.6):10;
+    ctx.fillStyle=cor1;ctx.fillRect(194,160-temp,12,temp);
+    ctx.beginPath();ctx.arc(200,180,14,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#e2e8f0';ctx.font='bold 12px sans-serif';ctx.fillText(`${Math.round(temp/1.4)}°C`,210,183);
+    for(let i=0;i<10;i++){const lx=80+i*22,ly=h/2+Math.sin(t*0.06+i)*30;
+      ctx.beginPath();ctx.arc(lx,ly,5,0,Math.PI*2);ctx.fillStyle=`hsl(${10+temp},75%,55%)`;ctx.fill();}
+    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText(anim.descricao_curta||'',80,210);
+  } else if(anim.tipo==='ondas'){
+    for(let k=0;k<3;k++){
+      ctx.beginPath();ctx.strokeStyle=k===0?cor1:k===1?cor2:'#4ade80';ctx.lineWidth=2;
+      for(let x=0;x<w;x++){const y=h/3*(k+0.8)+35*Math.sin((x*0.04+t*0.05)+(k*Math.PI/1.5));
+        if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    }
+    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText(anim.descricao_curta||state.expNome,80,210);
+  } else {
+    // eletrico ou genérico
+    for(let i=0;i<10;i++){
+      const a=(t*0.04)+(i*Math.PI*2/10);const r=60+Math.sin(a*2)*20;
+      const px=w/2+r*Math.cos(a),py=h/2+r*0.65*Math.sin(a);
+      ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=i%2===0?cor1:cor2;ctx.fill();
+      if(i>0){const a2=t*0.04+((i-1)*Math.PI*2/10);const r2=60+Math.sin(a2*2)*20;
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(w/2+r2*Math.cos(a2),h/2+r2*0.65*Math.sin(a2));
+        ctx.strokeStyle=cor1+'44';ctx.lineWidth=1;ctx.stroke();}
+    }
+    ctx.beginPath();ctx.arc(w/2,h/2,12,0,Math.PI*2);ctx.fillStyle=cor1;ctx.fill();
+    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText(anim.descricao_curta||state.expNome,80,210);
+  }
+  if(status)status.textContent=run?(anim.status_texto||'Simulação em andamento...'):'▶ Execute para animar';
+}
+
+// ══════════════ CALENDÁRIO DE PROVAS ══════════════
+const VESTIBULARES_BR = [
+  // ENEM / Nacionais
+  {nome:'ENEM',data:'2025-11-02',info:'Dia 1 — Obrigatório'},
+  {nome:'ENEM Dia 2',data:'2025-11-09',info:'Dia 2 — Obrigatório'},
+  {nome:'SISU',data:'2026-01-22',info:'Sistema de Seleção Unificada'},
+  {nome:'PROUNI',data:'2026-01-20',info:'Bolsas MEC'},
+  {nome:'FIES',data:'2026-02-01',info:'Financiamento Estudantil'},
+  // SP grandes
+  {nome:'FUVEST',data:'2025-12-01',info:'USP — 1ª Fase'},
+  {nome:'FUVEST 2ª Fase',data:'2026-01-11',info:'USP — 2ª Fase'},
+  {nome:'UNICAMP',data:'2025-10-19',info:'COMVEST 1ª Fase'},
+  {nome:'UNESP',data:'2025-11-23',info:'1ª Fase'},
+  {nome:'UNIFESP',data:'2025-11-30',info:'São Paulo'},
+  {nome:'VUNESP',data:'2025-11-02',info:'Vestibular Estadual SP'},
+  {nome:'Mackenzie',data:'2025-11-09',info:'São Paulo'},
+  {nome:'PUC-SP',data:'2025-11-30',info:'São Paulo'},
+  {nome:'FAAP',data:'2025-11-16',info:'São Paulo'},
+  {nome:'FEI',data:'2025-11-02',info:'São Paulo'},
+  {nome:'ESPM',data:'2025-10-26',info:'São Paulo'},
+  {nome:'Insper',data:'2025-10-12',info:'São Paulo'},
+  {nome:'FGV-SP',data:'2026-01-11',info:'São Paulo'},
+  {nome:'IFSP',data:'2025-11-16',info:'São Paulo — SISU'},
+  // RJ
+  {nome:'UERJ',data:'2025-09-14',info:'Rio de Janeiro'},
+  {nome:'UFF',data:'2026-01-11',info:'Rio de Janeiro'},
+  {nome:'UFRJ',data:'2026-01-05',info:'Rio de Janeiro'},
+  {nome:'PUC-RIO',data:'2025-12-07',info:'Rio de Janeiro'},
+  {nome:'FGV-RIO',data:'2026-01-18',info:'Rio de Janeiro'},
+  // MG
+  {nome:'UFMG',data:'2025-11-16',info:'Minas Gerais'},
+  {nome:'UFU',data:'2025-11-23',info:'Uberlândia MG'},
+  {nome:'UFJF',data:'2026-01-04',info:'Juiz de Fora MG'},
+  {nome:'UFLA',data:'2026-01-18',info:'Lavras MG'},
+  {nome:'PUC-MG',data:'2025-10-27',info:'Minas Gerais'},
+  {nome:'CEFET-MG',data:'2025-11-09',info:'Minas Gerais'},
+  {nome:'UFV',data:'2026-01-11',info:'Viçosa MG'},
+  {nome:'UFSJ',data:'2026-01-18',info:'São João del-Rei MG'},
+  {nome:'UNIMONTES',data:'2026-01-11',info:'Montes Claros MG'},
+  // PR
+  {nome:'UFPR',data:'2025-11-16',info:'Paraná'},
+  {nome:'UEL',data:'2025-10-05',info:'Londrina PR'},
+  {nome:'UEM',data:'2025-10-12',info:'Maringá PR'},
+  {nome:'UEPG',data:'2025-10-19',info:'Ponta Grossa PR'},
+  {nome:'UNIOESTE',data:'2025-11-02',info:'Cascavel PR'},
+  {nome:'UNICENTRO',data:'2025-11-09',info:'Guarapuava PR'},
+  {nome:'UENP',data:'2025-11-16',info:'Bandeirantes PR'},
+  // SC
+  {nome:'UFSC',data:'2026-01-11',info:'Santa Catarina'},
+  {nome:'UDESC',data:'2025-11-16',info:'Santa Catarina'},
+  {nome:'ACAFE',data:'2025-11-09',info:'Santa Catarina'},
+  {nome:'UNIVILLE',data:'2025-10-26',info:'Joinville SC'},
+  // RS
+  {nome:'UFRGS',data:'2026-01-18',info:'Rio Grande do Sul'},
+  {nome:'UFSM',data:'2026-01-11',info:'Santa Maria RS'},
+  {nome:'UFPel',data:'2026-01-18',info:'Pelotas RS'},
+  {nome:'FURG',data:'2026-01-04',info:'Rio Grande RS'},
+  {nome:'UCS',data:'2025-11-16',info:'Caxias do Sul RS'},
+  {nome:'UNISINOS',data:'2025-10-12',info:'São Leopoldo RS'},
+  {nome:'PUCRS',data:'2025-10-19',info:'Porto Alegre RS'},
+  // BA
+  {nome:'UFBA',data:'2026-01-04',info:'Bahia'},
+  {nome:'UESC',data:'2026-01-11',info:'Ilhéus BA'},
+  {nome:'UEFS',data:'2026-01-18',info:'Feira de Santana BA'},
+  {nome:'UESB',data:'2026-01-11',info:'Vitória da Conquista BA'},
+  {nome:'UNEB',data:'2026-01-18',info:'Bahia'},
+  // CE
+  {nome:'UFC',data:'2026-01-11',info:'Ceará'},
+  {nome:'URCA',data:'2026-01-18',info:'Crato CE — Univ. Regional do Cariri'},
+  {nome:'UVA',data:'2026-01-11',info:'Sobral CE'},
+  {nome:'UECE',data:'2026-01-18',info:'Ceará'},
+  {nome:'UFCA',data:'2026-01-11',info:'Juazeiro do Norte CE'},
+  // PE
+  {nome:'UFPE',data:'2026-01-18',info:'Pernambuco'},
+  {nome:'UFRPE',data:'2026-01-11',info:'Rural de Pernambuco'},
+  {nome:'UPE',data:'2026-01-18',info:'Estadual de Pernambuco'},
+  {nome:'UNIVASF',data:'2026-01-04',info:'Vale do São Francisco PE/BA/PI'},
+  // PB
+  {nome:'UFPB',data:'2026-01-18',info:'Paraíba'},
+  {nome:'UEPB',data:'2026-01-11',info:'Campina Grande PB'},
+  // RN
+  {nome:'UFRN',data:'2026-01-11',info:'Rio Grande do Norte'},
+  {nome:'UERN',data:'2026-01-18',info:'Mossoró RN'},
+  // AL / SE / PI / MA
+  {nome:'UFAL',data:'2026-01-11',info:'Alagoas'},
+  {nome:'UFS',data:'2026-01-18',info:'Sergipe'},
+  {nome:'UFPI',data:'2026-01-11',info:'Piauí'},
+  {nome:'UFMA',data:'2026-01-11',info:'Maranhão'},
+  {nome:'UEMA',data:'2026-01-18',info:'Estadual do Maranhão'},
+  // Norte
+  {nome:'UFPA',data:'2026-01-11',info:'Pará'},
+  {nome:'UEPA',data:'2026-01-18',info:'Estadual do Pará'},
+  {nome:'UFAM',data:'2026-01-04',info:'Amazonas'},
+  {nome:'UEA',data:'2026-01-11',info:'Estadual do Amazonas'},
+  {nome:'UFRR',data:'2026-01-11',info:'Roraima'},
+  {nome:'UNIFAP',data:'2026-01-18',info:'Amapá'},
+  {nome:'UFAC',data:'2026-01-11',info:'Acre'},
+  {nome:'UNIR',data:'2026-01-18',info:'Rondônia'},
+  {nome:'UFRO',data:'2026-01-18',info:'Rondônia'},
+  {nome:'UFTO',data:'2026-01-11',info:'Tocantins'},
+  {nome:'UFT',data:'2026-01-18',info:'Tocantins'},
+  // CO
+  {nome:'UFG',data:'2025-11-09',info:'Goiás'},
+  {nome:'PUC-GO',data:'2025-11-02',info:'Goiás'},
+  {nome:'UFGD',data:'2026-01-11',info:'Grande Dourados MS'},
+  {nome:'UFMS',data:'2026-01-04',info:'Mato Grosso do Sul'},
+  {nome:'UFMT',data:'2026-01-18',info:'Mato Grosso'},
+  {nome:'UEG',data:'2025-11-23',info:'Estadual de Goiás'},
+  {nome:'UnB',data:'2026-01-11',info:'Brasília DF'},
+  // Militares / Federais especiais
+  {nome:'ITA',data:'2025-12-14',info:'Inst. Tecnológico de Aeronáutica'},
+  {nome:'IME',data:'2025-09-28',info:'Inst. Militar de Engenharia'},
+  {nome:'ESPCEX',data:'2025-10-05',info:'Escola Preparatória EX'},
+  {nome:'AFA',data:'2025-10-19',info:'Academia da Força Aérea'},
+  {nome:'AMAN',data:'2025-09-21',info:'Academia Militar Agulhas Negras'},
+  {nome:'EN',data:'2025-10-12',info:'Escola Naval'},
+  {nome:'EFOMM',data:'2025-10-26',info:'Escola de Formação de Oficiais'},
+  // Outros
+  {nome:'FAMERP',data:'2025-11-30',info:'Medicina São José do Rio Preto SP'},
+  {nome:'FAMEMA',data:'2026-01-11',info:'Medicina Marília SP'},
+  {nome:'FCMMG',data:'2025-11-16',info:'Medicina Muriaé MG'},
+  {nome:'UENF',data:'2026-01-11',info:'Campos RJ'},
+  {nome:'UFRRJ',data:'2026-01-18',info:'Rural do Rio de Janeiro'},
+  {nome:'UNIRIO',data:'2026-01-11',info:'Rio de Janeiro'},
+  {nome:'CEFET-RJ',data:'2025-11-09',info:'Rio de Janeiro'},
+  {nome:'UFF-Angra',data:'2026-01-18',info:'Angra dos Reis RJ'},
+  {nome:'UNIPAMPA',data:'2026-01-11',info:'Pampa RS/RS'},
+  {nome:'UFSB',data:'2026-01-11',info:'Sul da Bahia'},
+  {nome:'UNILAB',data:'2026-01-18',info:'Redenção CE'},
+  {nome:'UFOPA',data:'2026-01-11',info:'Oeste do Pará'},
+  {nome:'UNIFESSPA',data:'2026-01-18',info:'Sudeste do Pará'},
+  {nome:'UFVJM',data:'2026-01-11',info:'Jequitinhonha e Mucuri MG'},
+  {nome:'UFOB',data:'2026-01-18',info:'Oeste da Bahia'},
+  {nome:'UFERSA',data:'2026-01-11',info:'Rural do Semi-Árido RN'},
+  {nome:'UFRB',data:'2026-01-18',info:'Recôncavo da Bahia'},
+  {nome:'UFCSPA',data:'2026-01-11',info:'Ciências da Saúde PA'},
+  {nome:'UFNT',data:'2026-01-18',info:'Norte do Tocantins'},
+  {nome:'UNIFEI',data:'2026-01-11',info:'Itajubá MG'},
+  {nome:'UNIFAL',data:'2026-01-18',info:'Alfenas MG'},
+  {nome:'UTFPR',data:'2026-01-11',info:'Tecnológica Federal PR'},
+  {nome:'UFFS',data:'2026-01-18',info:'Fronteira Sul SC/RS/PR'},
+  {nome:'UNIPAMPA',data:'2026-01-11',info:'Pampa RS'},
+  {nome:'UFABC',data:'2026-01-11',info:'Santo André SP'},
+  {nome:'UFCAT',data:'2026-01-18',info:'Catalão GO'},
+  {nome:'UFES',data:'2026-01-11',info:'Espírito Santo'},
+  {nome:'UFOP',data:'2026-01-18',info:'Ouro Preto MG'},
+  {nome:'UFTM',data:'2026-01-11',info:'Triângulo Mineiro MG'},
+  {nome:'UFCG',data:'2026-01-18',info:'Campina Grande PB'},
+  {nome:'UFERSA',data:'2026-01-11',info:'Mossoró RN'},
+  {nome:'UFRB',data:'2026-01-18',info:'Cruz das Almas BA'},
+  {nome:'UESPI',data:'2026-01-11',info:'Estadual do Piauí'},
+  {nome:'UNEAL',data:'2026-01-18',info:'Estadual de Alagoas'},
+  {nome:'UNIT',data:'2026-01-11',info:'Tiradentes SE'},
+  {nome:'UNIFOR',data:'2025-10-26',info:'Fortaleza CE'},
+  {nome:'INTA',data:'2025-11-09',info:'Sobral CE'},
+  {nome:'FIC',data:'2025-11-02',info:'Faculdades Integradas do Ceará'},
+  {nome:'UNIPAR',data:'2025-10-19',info:'Paraná'},
+  {nome:'UNIOESTEP',data:'2025-11-02',info:'Oeste do Paraná'},
+];
+
+
+let calMesAtual = new Date().getMonth();
+let calAnoAtual = new Date().getFullYear();
+let calCorSel = '#1e90ff';
+
+function applyDefCal(d){
+  if(!d.calEventos) d.calEventos = [];
+  // Sempre garante ENEM fixo (2026)
+  const temEnem1 = d.calEventos.find(e=>e.id==='enem-fixo-1');
+  if(!temEnem1) d.calEventos.push({id:'enem-fixo-1',nome:'ENEM — Dia 1',data:'2026-11-01',tipo:'enem',cor:'#ff5252',obs:'Linguagens, Ciências Humanas e Redação',fixo:true});
+  const temEnem2 = d.calEventos.find(e=>e.id==='enem-fixo-2');
+  if(!temEnem2) d.calEventos.push({id:'enem-fixo-2',nome:'ENEM — Dia 2',data:'2026-11-08',tipo:'enem',cor:'#ff5252',obs:'Matemática e Ciências da Natureza',fixo:true});
+  return d;
+}
+
+function initCalendario(){
+  if(!_sReady())return;
+  applyDefCal(S);
+  renderCalGrade();
+  renderCalProximas();
+  renderCalVestibulares('');
+}
+
+function filtrarVestibulares(){
+  const q = document.getElementById('cal-busca').value;
+  renderCalVestibulares(q);
+}
+
+function renderCalVestibulares(q){
+  const el = document.getElementById('cal-vestibulares-list');
+  const lista = q ? VESTIBULARES_BR.filter(v=>v.nome.toLowerCase().includes(q.toLowerCase())||v.info.toLowerCase().includes(q.toLowerCase())) : VESTIBULARES_BR.slice(0,20);
+  const ehEnem = n => n==='ENEM'||n==='ENEM Dia 2';
+  el.innerHTML = lista.map((v,i)=>{
+    const jaAdd = (S.calEventos||[]).find(e=>e.nome===v.nome);
+    const fixo = ehEnem(v.nome);
+    const cor = jaAdd ? (fixo?'border:1px solid var(--green);background:rgba(0,230,118,.08);color:var(--green)':'border:1px solid var(--green);background:rgba(0,230,118,.08);color:var(--green)') : 'border:1px solid var(--border);background:var(--bg3);color:var(--text2)';
+    return `<div data-vidx="${i}" onclick="toggleVestibular(${i})" title="${jaAdd?(fixo?'Fixo — ENEM sempre no calendário':'Clique para remover'):'Clique para adicionar ao calendário'}"
+      style="padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer;${cor};transition:all .2s;user-select:none">
+      ${jaAdd?'✓ ':''}<strong>${v.nome}</strong> <span style="opacity:.6;font-size:10px">${v.info}</span>${jaAdd&&!fixo?' <span style="font-size:10px;opacity:.5">✕</span>':''}
+    </div>`;
+  }).join('');
+  el._lista = lista;
+}
+
+function toggleVestibular(idx){
+  if(!_sReady())return;
+  const el=document.getElementById('cal-vestibulares-list');
+  const lista=el._lista||[];
+  const v=lista[idx];if(!v)return;
+  const ehEnem=v.nome.startsWith('ENEM');
+  const jaAddIdx=(S.calEventos||[]).findIndex(e=>e.nome===v.nome);
+  if(jaAddIdx>-1){
+    if(ehEnem){toast('O ENEM é fixo e não pode ser removido','info');return;}
+    S.calEventos.splice(jaAddIdx,1);
+    save();toast(`${v.nome} removido do calendário`,'info');
+  } else {
+    S.calEventos.push({id:'vest-'+Date.now(),nome:v.nome,data:v.data,tipo:'vestibular',cor:ehEnem?'#ff5252':'#1e90ff',obs:v.info,fixo:ehEnem});
+    save();toast(`${v.nome} adicionado! 📅`,'success');
+  }
+  renderCalGrade();renderCalProximas();renderCalVestibulares(document.getElementById('cal-busca').value);
+}
+
+function calNavMes(dir){
+  calMesAtual+=dir;
+  if(calMesAtual>11){calMesAtual=0;calAnoAtual++;}
+  if(calMesAtual<0){calMesAtual=11;calAnoAtual--;}
+  renderCalGrade();
+}
+
+function renderCalGrade(){
+  if(!_sReady())return;
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  document.getElementById('cal-mes-label').textContent=`${meses[calMesAtual]} ${calAnoAtual}`;
+  const grid=document.getElementById('cal-grid');
+  const primeiro=new Date(calAnoAtual,calMesAtual,1).getDay();
+  const dias=new Date(calAnoAtual,calMesAtual+1,0).getDate();
+  const hoje=new Date();
+  let html='';
+  for(let i=0;i<primeiro;i++) html+=`<div></div>`;
+  for(let d=1;d<=dias;d++){
+    const dataStr=`${calAnoAtual}-${String(calMesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const eventos=(S.calEventos||[]).filter(e=>e.data===dataStr);
+    const isHoje=d===hoje.getDate()&&calMesAtual===hoje.getMonth()&&calAnoAtual===hoje.getFullYear();
+    const dots=eventos.map(e=>`<div style="width:5px;height:5px;border-radius:50%;background:${e.cor||'#1e90ff'};margin:0 1px;flex-shrink:0"></div>`).join('');
+    html+=`<div onclick="clickDiaCal('${dataStr}')" style="min-height:38px;border-radius:7px;padding:4px;text-align:center;cursor:pointer;border:1px solid ${isHoje?'var(--blue2)':eventos.length?'var(--border2)':'transparent'};background:${isHoje?'rgba(30,144,255,.15)':eventos.length?'rgba(30,144,255,.06)':'transparent'};transition:all .2s;position:relative" onmouseenter="this.style.background='rgba(30,144,255,.1)'" onmouseleave="this.style.background='${isHoje?'rgba(30,144,255,.15)':eventos.length?'rgba(30,144,255,.06)':'transparent'}'">
+      <div style="font-size:12px;font-weight:${isHoje?'700':'400'};color:${isHoje?'var(--blue2)':'var(--text)'}">${d}</div>
+      <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1px;margin-top:2px">${dots}</div>
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function clickDiaCal(dataStr){
+  const eventos=(S.calEventos||[]).filter(e=>e.data===dataStr);
+  const diff=diasAte(dataStr);
+  const diffTexto=diff>0?`Faltam ${diff>30?Math.ceil(diff/30)+' meses e '+(diff%30)+' dias':diff+' dia'+(diff>1?'s':'')}`:diff===0?'Hoje!':'Passou há '+Math.abs(diff)+' dia'+(Math.abs(diff)>1?'s':'');
+  if(!eventos.length){
+    // Abrir modal para adicionar
+    document.getElementById('cal-ev-data').value=dataStr;
+    openModal('modal-cal-evento');
+    return;
+  }
+  // Mostrar detalhes
+  const info=eventos.map(e=>`<div style="background:var(--bg3);border:1px solid ${e.cor||'#1e90ff'};border-radius:10px;padding:12px;margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <div><div style="font-weight:700;font-size:14px;color:${e.cor||'#1e90ff'}">${e.nome}</div>
+      ${e.obs?`<div style="font-size:12px;color:var(--text2);margin-top:3px">${e.obs}</div>`:''}
+      <div style="font-size:13px;font-weight:600;margin-top:6px">${diffTexto}</div></div>
+      ${!e.fixo?`<button onclick="removerEventoCal('${e.id}')" class="btn btn-danger btn-sm" style="font-size:10px">✕</button>`:'<span class="badge badge-red" style="font-size:10px">FIXO</span>'}
+    </div>
+  </div>`).join('');
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay open';overlay.innerHTML=`<div class="modal" style="max-width:400px"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button><h2>${new Date(dataStr+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</h2><div style="margin-top:14px">${info}</div></div>`;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+  document.body.appendChild(overlay);
+}
+
+function removerEventoCal(id){
+  S.calEventos=S.calEventos.filter(e=>e.id!==id);save();
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.remove());
+  renderCalGrade();renderCalProximas();toast('Evento removido','info');
+}
+
+function diasAte(dataStr){
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const alvo=new Date(dataStr+'T00:00:00');alvo.setHours(0,0,0,0);
+  return Math.round((alvo-hoje)/(1000*60*60*24));
+}
+function renderCalProximas(){
+  if(!_sReady())return;
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const proximas=(S.calEventos||[]).filter(e=>diasAte(e.data)>=0).sort((a,b)=>new Date(a.data)-new Date(b.data)).slice(0,8);
+  const cd=document.getElementById('cal-countdown');
+  const pr=document.getElementById('cal-proximas');
+  if(!proximas.length){cd.innerHTML='<p style="font-size:13px;color:var(--text3)">Nenhuma prova futura</p>';pr.innerHTML='';return;}
+  const prox=proximas[0];const diff=diasAte(prox.data);
+  const semanas=Math.floor(diff/7);const dias=diff%7;
+  cd.innerHTML=`<div style="text-align:center;padding:10px 0">
+    <div style="font-family:var(--font2);font-size:42px;font-weight:800;color:${prox.cor||'var(--blue2)'};">${diff}</div>
+    <div style="font-size:13px;color:var(--text2)">${diff===0?'é hoje!':diff===1?'dia para':'dias para'}</div>
+    <div style="font-size:16px;font-weight:700;margin:4px 0">${prox.nome}</div>
+    <div style="font-size:12px;color:var(--text3)">${semanas>0?semanas+'sem '+dias+'d':diff+'d'} · ${new Date(prox.data+'T00:00:00').toLocaleDateString('pt-BR')}</div>
+  </div>`;
+  pr.innerHTML=proximas.map(e=>{
+    const d=diasAte(e.data);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:8px;height:8px;border-radius:50%;background:${e.cor||'#1e90ff'};flex-shrink:0"></div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:600">${e.nome}</div>
+      <div style="font-size:11px;color:var(--text3)">${new Date(e.data+'T00:00:00').toLocaleDateString('pt-BR')}</div></div>
+      <span class="badge badge-blue" style="font-size:10px">${d===0?'Hoje':d+'d'}</span>
+    </div>`;
+  }).join('');
+}
+
+function selCor(el){
+  document.querySelectorAll('.cal-cor-opt').forEach(e=>e.style.border='2px solid transparent');
+  el.style.border='3px solid white';calCorSel=el.dataset.cor;
+}
+
+function salvarEventoCal(){
+  const nome=document.getElementById('cal-ev-nome').value.trim();
+  const data=document.getElementById('cal-ev-data').value;
+  if(!nome||!data){toast('Preencha nome e data','error');return;}
+  S.calEventos.push({id:'ev-'+Date.now(),nome,data,tipo:document.getElementById('cal-ev-tipo').value,cor:calCorSel,obs:document.getElementById('cal-ev-obs').value,fixo:false});
+  save();closeModal('modal-cal-evento');renderCalGrade();renderCalProximas();
+  document.getElementById('cal-ev-nome').value='';document.getElementById('cal-ev-obs').value='';
+  toast('Prova adicionada! 📅','success');
+}
+
+// ══════════════ ESTATÍSTICAS ══════════════
+function initEstatisticas(){
+  if(!_sReady())return;
+  renderStatsEnemArea();renderStatsStreaks();renderChartCanvas();
+}
+
+function renderChartCanvas(){
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const cards=[],pomos=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(Date.now()-i*86400000).toDateString();
+    cards.push(S.stats.activity[d]||0);
+    pomos.push(S.stats.pomoDays[d]||0);
+  }
+  ['chart-cards','chart-pomo'].forEach((id,ci)=>{
+    const canvas=document.getElementById(id);if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    const data=ci===0?cards:pomos;const maxV=Math.max(...data,1);
+    const W=canvas.offsetWidth||300,H=120;
+    canvas.width=W;canvas.height=H;
+    ctx.clearRect(0,0,W,H);ctx.fillStyle='#060d1f';ctx.fillRect(0,0,W,H);
+    const bw=(W-40)/(data.length);
+    data.forEach((v,i)=>{
+      const bh=Math.max(4,(v/maxV)*(H-30));
+      const x=20+i*bw+bw*0.1,y=H-20-bh;
+      const grd=ctx.createLinearGradient(0,y,0,H-20);
+      grd.addColorStop(0,ci===0?'#1e90ff':'#00cfff');grd.addColorStop(1,ci===0?'#0050c8':'#007fa3');
+      ctx.fillStyle=grd;ctx.beginPath();
+      ctx.roundRect(x,y,bw*0.8,bh,4);ctx.fill();
+      ctx.fillStyle='#475569';ctx.font='9px sans-serif';ctx.textAlign='center';
+      ctx.fillText(dias[(new Date().getDay()-6+i+7)%7],x+bw*0.4,H-6);
+      if(v>0){ctx.fillStyle='#e2e8f0';ctx.fillText(v,x+bw*0.4,y-3);}
+    });
+  });
+}
+
+function renderStatsEnemArea(){
+  const el=document.getElementById('stats-enem-area');if(!el)return;
+  const areas={cn:'Ciências da Natureza',ch:'Ciências Humanas',lc:'Linguagens',mt:'Matemática'};
+  el.innerHTML=Object.entries(areas).map(([k,n])=>{
+    const hist=(S.enemHistory||[]).filter(h=>h.area===k);
+    if(!hist.length)return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${n}</span><span style="color:var(--text3)">sem dados</span></div><div class="progress"><div class="progress-bar" style="width:0%"></div></div></div>`;
+    const avg=Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length);
+    const col=avg>=70?'var(--green)':avg>=50?'var(--orange)':'var(--red)';
+    return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${n}</span><span style="font-weight:600;color:${col}">${avg}% (${hist.length} simulados)</span></div><div class="progress"><div class="progress-bar" style="width:${avg}%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+
+function renderStatsStreaks(){
+  const el=document.getElementById('stats-streaks');if(!el)return;
+  const melhorStreak=Math.max(S.streak||0,...Object.values(S.stats?.pomoDays||{}).map(()=>1));
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.streak||0}🔥</div><div class="stat-label">Streak atual</div></div>
+      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.stats?.pomo||0}</div><div class="stat-label">Total Pomodoros</div></div>
+      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.stats?.cards||0}</div><div class="stat-label">Cards revisados</div></div>
+      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.stats?.quiz||0}</div><div class="stat-label">Questões respondidas</div></div>
+    </div>
+    <div style="margin-top:12px;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.7">
+      📅 Estudando desde: ${S.lastStudyDate?new Date(S.lastStudyDate).toLocaleDateString('pt-BR'):'sem dados'}<br>
+      ✅ Taxa de acerto ENEM: ${S.stats?.quiz>0?Math.round(S.stats.quizCorrect/S.stats.quiz*100)+'%':'sem dados'}<br>
+      📚 Decks de flashcards: ${[...new Set((S.flashcards||[]).map(c=>c.deck))].length}
+    </div>`;
+}
+
+async function gerarAnaliseIA(){
+  const el=document.getElementById('stats-analise-ia');
+  el.style.display='block';el.innerHTML='<span class="loading"></span> Analisando seu desempenho...';
+  const dados=`Cards: ${S.stats?.cards||0}, Pomodoros: ${S.stats?.pomo||0}, Quiz: ${S.stats?.quiz||0}, Acerto: ${S.stats?.quiz>0?Math.round(S.stats.quizCorrect/S.stats.quiz*100)+'%':'0%'}, Streak: ${S.streak||0} dias, Flashcards: ${(S.flashcards||[]).length}, Histórico ENEM: ${(S.enemHistory||[]).slice(0,3).map(h=>`${h.area}:${h.pct}%`).join(', ')||'sem dados'}`;
+  try{
+    const txt=await callGemini(`Você é um orientador educacional. Analise estes dados de estudo de um estudante e forneça: 1) Diagnóstico do desempenho atual, 2) Pontos fortes identificados, 3) Áreas que precisam de atenção, 4) Plano de ação para as próximas 2 semanas, 5) Motivação personalizada. Dados: ${dados}. Seja específico, empático e motivador. Em português.`);
+    el.innerHTML=txt.replace(/\n/g,'<br>');
+  }catch(e){el.innerHTML='❌ '+e.message;}
+}
+
+// ══════════════ DESAFIOS / GAMIFICAÇÃO ══════════════
+const NIVEIS_DESAFIO=[
+  {xp:0,titulo:'Estudante Iniciante',icon:'🥉'},
+  {xp:100,titulo:'Aprendiz Dedicado',icon:'🥈'},
+  {xp:300,titulo:'Estudante Avançado',icon:'🥇'},
+  {xp:600,titulo:'Mestre do Estudo',icon:'🏆'},
+  {xp:1000,titulo:'Lenda Acadêmica',icon:'👑'},
+  {xp:2000,titulo:'Gênio do Conhecimento',icon:'⚡'},
+];
+
+const DESAFIOS_FIXOS=[
+  {id:'d1',nome:'Revisar 10 flashcards',xp:20,icone:'🧠',tipo:'cards',meta:10},
+  {id:'d2',nome:'Completar 3 pomodoros',xp:30,icone:'⏱️',tipo:'pomo',meta:3},
+  {id:'d3',nome:'Responder 5 questões ENEM',xp:25,icone:'📝',tipo:'quiz',meta:5},
+  {id:'d4',nome:'Escrever no diário',xp:15,icone:'📓',tipo:'diario',meta:1},
+  {id:'d5',nome:'Gerar um mapa mental',xp:20,icone:'🗺️',tipo:'mapa',meta:1},
+  {id:'d6',nome:'Estudar 45 minutos',xp:40,icone:'🎯',tipo:'tempo',meta:45},
+  {id:'d7',nome:'Ler 3 notícias de atualidade',xp:15,icone:'📰',tipo:'noticias',meta:3},
+  {id:'d8',nome:'Criar 5 flashcards novos',xp:25,icone:'✏️',tipo:'criar',meta:5},
+];
+
+function initDesafios(){
+  if(!_sReady())return;
+  if(!S.desafios){S.desafios={xp:0,diarios:[],semanais:[],lastReset:'',conquistas:[]};}
+  const hoje=new Date().toDateString();
+  if(S.desafios.lastReset!==hoje){
+    S.desafios.diarios=DESAFIOS_FIXOS.sort(()=>Math.random()-.5).slice(0,3).map(d=>({...d,feito:false,progresso:0}));
+    S.desafios.lastReset=hoje;
+    save();
+  }
+  renderDesafios();
+}
+
+function renderDesafios(){
+  if(!S.desafios)return;
+  // Nível
+  const xp=S.desafios.xp||0;
+  let nivel=0;
+  for(let i=NIVEIS_DESAFIO.length-1;i>=0;i--){if(xp>=NIVEIS_DESAFIO[i].xp){nivel=i;break;}}
+  const n=NIVEIS_DESAFIO[nivel];
+  const prox=NIVEIS_DESAFIO[Math.min(nivel+1,NIVEIS_DESAFIO.length-1)];
+  const pct=Math.min(100,Math.round((xp-n.xp)/(prox.xp-n.xp)*100));
+  document.getElementById('desafio-nivel-icon').textContent=n.icon;
+  document.getElementById('desafio-nivel').textContent=`Nível ${nivel+1}`;
+  document.getElementById('desafio-titulo-nivel').textContent=n.titulo;
+  document.getElementById('desafio-xp-bar').style.width=pct+'%';
+  document.getElementById('desafio-xp-atual').textContent=xp;
+  document.getElementById('desafio-xp-prox').textContent=prox.xp;
+  // Diários
+  const dd=document.getElementById('desafios-diarios');
+  dd.innerHTML=(S.desafios.diarios||[]).map((d,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:22px">${d.icone}</span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;${d.feito?'text-decoration:line-through;color:var(--text3)':''}">${d.nome}</div>
+        <div style="font-size:11px;color:var(--text3)">+${d.xp} XP</div>
+      </div>
+      ${d.feito?'<span class="badge badge-green">✓ Feito</span>':`<button class="btn btn-ghost btn-sm" onclick="concluirDesafio(${i})">Concluir</button>`}
+    </div>`).join('');
+  // Semanais
+  const ds=document.getElementById('desafios-semanais');
+  const semanais=[
+    {nome:'Completar 5 simulados ENEM',xp:100,icone:'📊',progresso:Math.min(5,S.enemHistory?.length||0),meta:5},
+    {nome:'Estudar 7 dias seguidos',xp:150,icone:'🔥',progresso:Math.min(7,S.streak||0),meta:7},
+    {nome:'Revisar 50 flashcards',xp:80,icone:'🧠',progresso:Math.min(50,S.stats?.cards||0),meta:50},
+    {nome:'Escrever 3 redações',xp:120,icone:'✍️',progresso:Math.min(3,S.correcoes?.length||0),meta:3},
+  ];
+  ds.innerHTML=semanais.map(d=>{
+    const pct=Math.min(100,Math.round(d.progresso/d.meta*100));
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span>${d.icone} ${d.nome}</span>
+        <span style="color:var(--blue2);font-weight:600">${d.progresso}/${d.meta} · +${d.xp}XP</span>
+      </div>
+      <div class="progress"><div class="progress-bar" style="width:${pct}%;${pct>=100?'background:var(--green)':''}"></div></div>
+    </div>`;
+  }).join('');
+  // Conquistas
+  const dc=document.getElementById('desafios-conquistas');
+  const conquistasAtuais=CONQUISTAS.filter(c=>c.check());
+  dc.innerHTML=conquistasAtuais.length?conquistasAtuais.map(c=>`
+    <div style="background:rgba(255,215,64,.08);border:1px solid rgba(255,215,64,.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:28px">${c.icon}</span>
+      <div><div style="font-size:13px;font-weight:600;color:var(--yellow)">${c.name}</div><div style="font-size:11px;color:var(--text2)">${c.desc}</div></div>
+    </div>`).join(''):'<p style="font-size:13px;color:var(--text3)">Complete desafios para desbloquear conquistas!</p>';
+}
+
+function concluirDesafio(i){
+  S.desafios.diarios[i].feito=true;
+  const xp=S.desafios.diarios[i].xp;
+  S.desafios.xp=(S.desafios.xp||0)+xp;
+  save();renderDesafios();toast(`+${xp} XP! 🎉`,'success');
+}
+
+async function gerarDesafioIA(){
+  const btn=event.target;btn.disabled=true;btn.innerHTML='<span class="loading"></span>';
+  const perfil=`Cards:${S.stats?.cards||0}, Pomodoros:${S.stats?.pomo||0}, Streak:${S.streak||0}, Matéria fraca:${Object.entries(S.stats?.enemPerf||{}).sort(([,a],[,b])=>(a.c/a.t||0)-(b.c/b.t||0))[0]?.[0]||'?'}`;
+  try{
+    const txt=await callGemini(`Crie 1 desafio de estudo personalizado e criativo para um estudante com este perfil: ${perfil}. O desafio deve ser específico, motivador e alcançável em 1 dia. Formato: EMOJI Nome do desafio (1 linha, máximo 60 caracteres). Depois 1 linha de instrução. Em português.`);
+    const dd=document.getElementById('desafios-diarios');
+    const div=document.createElement('div');
+    div.style.cssText='background:rgba(179,136,255,.08);border:1px solid rgba(179,136,255,.3);border-radius:10px;padding:12px;margin-top:10px';
+    div.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:4px">🤖 Desafio Personalizado</div><div style="font-size:13px;color:var(--text);line-height:1.6">${txt}</div><button onclick="S.desafios.xp=(S.desafios.xp||0)+50;save();renderDesafios();this.parentElement.remove();toast('+50 XP!','success')" class="btn btn-ghost btn-sm" style="margin-top:8px;font-size:11px;color:var(--purple);border-color:rgba(179,136,255,.4)">✅ Marcar como concluído (+50 XP)</button>`;
+    dd.after(div);
+  }catch(e){toast('Erro ao gerar desafio','error');}
+  btn.disabled=false;btn.innerHTML='🤖 Gerar desafio personalizado';
+}
+
+// ══════════════ NOTÍCIAS COM IA ══════════════
+let noticiasSessao=[];
+async function carregarNoticias(){
+  const filtro=document.getElementById('noticias-filtro').value;
+  const grid=document.getElementById('noticias-grid');
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px"><span class="loading"></span><p style="margin-top:10px;font-size:13px;color:var(--text2)">Buscando notícias com IA...</p></div>';
+  const temaMap={geral:'ENEM 2025, vestibulares e educação brasileira',enem:'ENEM 2025 inscrições, resultados e novidades do MEC',redacao:'temas relevantes para redação ENEM 2025: atualidades brasileiras e mundiais',ciencia:'ciência e tecnologia que podem cair no ENEM',social:'questões sociais e desigualdade no Brasil para redação',politica:'política e economia brasileira para o ENEM',ambiental:'meio ambiente e sustentabilidade para redação ENEM'};
+  try{
+    const txt=await callGemini(`Você é um jornalista educacional brasileiro. Gere 6 notícias fictícias mas realistas e educativas sobre: ${temaMap[filtro]||temaMap.geral}. As notícias devem ser relevantes para estudantes do ENEM 2025, informativas e baseadas em tendências reais.
+Responda SOMENTE JSON puro:
+{"noticias":[{"titulo":"Título da notícia","resumo":"2-3 frases de resumo informativo","categoria":"Categoria","relevancia":"Por que importa para o ENEM","emoji":"🎓","data":"data fictícia recente"}]}`);
+    const data=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    noticiasSessao=data.noticias||[];
+    renderNoticias();
+  }catch(e){grid.innerHTML=`<p style="color:var(--red);font-size:13px;padding:20px">❌ ${e.message}</p>`;}
+}
+
+function renderNoticias(){
+  const grid=document.getElementById('noticias-grid');
+  if(!noticiasSessao.length){grid.innerHTML='<p style="color:var(--text3);font-size:13px">Clique em Atualizar para carregar notícias</p>';return;}
+  grid.innerHTML=noticiasSessao.map((n,i)=>`
+    <div class="card" style="cursor:pointer;transition:all .2s;border-color:${i===0?'var(--blue3)':'var(--border)'}" onclick="expandirNoticia(${i})" onmouseenter="this.style.borderColor='var(--blue2)'" onmouseleave="this.style.borderColor='${i===0?'var(--blue3)':'var(--border)'}'">
+      <div style="display:flex;align-items:start;gap:12px">
+        <span style="font-size:28px;flex-shrink:0">${n.emoji||'📰'}</span>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge badge-blue" style="font-size:10px">${n.categoria||'ENEM'}</span>
+            <span style="font-size:10px;color:var(--text3)">${n.data||'Hoje'}</span>
+          </div>
+          <h3 style="font-size:14px;font-weight:700;line-height:1.4;margin-bottom:6px">${n.titulo}</h3>
+          <p style="font-size:12px;color:var(--text2);line-height:1.6">${n.resumo}</p>
+          <div style="margin-top:8px;background:rgba(30,144,255,.07);border-radius:6px;padding:7px 10px;font-size:11px;color:var(--blue2)">
+            📌 <strong>Relevância ENEM:</strong> ${n.relevancia}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function expandirNoticia(i){
+  const n=noticiasSessao[i];if(!n)return;
+  const ov=document.createElement('div');ov.className='modal-overlay open';
+  ov.innerHTML=`<div class="modal" style="max-width:550px">
+    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+    <div style="font-size:32px;margin-bottom:10px">${n.emoji}</div>
+    <span class="badge badge-blue">${n.categoria}</span>
+    <h2 style="font-size:17px;margin:10px 0">${n.titulo}</h2>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px">${n.resumo}</p>
+    <div style="background:rgba(30,144,255,.08);border:1px solid var(--blue3);border-radius:10px;padding:12px;font-size:13px;line-height:1.7">
+      🎯 <strong style="color:var(--blue2)">Por que cai no ENEM:</strong><br>${n.relevancia}
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="usarNoticiaTema('${n.titulo.replace(/'/g,"\\'")}')">✍️ Usar como tema de redação</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+
+function usarNoticiaTema(titulo){
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.remove());
+  navigate('redacao');
+  document.getElementById('tema-text').textContent=titulo;
+  document.getElementById('tema-result').style.display='block';
+  toast('Tema carregado na redação!','success');
+}
+
+// ══════════════ TUTOR IA ══════════════
+let tutorHistorico=[];
+
+function initTutor(){
+  renderTutorSugestoes();
+  if(!tutorHistorico.length) adicionarBolhaTutor('ia','Olá! 👋 Sou seu tutor de estudos. Pode me perguntar qualquer coisa sobre as matérias do ENEM, como resolver exercícios, pedir explicações ou tirar dúvidas. Em qual matéria posso te ajudar hoje?');
+}
+
+const SUGESTOES_TUTOR=['Explique mitose e meiose','Como resolver equação do 2° grau?','O que foi a Revolução Francesa?','Diferença entre ironia e sarcasmo','Lei de Ohm explicada','Tema para redação ENEM','Como estruturar uma dissertação?','O que é fotossíntese?'];
+
+function renderTutorSugestoes(){
+  const el=document.getElementById('tutor-sugestoes');if(!el)return;
+  el.innerHTML=SUGESTOES_TUTOR.map(s=>`<button class="ex-opcao-btn" onclick="usarSugestaoTutor('${s.replace(/'/g,"\\'")}')">💬 ${s}</button>`).join('');
+}
+
+function usarSugestaoTutor(texto){
+  document.getElementById('tutor-input').value=texto;
+  enviarTutor();
+}
+
+function adicionarBolhaTutor(tipo,texto){
+  const chat=document.getElementById('tutor-chat');if(!chat)return;
+  const div=document.createElement('div');
+  div.className=tipo==='ia'?'ex-bubble-ia':'ex-bubble-user';
+  div.innerHTML=texto.replace(/\n/g,'<br>');
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+async function enviarTutor(){
+  const input=document.getElementById('tutor-input');
+  const texto=input.value.trim();if(!texto)return;
+  const materia=document.getElementById('tutor-materia').value;
+  input.value='';
+  adicionarBolhaTutor('user',texto);
+  tutorHistorico.push({role:'user',content:texto});
+  const loading=document.createElement('div');
+  loading.className='ex-bubble-ia';loading.innerHTML='<span class="loading"></span> Pensando...';
+  document.getElementById('tutor-chat').appendChild(loading);
+  document.getElementById('tutor-chat').scrollTop=document.getElementById('tutor-chat').scrollHeight;
+  const sistema=`Você é um tutor especializado em ${materia==='geral'?'todas as matérias do ENEM':materia}. Responda de forma didática, clara e objetiva. Use exemplos práticos. Se for matemática ou ciências, mostre o passo a passo. Use emojis para deixar mais dinâmico. Máximo 300 palavras por resposta. Em português brasileiro.`;
+  const msgs=tutorHistorico.slice(-6).map(m=>m);
+  try{
+    const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'meta-llama/llama-3.3-70b-instruct:free',max_tokens:1000,
+        messages:[{role:'user',content:sistema+'\n\nPergunta: '+texto}]})});
+    const data=await resp.json();
+    const txt=data.choices?.[0]?.message?.content||'Desculpe, não consegui responder. Tente novamente.';
+    loading.remove();
+    adicionarBolhaTutor('ia',txt);
+    tutorHistorico.push({role:'assistant',content:txt});
+    if(tutorHistorico.length>20)tutorHistorico=tutorHistorico.slice(-16);
+  }catch(e){loading.remove();adicionarBolhaTutor('ia','❌ Erro: '+e.message);}
+}
+
+function limparTutor(){
+  tutorHistorico=[];
+  document.getElementById('tutor-chat').innerHTML='';
+  initTutor();
+}
+
+// ══════════════ DIÁRIO → PDF ══════════════
+async function exportarDiarioPDF(){
+  if(!_sReady()||!S.diario.length){toast('Nenhuma entrada no diário','error');return;}
+  const btn=event.target;btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando...';
+  const linhas=S.diario.map(e=>`
+    <div style="margin-bottom:18px;padding:14px;border:1px solid #ddd;border-radius:8px;page-break-inside:avoid">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <strong>${e.date}</strong><span style="font-size:18px">${e.humor||''}</span>
+      </div>
+      <p><strong>📚 O que estudei:</strong> ${e.estudou}</p>
+      ${e.duvidas?`<p style="margin-top:6px"><strong>❓ Dúvidas:</strong> ${e.duvidas}</p>`:''}
+      ${e.nota?`<p style="margin-top:6px"><strong>📝 Notas:</strong> ${e.nota}</p>`:''}
+    </div>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Diário de Estudos</title><style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:20px;color:#333}h1{color:#1e3a8a;border-bottom:2px solid #1e3a8a;padding-bottom:8px}p{line-height:1.6;margin:4px 0}</style></head><body><h1>📓 Diário de Estudos — Nexus Study</h1><p style="color:#666;margin-bottom:20px">Exportado em ${new Date().toLocaleDateString('pt-BR')}</p>${linhas}</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='diario-estudos.html';a.click();
+  btn.disabled=false;btn.innerHTML='📥 Exportar PDF';
+  toast('Diário exportado! Abra o arquivo e use Ctrl+P para salvar como PDF.','success');
+}
+
+// ══════════════ REDAÇÃO — CONTADOR DE LINHAS ══════════════
+document.addEventListener('input',e=>{
+  if(e.target.id==='redacao-text'){
+    const texto=e.target.value;
+    const palavras=texto.trim().split(/\s+/).filter(Boolean).length;
+    // Conta linhas reais: cada \n é uma nova linha, linha vazia conta, mínimo 1 se tiver texto
+    const linhas=texto===''?0:texto.split('\n').length;
+    const el_w=document.getElementById('word-count');
+    if(el_w)el_w.textContent=palavras;
+    let el_l=document.getElementById('line-count');
+    if(!el_l){
+      el_l=document.createElement('strong');el_l.id='line-count';el_l.style.color='var(--green)';
+      const ref=el_w?.parentElement;
+      if(ref)ref.innerHTML=ref.innerHTML.replace('Palavras:','Palavras:');}
+    if(el_l)el_l.textContent=linhas;
+    // Atualiza UI de linhas
+    let lineEl=document.getElementById('redacao-linha-info');
+    const cor=linhas>=25&&linhas<=30?'var(--green)':linhas>30?'var(--red)':'var(--text2)';
+    if(lineEl){lineEl.textContent=`${linhas} linhas (${palavras} palavras) · Ideal: 25–30 linhas`;lineEl.style.color=cor;}
+  }
+});
+
 if('serviceWorker' in navigator){
   const swCode=`
 const CACHE='nexus-v2';
@@ -4122,8 +5206,321 @@ self.addEventListener('fetch',e=>{
   navigator.serviceWorker.register(url).catch(()=>{});
 }
 </script>
+<!-- ══════════════ REVISÃO INTELIGENTE ══════════════ -->
+<div class="page" id="page-revisao-inteligente">
+  <div class="page-header">
+    <div><h1>🔍 Revisão Inteligente</h1><p>A IA analisa seu histórico e diz exatamente o que você precisa revisar</p></div>
+    <button class="btn btn-primary" onclick="gerarRevisaoInteligente()" id="btn-revisao-ia">🤖 Analisar e gerar plano</button>
+  </div>
+  <div class="grid2" style="margin-bottom:18px">
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📊 Seu desempenho atual</h3>
+      <div id="rev-stats-preview"></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">⚙️ Configurar revisão</h3>
+      <div class="form-group"><label>Tempo disponível para revisar</label>
+        <select id="rev-tempo">
+          <option value="15">15 minutos (revisão rápida)</option>
+          <option value="30" selected>30 minutos</option>
+          <option value="60">1 hora</option>
+          <option value="120">2 horas (revisão completa)</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Foco</label>
+        <select id="rev-foco">
+          <option value="fraco">Focar nas matérias mais fracas</option>
+          <option value="equilibrado" selected>Equilibrado</option>
+          <option value="enem">Preparação ENEM</option>
+          <option value="flashcards">Flashcards pendentes</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="gerarRevisaoInteligente()" id="btn-rev2">🤖 Gerar plano com IA</button>
+    </div>
+  </div>
+  <div id="rev-resultado">
+    <div class="empty"><div class="empty-icon">🔍</div><p>Clique em "Analisar e gerar plano" para ver o que a IA recomenda revisar hoje</p></div>
+  </div>
+</div>
+
+<!-- ══════════════ GERADOR DE PROVAS ══════════════ -->
+<div class="page" id="page-gerador-provas">
+  <div class="page-header">
+    <div><h1>📋 Gerador de Provas</h1><p>Crie provas personalizadas com questões do ENEM, vestibulares ou qualquer tema</p></div>
+  </div>
+  <div class="grid2" style="margin-bottom:18px">
+      <div>
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">⚙️ Configurar Prova</h3>
+        <div class="form-group"><label>Tipo de prova</label>
+          <select id="gp-tipo" onchange="atualizarConfigProva()">
+            <option value="enem">ENEM (questões que já caíram)</option>
+            <option value="vestibular">Vestibular específico</option>
+            <option value="misto">ENEM + Vestibulares (aleatório)</option>
+            <option value="tema">Tema personalizado</option>
+          </select>
+        </div>
+        <div id="gp-vestibular-sel" class="form-group" style="display:none">
+          <label>Vestibular</label>
+          <select id="gp-vestibular">
+            <option value="FUVEST">FUVEST (USP)</option>
+            <option value="UNICAMP">UNICAMP</option>
+            <option value="UNESP">UNESP</option>
+            <option value="UERJ">UERJ</option>
+            <option value="UFMG">UFMG</option>
+            <option value="UFC">UFC</option>
+            <option value="URCA">URCA</option>
+            <option value="UECE">UECE</option>
+            <option value="ITA">ITA</option>
+            <option value="IME">IME</option>
+            <option value="outros">Outros vestibulares</option>
+          </select>
+        </div>
+        <div id="gp-tema-input" class="form-group" style="display:none">
+          <label>Tema da prova</label>
+          <input type="text" id="gp-tema" placeholder="Ex: Segunda Guerra Mundial, Funções do 2º grau, Genética...">
+        </div>
+        <div class="form-group"><label>Área / Matéria</label>
+          <select id="gp-area">
+            <option value="todas">Todas as áreas</option>
+            <option value="matematica">Matemática</option>
+            <option value="portugues">Português / Linguagens</option>
+            <option value="historia">História</option>
+            <option value="geografia">Geografia</option>
+            <option value="biologia">Biologia</option>
+            <option value="quimica">Química</option>
+            <option value="fisica">Física</option>
+            <option value="ingles">Inglês</option>
+            <option value="filosofia">Filosofia / Sociologia</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Quantidade de questões</label>
+          <select id="gp-qtd">
+            <option value="5">5 questões</option>
+            <option value="10" selected>10 questões</option>
+            <option value="15">15 questões</option>
+            <option value="20">20 questões</option>
+            <option value="30">30 questões (prova completa)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Dificuldade</label>
+          <select id="gp-dif">
+            <option value="facil">Fácil (questões introdutórias)</option>
+            <option value="media" selected>Média (nível ENEM)</option>
+            <option value="dificil">Difícil (nível vestibular concorrido)</option>
+            <option value="misto">Mista (variada)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Modo</label>
+          <select id="gp-modo">
+            <option value="normal">Normal (sem tempo)</option>
+            <option value="cronometrado">Cronometrado (3min/questão)</option>
+            <option value="simulado">Simulado real (corrigir no final)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="gerarProva()" id="btn-gerar-prova">📋 Gerar Prova com IA</button>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">📈 Histórico de Provas</h3>
+        <div id="gp-historico"><p style="font-size:12px;color:var(--text3)">Nenhuma prova gerada ainda</p></div>
+      </div>
+    </div>
+    <div>
+      <div id="gp-resultado">
+        <div class="empty"><div class="empty-icon">📋</div><p>Configure e clique em "Gerar Prova" para começar</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCANNER DE QUESTÕES ══════════════ -->
+<div class="page" id="page-scanner-questoes">
+  <div class="page-header">
+    <div><h1>📷 Scanner de Questões</h1><p>Envie a foto de uma questão — a IA resolve e explica o passo a passo</p></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📸 Enviar questão</h3>
+        <div class="cal-upload" id="scanner-upload-area" onclick="document.getElementById('scanner-file').click()" style="margin-bottom:12px">
+          <div style="font-size:40px;margin-bottom:10px">📷</div>
+          <p style="font-weight:700;font-size:14px">Clique ou arraste a foto da questão</p>
+          <p style="font-size:12px;color:var(--text2);margin-top:4px">JPG, PNG, WEBP — funciona com foto tirada do celular</p>
+        </div>
+        <input type="file" id="scanner-file" accept="image/*" style="display:none" onchange="previewScannerImg()">
+        <div id="scanner-preview" style="display:none;margin-bottom:12px">
+          <img id="scanner-img" style="width:100%;border-radius:10px;border:1px solid var(--border2);max-height:300px;object-fit:contain">
+          <button class="btn btn-ghost btn-sm" style="margin-top:6px;width:100%" onclick="document.getElementById('scanner-file').click()">🔄 Trocar imagem</button>
+        </div>
+        <div class="form-group">
+          <label>Contexto adicional (opcional)</label>
+          <textarea id="scanner-contexto" rows="2" placeholder="Ex: É uma questão de Física sobre cinemática do ENEM 2023..."></textarea>
+        </div>
+        <div class="form-group"><label>O que você quer da IA?</label>
+          <select id="scanner-modo">
+            <option value="resolver">Resolver e explicar completamente</option>
+            <option value="passo">Resolver passo a passo</option>
+            <option value="dica">Dar uma dica (sem resolver tudo)</option>
+            <option value="macete">Resolver + macete para memorizar</option>
+            <option value="similar">Resolver + criar questão similar</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="width:100%" id="btn-scanner" onclick="resolverQuestaoScanner()">🤖 Resolver com IA</button>
+      </div>
+    </div>
+    <div>
+      <div id="scanner-resultado">
+        <div class="empty"><div class="empty-icon">📷</div><p>Envie a foto de uma questão para começar</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SIMULADOR DE NOTA ══════════════ -->
+<div class="page" id="page-simulador-nota">
+  <div class="page-header">
+    <div><h1>📈 Simulador de Nota ENEM</h1><p>Estime sua nota real no ENEM com base nos seus simulados (cálculo TRI estimado)</p></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📝 Inserir resultados do simulado</h3>
+        <p style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7">Informe quantas questões você acertou em cada área. O simulador calcula a nota estimada usando uma aproximação da Teoria de Resposta ao Item (TRI).</p>
+        <div class="form-group">
+          <label>Linguagens e Códigos <span style="color:var(--text3)">(45 questões)</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="number" id="sim-lc" min="0" max="45" placeholder="acertos" style="flex:1" oninput="calcSimuladorNota()">
+            <span style="font-size:12px;color:var(--text2);white-space:nowrap">/45</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Ciências Humanas <span style="color:var(--text3)">(45 questões)</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="number" id="sim-ch" min="0" max="45" placeholder="acertos" style="flex:1" oninput="calcSimuladorNota()">
+            <span style="font-size:12px;color:var(--text2);white-space:nowrap">/45</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Ciências da Natureza <span style="color:var(--text3)">(45 questões)</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="number" id="sim-cn" min="0" max="45" placeholder="acertos" style="flex:1" oninput="calcSimuladorNota()">
+            <span style="font-size:12px;color:var(--text2);white-space:nowrap">/45</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Matemática <span style="color:var(--text3)">(45 questões)</span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="number" id="sim-mt" min="0" max="45" placeholder="acertos" style="flex:1" oninput="calcSimuladorNota()">
+            <span style="font-size:12px;color:var(--text2);white-space:nowrap">/45</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Redação <span style="color:var(--text3)">(0–1000)</span></label>
+          <input type="number" id="sim-red" min="0" max="1000" step="40" placeholder="nota estimada" oninput="calcSimuladorNota()">
+        </div>
+        <div style="background:rgba(30,144,255,.08);border:1px solid rgba(30,144,255,.2);border-radius:10px;padding:12px;font-size:12px;color:var(--text2);line-height:1.7;margin-top:4px">
+          💡 <strong style="color:var(--text)">Sobre a TRI:</strong> A nota ENEM não é proporcional ao número de acertos. A TRI considera a dificuldade de cada questão. Esta estimativa é aproximada e usa médias históricas.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div id="sim-nota-resultado">
+        <div class="empty"><div class="empty-icon">📈</div><p>Preencha os acertos para ver sua nota estimada</p></div>
+      </div>
+    </div>
+  </div>
+  <!-- Histórico de simulações -->
+  <div class="card" style="max-width:1000px;margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="font-size:13px;color:var(--text2)">📊 Evolução das notas simuladas</h3>
+      <button class="btn btn-ghost btn-sm" onclick="salvarSimulacao()">💾 Salvar esta simulação</button>
+    </div>
+    <div id="sim-historico"><p style="font-size:12px;color:var(--text3)">Salve simulações para acompanhar sua evolução</p></div>
+  </div>
+</div>
+
+<!-- ══════════════ CHANCES NA FACULDADE ══════════════ -->
+<div class="page" id="page-chances-faculdade">
+  <div class="page-header">
+    <div><h1>🎓 Chances na Faculdade</h1><p>Calcule sua probabilidade de aprovação com base nas suas notas do ENEM ou média geral</p></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📊 Informar suas notas</h3>
+        <div class="form-group">
+          <label>Qual nota usar para o cálculo?</label>
+          <select id="chance-tipo-nota" onchange="toggleTipoNotaChance()">
+            <option value="enem">Notas do ENEM (por área)</option>
+            <option value="media">Média geral (uma nota só)</option>
+            <option value="simulado">Usar minhas simulações salvas</option>
+          </select>
+        </div>
+        <div id="chance-notas-enem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group"><label>Linguagens</label><input type="number" id="ch-lc" placeholder="0–1000" min="0" max="1000" oninput="calcChances()"></div>
+            <div class="form-group"><label>Humanas</label><input type="number" id="ch-ch" placeholder="0–1000" min="0" max="1000" oninput="calcChances()"></div>
+            <div class="form-group"><label>Natureza</label><input type="number" id="ch-cn" placeholder="0–1000" min="0" max="1000" oninput="calcChances()"></div>
+            <div class="form-group"><label>Matemática</label><input type="number" id="ch-mt" placeholder="0–1000" min="0" max="1000" oninput="calcChances()"></div>
+          </div>
+          <div class="form-group"><label>Redação</label><input type="number" id="ch-red" placeholder="0–1000" step="40" min="0" max="1000" oninput="calcChances()"></div>
+        </div>
+        <div id="chance-nota-media" style="display:none">
+          <div class="form-group"><label>Sua média geral</label><input type="number" id="ch-media" placeholder="Ex: 680" min="0" max="1000" oninput="calcChances()"></div>
+        </div>
+        <div class="form-group">
+          <label>Curso desejado</label>
+          <select id="ch-curso">
+            <option value="medicina">Medicina</option>
+            <option value="direito">Direito</option>
+            <option value="engenharia">Engenharia (Mecânica/Civil/Elétrica)</option>
+            <option value="computacao">Ciência da Computação / Sistemas</option>
+            <option value="administracao">Administração</option>
+            <option value="psicologia">Psicologia</option>
+            <option value="pedagogia">Pedagogia / Licenciatura</option>
+            <option value="enfermagem">Enfermagem</option>
+            <option value="arquitetura">Arquitetura</option>
+            <option value="veterinaria">Veterinária / Zootecnia</option>
+            <option value="agronomia">Agronomia</option>
+            <option value="farmacia">Farmácia</option>
+            <option value="fisioterapia">Fisioterapia</option>
+            <option value="nutrição">Nutrição</option>
+            <option value="outro">Outro curso</option>
+          </select>
+        </div>
+        <div id="ch-outro-curso" class="form-group" style="display:none">
+          <label>Nome do curso</label>
+          <input type="text" id="ch-curso-custom" placeholder="Ex: Jornalismo, Design, Letras...">
+        </div>
+        <div class="form-group">
+          <label>Universidade desejada</label>
+          <select id="ch-uni">
+            <option value="federal_top">Federal de ponta (USP, UNICAMP, UFRJ, UFMG...)</option>
+            <option value="federal_media">Federal média (UFC, UFPE, UFBA, UFRN...)</option>
+            <option value="federal_regional">Federal regional (URCA, UECE, UNIFOR...)</option>
+            <option value="estadual">Estadual</option>
+            <option value="particular_top">Particular conceituada (PUC, Mackenzie, FGV...)</option>
+            <option value="particular_comum">Particular comum</option>
+            <option value="sisu">SISU (qualquer federal)</option>
+            <option value="outra">Outra (especificar)</option>
+          </select>
+        </div>
+        <div id="ch-uni-custom" class="form-group" style="display:none">
+          <label>Nome da universidade</label>
+          <input type="text" id="ch-uni-nome" placeholder="Ex: URCA, UVA, UFCA...">
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="calcChancesIA()" id="btn-chances">🎓 Calcular chances com IA</button>
+      </div>
+    </div>
+    <div>
+      <div id="chances-resultado">
+        <div class="empty"><div class="empty-icon">🎓</div><p>Preencha suas notas e o curso desejado para calcular as chances</p></div>
+      </div>
+    </div>
+  </div>
+</div>
 </main>
-<!-- ══ MOBILE BOTTOM NAV ══ -->
+
 <div id="mobile-nav">
   <div class="mob-nav-inner">
     <div class="mob-nav-item active" data-page="dashboard" onclick="navigate('dashboard');setMobNav(this)">
@@ -4166,13 +5563,774 @@ self.addEventListener('fetch',e=>{
     <div class="mob-menu-item" data-page="laboratorio" onclick="navigate('laboratorio');toggleMobMenu()"><span>🧪</span>Laboratório</div>
     <div class="mob-menu-item" data-page="noturno" onclick="navigate('noturno');toggleMobMenu()"><span>🌙</span>Noturno</div>
     <div class="mob-menu-item" data-page="alarmes" onclick="navigate('alarmes');toggleMobMenu()"><span>🔔</span>Alarmes</div>
+    <div class="mob-menu-item" data-page="calendario" onclick="navigate('calendario');toggleMobMenu()"><span>📅</span>Calendário</div>
+    <div class="mob-menu-item" data-page="estatisticas" onclick="navigate('estatisticas');toggleMobMenu()"><span>📊</span>Estatísticas</div>
+    <div class="mob-menu-item" data-page="desafios" onclick="navigate('desafios');toggleMobMenu()"><span>🏆</span>Desafios</div>
+    <div class="mob-menu-item" data-page="noticias" onclick="navigate('noticias');toggleMobMenu()"><span>📰</span>Notícias</div>
+    <div class="mob-menu-item" data-page="tutor" onclick="navigate('tutor');toggleMobMenu()"><span>🤖</span>Tutor IA</div>
+    <div class="mob-menu-item" data-page="revisao-inteligente" onclick="navigate('revisao-inteligente');toggleMobMenu()"><span>🔍</span>Revisão IA</div>
+    <div class="mob-menu-item" data-page="gerador-provas" onclick="navigate('gerador-provas');toggleMobMenu()"><span>📋</span>Gerador Prova</div>
+    <div class="mob-menu-item" data-page="scanner-questoes" onclick="navigate('scanner-questoes');toggleMobMenu()"><span>📷</span>Scanner</div>
+    <div class="mob-menu-item" data-page="simulador-nota" onclick="navigate('simulador-nota');toggleMobMenu()"><span>📈</span>Simul. Nota</div>
+    <div class="mob-menu-item" data-page="chances-faculdade" onclick="navigate('chances-faculdade');toggleMobMenu()"><span>🎓</span>Chances</div>
     <div class="mob-menu-item" onclick="doLogout();toggleMobMenu()"><span>🔄</span>Trocar perfil</div>
   </div>
 </div>
 
 <script>
-// ══ MOBILE NAV ══
-function setMobNav(el) {
+// ══════════════ PAGE INIT HOOK ══════════════
+// Navigate é sobrescrito aqui para chamar inits das novas páginas
+// O mobile nav override fica no script abaixo (após definições de setMobNav/toggleMobMenu)
+const _origNavigateNewPages = navigate;
+window.navigate = function(page) {
+  _origNavigateNewPages(page);
+  if(page==='revisao-inteligente') setTimeout(initRevisaoInteligente,50);
+  if(page==='gerador-provas') setTimeout(initGeradorProvas,50);
+  if(page==='simulador-nota') setTimeout(initSimuladorNota,50);
+  if(page==='chances-faculdade') setTimeout(initChancesFaculdade,50);
+};
+
+// ══════════════ REVISÃO INTELIGENTE ══════════════
+function initRevisaoInteligente() {
+  if(!_sReady()) return;
+  const el = document.getElementById('rev-stats-preview');
+  const areas = {cn:'Ciências da Natureza',ch:'Ciências Humanas',lc:'Linguagens',mt:'Matemática'};
+  const cards = S.flashcards||[];
+  const decksComPendentes = [...new Set(cards.filter(c=>!c.nextReview||new Date(c.nextReview)<=new Date()).map(c=>c.deck))];
+  const totalPendentes = cards.filter(c=>!c.nextReview||new Date(c.nextReview)<=new Date()).length;
+  let statsHtml = '';
+  Object.entries(areas).forEach(([k,n]) => {
+    const hist = (S.enemHistory||[]).filter(h=>h.area===k);
+    const avg = hist.length ? Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length) : null;
+    const cor = avg===null?'var(--text3)':avg>=70?'var(--green)':avg>=50?'var(--orange)':'var(--red)';
+    const label = avg===null?'Sem dados':`${avg}% de acerto`;
+    statsHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px">${n}</span>
+      <span style="font-size:12px;font-weight:600;color:${cor}">${label}</span>
+    </div>`;
+  });
+  statsHtml += `<div style="margin-top:12px;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.8">
+    🧠 ${totalPendentes} flashcards pendentes em ${decksComPendentes.length} deck(s)<br>
+    📝 ${(S.enemHistory||[]).length} simulados feitos<br>
+    🔥 Streak atual: ${S.streak||0} dias
+  </div>`;
+  el.innerHTML = statsHtml;
+}
+
+async function gerarRevisaoInteligente() {
+  if(!_sReady()){toast('Faça login primeiro','error');return;}
+  const tempo = document.getElementById('rev-tempo').value;
+  const foco = document.getElementById('rev-foco').value;
+  const btn = document.getElementById('btn-revisao-ia');
+  const btn2 = document.getElementById('btn-rev2');
+  [btn,btn2].forEach(b=>{if(b){b.disabled=true;b.innerHTML='<span class="loading"></span> Analisando...'}});
+  const el = document.getElementById('rev-resultado');
+  el.innerHTML = '<div class="card"><div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2)"><span class="loading"></span> A IA está analisando seu histórico completo...</div></div>';
+
+  const areas = {cn:'Ciências da Natureza',ch:'Ciências Humanas',lc:'Linguagens',mt:'Matemática'};
+  const desempenho = Object.entries(areas).map(([k,n])=>{
+    const hist=(S.enemHistory||[]).filter(h=>h.area===k);
+    const avg=hist.length?Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length):null;
+    return `${n}: ${avg!==null?avg+'% de acerto':'sem dados'}`;
+  }).join(', ');
+  const pendentes = (S.flashcards||[]).filter(c=>!c.nextReview||new Date(c.nextReview)<=new Date()).length;
+  const duvidas = (S.diario||[]).slice(0,5).map(e=>e.duvidas).filter(Boolean).join('; ');
+
+  const prompt = `Você é um orientador de estudos expert no ENEM. Analise estes dados de um estudante e crie um plano de revisão inteligente para hoje.
+
+Dados do estudante:
+- Desempenho por área: ${desempenho}
+- Flashcards pendentes: ${pendentes}
+- Dúvidas recentes no diário: ${duvidas||'nenhuma registrada'}
+- Streak atual: ${S.streak||0} dias
+- Total de simulados: ${(S.enemHistory||[]).length}
+- Tempo disponível: ${tempo} minutos
+- Foco: ${foco}
+
+Responda SOMENTE em JSON puro, sem markdown:
+{
+  "diagnostico": "texto curto sobre o estado atual do estudante",
+  "pontos_fortes": ["área/tema forte 1", "área/tema forte 2"],
+  "pontos_fracos": ["área/tema fraco 1", "área/tema fraco 2", "área/tema fraco 3"],
+  "plano_revisao": [
+    {"ordem":1,"materia":"nome","topico":"tópico específico","tempo_min":10,"prioridade":"alta","motivo":"por que revisar","como_revisar":"método sugerido","recursos":["flashcards","questões ENEM","mapa mental"]},
+    {"ordem":2,"materia":"nome","topico":"tópico","tempo_min":10,"prioridade":"media","motivo":"motivo","como_revisar":"método","recursos":["flashcards"]}
+  ],
+  "meta_dia": "meta motivacional para hoje",
+  "dica_tecnica": "dica de técnica de estudo para o dia"
+}`;
+
+  try {
+    const txt = await callGemini(prompt);
+    const data = JSON.parse(txt.replace(/```json|```/g,'').trim());
+    renderRevisaoInteligente(data, tempo);
+    toast('Plano de revisão gerado! 🔍','success');
+  } catch(e) {
+    el.innerHTML = `<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;
+  }
+  [btn,btn2].forEach(b=>{if(b){b.disabled=false;b.innerHTML='🤖 Analisar e gerar plano';}});
+}
+
+function renderRevisaoInteligente(data, tempo) {
+  const el = document.getElementById('rev-resultado');
+  const prioridadeCor = {alta:'var(--red)',media:'var(--orange)',baixa:'var(--green)'};
+  const prioridadeLabel = {alta:'🔴 Alta','media':'🟡 Média',baixa:'🟢 Baixa'};
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:16px;border-color:var(--blue3)">
+      <h3 style="font-size:14px;margin-bottom:10px;color:var(--blue2)">🔍 Diagnóstico do dia</h3>
+      <p style="font-size:13px;line-height:1.7;color:var(--text)">${data.diagnostico}</p>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:10px;padding:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">💪 PONTOS FORTES</div>
+          ${(data.pontos_fortes||[]).map(p=>`<div style="font-size:12px;color:var(--text);padding:2px 0">✓ ${p}</div>`).join('')}
+        </div>
+        <div style="background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);border-radius:10px;padding:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px">⚠️ MELHORAR</div>
+          ${(data.pontos_fracos||[]).map(p=>`<div style="font-size:12px;color:var(--text);padding:2px 0">→ ${p}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h3 style="font-size:14px;color:var(--text2)">📅 Plano de revisão — ${tempo} minutos</h3>
+        <span class="badge badge-blue">${(data.plano_revisao||[]).length} itens</span>
+      </div>
+      ${(data.plano_revisao||[]).map((item,i)=>`
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;transition:border .2s" onmouseenter="this.style.borderColor='var(--blue)'" onmouseleave="this.style.borderColor='var(--border)'">
+          <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <div>
+              <span style="font-size:14px;font-weight:700">${i+1}. ${item.materia}</span>
+              <span style="font-size:12px;color:var(--blue2);margin-left:8px">▸ ${item.topico}</span>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <span class="badge" style="background:rgba(30,144,255,.1);color:var(--blue2)">⏱ ${item.tempo_min}min</span>
+              <span style="font-size:11px;color:${prioridadeCor[item.prioridade]||'var(--text2)'}">${prioridadeLabel[item.prioridade]||item.prioridade}</span>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5">💡 ${item.motivo}</p>
+          <p style="font-size:12px;color:var(--text);margin-bottom:8px;line-height:1.5">📖 ${item.como_revisar}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            ${(item.recursos||[]).map(r=>`<span class="tag" style="font-size:11px">${r}</span>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,#0d1f3c,#0f2a4a);border-color:var(--blue3)">
+      <div style="font-size:12px;color:var(--orange);font-weight:700;margin-bottom:6px">🎯 META DO DIA</div>
+      <p style="font-size:14px;font-weight:600;line-height:1.6;color:var(--text)">${data.meta_dia}</p>
+      <div style="margin-top:12px;background:rgba(30,144,255,.1);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6">
+        💡 <strong style="color:var(--text)">Dica técnica:</strong> ${data.dica_tecnica}
+      </div>
+    </div>`;
+}
+
+// ══════════════ GERADOR DE PROVAS ══════════════
+let gpProvaAtual = [], gpRespostas = {}, gpModo = 'normal', gpTimer = null, gpStart = null;
+
+function initGeradorProvas() {
+  if(!_sReady()) return;
+  renderHistoricoProvas();
+  atualizarConfigProva();
+}
+
+function atualizarConfigProva() {
+  const tipo = document.getElementById('gp-tipo').value;
+  document.getElementById('gp-vestibular-sel').style.display = tipo==='vestibular'?'block':'none';
+  document.getElementById('gp-tema-input').style.display = tipo==='tema'?'block':'none';
+}
+
+async function gerarProva() {
+  if(!_sReady()) return;
+  const tipo = document.getElementById('gp-tipo').value;
+  const area = document.getElementById('gp-area').value;
+  const qtd = parseInt(document.getElementById('gp-qtd').value);
+  const dif = document.getElementById('gp-dif').value;
+  const modo = document.getElementById('gp-modo').value;
+  const vestibular = document.getElementById('gp-vestibular').value;
+  const tema = document.getElementById('gp-tema').value.trim();
+
+  const btn = document.getElementById('btn-gerar-prova');
+  btn.disabled=true; btn.innerHTML='<span class="loading"></span> Gerando prova...';
+  const el = document.getElementById('gp-resultado');
+  el.innerHTML='<div class="card"><div style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2)"><span class="loading"></span> Criando questões com IA...</div></div>';
+
+  let tipoDesc = tipo==='enem'?'ENEM (questões no estilo das que já caíram no ENEM)'
+    :tipo==='vestibular'?`vestibular ${vestibular}`
+    :tipo==='misto'?'mistura de ENEM e vestibulares brasileiros'
+    :`tema personalizado: ${tema||area}`;
+  let difDesc = dif==='facil'?'fácil (básico, introdutório)':dif==='media'?'média (nível ENEM, moderado)':dif==='dificil'?'difícil (nível vestibular concorrido)':'mista (variada)';
+  let areaDesc = area==='todas'?'variadas (misture as áreas do ENEM)':area;
+
+  const prompt = `Você é um professor especialista criando uma prova de ${tipoDesc}.
+Crie exatamente ${qtd} questões de múltipla escolha (A,B,C,D,E) de ${areaDesc}, dificuldade ${difDesc}.
+As questões devem ser realistas, com contexto, típicas de vestibular/ENEM brasileiro.
+
+Responda SOMENTE JSON puro, sem markdown:
+{"prova":[
+  {
+    "numero":1,
+    "area":"nome da área",
+    "topico":"tópico específico",
+    "ano_referencia":"ENEM 2022 ou Vestibular X 2023 (estime)",
+    "enunciado":"texto completo da questão com contexto...",
+    "alternativas":{"A":"texto","B":"texto","C":"texto","D":"texto","E":"texto"},
+    "resposta_correta":"B",
+    "explicacao":"explicação didática completa do gabarito e por que as outras estão erradas",
+    "dificuldade":"fácil/média/difícil"
+  }
+]}`;
+
+  try {
+    const txt = await callGemini(prompt);
+    const data = JSON.parse(txt.replace(/```json|```/g,'').trim());
+    gpProvaAtual = data.prova || [];
+    gpRespostas = {};
+    gpModo = modo;
+    gpStart = Date.now();
+    renderProvaGerada(qtd, modo, tipo, vestibular);
+    toast(`Prova com ${gpProvaAtual.length} questões gerada! 📋`,'success');
+  } catch(e) {
+    el.innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;
+  }
+  btn.disabled=false; btn.innerHTML='📋 Gerar Prova com IA';
+}
+
+function renderProvaGerada(qtdTotal, modo, tipo, vestibular) {
+  const el = document.getElementById('gp-resultado');
+  const tipoLabel = tipo==='enem'?'ENEM':tipo==='vestibular'?vestibular:tipo==='misto'?'Misto':'Personalizada';
+  const mostrarRespostas = modo !== 'simulado';
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div>
+        <h3 style="font-size:15px;font-weight:700">Prova ${tipoLabel}</h3>
+        <p style="font-size:12px;color:var(--text2)">${gpProvaAtual.length} questões · ${modo==='cronometrado'?'Cronometrado':'Sem limite de tempo'}</p>
+      </div>
+      ${modo==='simulado'?`<button class="btn btn-primary btn-sm" onclick="encerrarProvaSimulado()">📊 Encerrar e ver gabarito</button>`:''}
+      ${modo==='cronometrado'?`<span id="gp-cronometro" class="badge badge-red" style="font-size:14px;padding:6px 12px">00:00</span>`:''}
+    </div>
+    <div id="gp-questoes">
+      ${gpProvaAtual.map((q,i) => renderQuestaoProva(q, i, mostrarRespostas)).join('')}
+    </div>
+    ${modo==='simulado'?`<button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="encerrarProvaSimulado()">📊 Encerrar e ver gabarito</button>`:''}`;
+
+  if(modo==='cronometrado') iniciarCronometroProva(qtdTotal);
+}
+
+function renderQuestaoProva(q, idx, mostrarResposta) {
+  const jaRespondeu = gpRespostas[idx] !== undefined;
+  const acertou = jaRespondeu && gpRespostas[idx] === q.resposta_correta;
+  return `
+    <div class="card" style="margin-bottom:14px;border-color:${jaRespondeu?(acertou?'var(--green)':'var(--red)'):'var(--border)'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-blue">Q${idx+1}</span>
+          <span class="badge badge-purple" style="font-size:10px">${q.area}</span>
+          <span style="font-size:10px;color:var(--text3)">${q.topico}</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:10px;color:var(--text3)">${q.ano_referencia||''}</span>
+          ${jaRespondeu?`<span class="badge ${acertou?'badge-green':'badge-red'}">${acertou?'✓ Certo':'✗ Errou'}</span>`:''}
+        </div>
+      </div>
+      <p style="font-size:13px;line-height:1.8;margin-bottom:14px;color:var(--text)">${q.enunciado}</p>
+      <div id="opts-${idx}">
+        ${Object.entries(q.alternativas).map(([letra,texto])=>`
+          <div onclick="responderQuestaoProva(${idx},'${letra}')" id="opt-${idx}-${letra}"
+            class="quiz-option ${jaRespondeu&&mostrarResposta?(letra===q.resposta_correta?'correct':(gpRespostas[idx]===letra?'wrong':'')):''}">
+            <strong>${letra})</strong> ${texto}
+          </div>`).join('')}
+      </div>
+      ${jaRespondeu&&mostrarResposta?`<div class="quiz-explain" style="display:block">
+        <strong style="color:var(--blue2)">Gabarito: ${q.resposta_correta}</strong><br>${q.explicacao}
+      </div>`:''}
+    </div>`;
+}
+
+function responderQuestaoProva(idx, letra) {
+  if(gpRespostas[idx] !== undefined && gpModo !== 'simulado') return;
+  gpRespostas[idx] = letra;
+  const q = gpProvaAtual[idx];
+  const container = document.getElementById(`opts-${idx}`);
+  if(!container) return;
+  if(gpModo !== 'simulado') {
+    // Mostrar resposta imediatamente
+    Object.keys(q.alternativas).forEach(l => {
+      const el = document.getElementById(`opt-${idx}-${l}`);
+      if(el) {
+        el.classList.remove('correct','wrong','selected');
+        if(l===q.resposta_correta) el.classList.add('correct');
+        else if(l===letra) el.classList.add('wrong');
+      }
+    });
+    // Mostrar explicação
+    const card = container.closest('.card');
+    let explEl = card.querySelector('.quiz-explain');
+    if(!explEl) {
+      explEl = document.createElement('div');
+      explEl.className='quiz-explain';
+      card.appendChild(explEl);
+    }
+    explEl.innerHTML=`<strong style="color:var(--blue2)">Gabarito: ${q.resposta_correta}</strong><br>${q.explicacao}`;
+    explEl.style.display='block';
+    // Badge
+    const badges = card.querySelectorAll('.badge-green,.badge-red');
+    const acertou = letra===q.resposta_correta;
+    const badgeDiv = card.querySelector('.badge-blue')?.parentElement;
+    const jaTemBadge = card.querySelector('.badge-green,.badge-red');
+    if(!jaTemBadge && badgeDiv) {
+      const b = document.createElement('span');
+      b.className = `badge ${acertou?'badge-green':'badge-red'}`;
+      b.textContent = acertou?'✓ Certo':'✗ Errou';
+      badgeDiv.appendChild(b);
+    }
+  } else {
+    // Só marcar selecionado, sem revelar
+    Object.keys(q.alternativas).forEach(l => {
+      const el = document.getElementById(`opt-${idx}-${l}`);
+      if(el){ el.classList.remove('selected'); if(l===letra) el.classList.add('selected'); }
+    });
+  }
+}
+
+function encerrarProvaSimulado() {
+  const total = gpProvaAtual.length;
+  const respondidas = Object.keys(gpRespostas).length;
+  const acertos = gpProvaAtual.filter((q,i)=>gpRespostas[i]===q.resposta_correta).length;
+  const pct = total>0?Math.round(acertos/total*100):0;
+  // Revelar gabarito
+  gpProvaAtual.forEach((q,i)=>{
+    Object.keys(q.alternativas).forEach(l=>{
+      const el=document.getElementById(`opt-${i}-${l}`);
+      if(el){
+        el.classList.remove('selected','correct','wrong');
+        if(l===q.resposta_correta) el.classList.add('correct');
+        else if(gpRespostas[i]===l) el.classList.add('wrong');
+      }
+    });
+    // Mostrar explicação
+    const container=document.getElementById(`opts-${i}`);
+    if(container){
+      const card=container.closest('.card');
+      let explEl=card.querySelector('.quiz-explain');
+      if(!explEl){explEl=document.createElement('div');explEl.className='quiz-explain';card.appendChild(explEl);}
+      explEl.innerHTML=`<strong style="color:var(--blue2)">Gabarito: ${q.resposta_correta}</strong><br>${q.explicacao}`;
+      explEl.style.display='block';
+    }
+  });
+  if(gpTimer) clearInterval(gpTimer);
+  const tempoTotal = gpStart?Math.round((Date.now()-gpStart)/1000):0;
+  const resumo=document.createElement('div');
+  resumo.className='card';resumo.style.cssText='margin-bottom:14px;border-color:var(--blue2);background:linear-gradient(135deg,#0a1628,#0d1f3c);text-align:center';
+  resumo.innerHTML=`<div style="font-size:48px;margin-bottom:8px">${pct>=70?'🎉':pct>=50?'💪':'📚'}</div>
+    <div style="font-family:var(--font2);font-size:36px;font-weight:800;color:${pct>=70?'var(--green)':pct>=50?'var(--orange)':'var(--red)'}">${pct}%</div>
+    <div style="font-size:14px;color:var(--text2);margin:6px 0">${acertos}/${total} acertos · ${respondidas}/${total} respondidas</div>
+    <div style="font-size:12px;color:var(--text3)">Tempo: ${Math.floor(tempoTotal/60)}min ${tempoTotal%60}s</div>`;
+  const el=document.getElementById('gp-resultado');
+  el.insertBefore(resumo, el.firstChild);
+  // Salvar no histórico
+  if(!S.gpHistorico) S.gpHistorico=[];
+  S.gpHistorico.unshift({data:new Date().toLocaleDateString('pt-BR'),acertos,total,pct,tempo:tempoTotal});
+  S.gpHistorico=S.gpHistorico.slice(0,10);
+  save();renderHistoricoProvas();
+  toast(`Prova encerrada! ${acertos}/${total} acertos (${pct}%)`, pct>=70?'success':'info');
+}
+
+function iniciarCronometroProva(qtd) {
+  const tempoTotal = qtd * 3 * 60;
+  let restante = tempoTotal;
+  if(gpTimer) clearInterval(gpTimer);
+  gpTimer = setInterval(()=>{
+    restante--;
+    const el=document.getElementById('gp-cronometro');
+    if(el){
+      const m=Math.floor(restante/60),s=restante%60;
+      el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if(restante<=60) el.style.background='rgba(255,82,82,.2)';
+    }
+    if(restante<=0){clearInterval(gpTimer);encerrarProvaSimulado();toast('⏰ Tempo esgotado!','warn');}
+  },1000);
+}
+
+function renderHistoricoProvas() {
+  const el=document.getElementById('gp-historico');if(!el)return;
+  if(!_sReady()||!S.gpHistorico?.length){el.innerHTML='<p style="font-size:12px;color:var(--text3)">Nenhuma prova gerada ainda</p>';return;}
+  el.innerHTML=S.gpHistorico.map(h=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:12px;font-weight:600">${h.acertos}/${h.total} — ${h.pct}%</div><div style="font-size:10px;color:var(--text3)">${h.data}</div></div>
+      <span class="badge ${h.pct>=70?'badge-green':h.pct>=50?'badge-orange':'badge-red'}">${h.pct>=70?'Ótimo':h.pct>=50?'Médio':'Fraco'}</span>
+    </div>`).join('');
+}
+
+// ══════════════ SCANNER DE QUESTÕES ══════════════
+let scannerImgB64 = null, scannerImgMime = null;
+
+function initScanner() {}
+
+function previewScannerImg() {
+  const file = document.getElementById('scanner-file').files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    scannerImgB64 = e.target.result.split(',')[1];
+    scannerImgMime = file.type;
+    document.getElementById('scanner-img').src = e.target.result;
+    document.getElementById('scanner-preview').style.display='block';
+    document.getElementById('scanner-upload-area').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function resolverQuestaoScanner() {
+  if(!scannerImgB64){toast('Envie uma foto da questão primeiro','error');return;}
+  const contexto = document.getElementById('scanner-contexto').value.trim();
+  const modo = document.getElementById('scanner-modo').value;
+  const btn = document.getElementById('btn-scanner');
+  btn.disabled=true; btn.innerHTML='<span class="loading"></span> Resolvendo...';
+  const el = document.getElementById('scanner-resultado');
+  el.innerHTML='<div class="card"><div style="display:flex;align-items:center;gap:10px"><span class="loading"></span><span style="font-size:14px;color:var(--text2)">Analisando a questão...</span></div></div>';
+
+  let instrucao = '';
+  if(modo==='resolver') instrucao='Resolva completamente e explique cada etapa.';
+  else if(modo==='passo') instrucao='Resolva passo a passo, numerando cada etapa.';
+  else if(modo==='dica') instrucao='Dê apenas uma dica para resolver, sem entregar a resposta.';
+  else if(modo==='macete') instrucao='Resolva e crie um macete/mnemônico para memorizar o conteúdo.';
+  else if(modo==='similar') instrucao='Resolva e depois crie uma questão similar para praticar.';
+
+  const prompt = `Você é um professor especialista em vestibulares e ENEM brasileiros. Analise a questão na imagem e responda em português.
+${contexto?'Contexto adicional: '+contexto:''}
+Instrução: ${instrucao}
+
+Responda em formato estruturado com:
+1. IDENTIFICAÇÃO: Área, matéria e tópico da questão
+2. RESOLUÇÃO: ${instrucao}
+3. CONCEITO-CHAVE: O conceito principal que essa questão testa
+${modo==='similar'?'4. QUESTÃO SIMILAR: Crie uma questão parecida para treino':''}
+${modo==='macete'?'4. MACETE: Técnica de memorização':''}
+
+Use formatação clara com emojis para facilitar a leitura.`;
+
+  try {
+    const txt = await callGemini(prompt, scannerImgB64, scannerImgMime);
+    el.innerHTML = `
+      <div class="card" style="border-color:var(--blue3)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <h3 style="font-size:14px;color:var(--blue2)">🤖 Resolução da IA</h3>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('scanner-txt').innerText).then(()=>toast('Copiado!','success'))">📋 Copiar</button>
+            <button class="btn btn-ghost btn-sm" onclick="novaQuestaoScanner()">📷 Nova questão</button>
+          </div>
+        </div>
+        <div id="scanner-txt" style="font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap">${txt}</div>
+      </div>`;
+    toast('Questão resolvida! 🎯','success');
+  } catch(e) {
+    el.innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;
+  }
+  btn.disabled=false; btn.innerHTML='🤖 Resolver com IA';
+}
+
+function novaQuestaoScanner() {
+  scannerImgB64=null;scannerImgMime=null;
+  document.getElementById('scanner-preview').style.display='none';
+  document.getElementById('scanner-upload-area').style.display='block';
+  document.getElementById('scanner-contexto').value='';
+  document.getElementById('scanner-resultado').innerHTML='<div class="empty"><div class="empty-icon">📷</div><p>Envie a foto de uma questão para começar</p></div>';
+}
+
+// ══════════════ SIMULADOR DE NOTA ENEM ══════════════
+function initSimuladorNota() {
+  if(!_sReady()) return;
+  renderHistoricoSimulacoes();
+}
+
+function calcSimuladorNota() {
+  const lc = parseInt(document.getElementById('sim-lc').value)||0;
+  const ch = parseInt(document.getElementById('sim-ch').value)||0;
+  const cn = parseInt(document.getElementById('sim-cn').value)||0;
+  const mt = parseInt(document.getElementById('sim-mt').value)||0;
+  const red = parseInt(document.getElementById('sim-red').value)||0;
+
+  if(lc===0&&ch===0&&cn===0&&mt===0) return;
+
+  // Aproximação TRI: curva sigmóide inversa
+  // Médias históricas e desvios do ENEM (aproximação baseada em dados reais)
+  const triCalc = (acertos, total, media, desvio) => {
+    if(acertos<=0) return Math.max(300, media - 2*desvio);
+    if(acertos>=total) return Math.min(900, media + 2.5*desvio);
+    const pct = acertos/total;
+    // Curva não-linear que penaliza mais erros em questões difíceis
+    const base = media + desvio * (Math.log(pct/(1-pct)) * 0.8);
+    return Math.round(Math.max(300, Math.min(900, base)));
+  };
+
+  const notas = {
+    lc: triCalc(lc, 45, 524, 82),
+    ch: triCalc(ch, 45, 512, 79),
+    cn: triCalc(cn, 45, 509, 91),
+    mt: triCalc(mt, 45, 516, 108),
+    red: red || 0
+  };
+  const mediaObj = (notas.lc+notas.ch+notas.cn+notas.mt)/4;
+  const notaGeral = red>0 ? Math.round((notas.lc+notas.ch+notas.cn+notas.mt+notas.red)/5) : Math.round(mediaObj);
+
+  const el = document.getElementById('sim-nota-resultado');
+  const barCor = n => n>=700?'var(--green)':n>=600?'var(--blue2)':n>=500?'var(--orange)':'var(--red)';
+  const nivel = n => n>=800?'Excelente':n>=700?'Muito bom':n>=600?'Bom':n>=500?'Regular':'Precisa melhorar';
+
+  const areas = [
+    {nome:'Linguagens e Códigos',nota:notas.lc,acertos:lc,total:45},
+    {nome:'Ciências Humanas',nota:notas.ch,acertos:ch,total:45},
+    {nome:'Ciências da Natureza',nota:notas.cn,acertos:cn,total:45},
+    {nome:'Matemática',nota:notas.mt,acertos:mt,total:45},
+  ];
+
+  el.innerHTML = `
+    <div class="card glow-card" style="margin-bottom:14px;text-align:center;border-color:var(--blue3)">
+      <div style="font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:6px">NOTA GERAL ESTIMADA (TRI)</div>
+      <div style="font-family:var(--font2);font-size:60px;font-weight:800;color:${barCor(notaGeral)}">${notaGeral}</div>
+      <div style="font-size:13px;color:var(--text2)">${nivel(notaGeral)}</div>
+      ${red>0?`<div style="font-size:12px;color:var(--text3);margin-top:4px">Incluindo redação (${red} pts)</div>`:'<div style="font-size:11px;color:var(--orange);margin-top:4px">⚠️ Sem nota de redação — média das 4 áreas</div>'}
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📊 Por área</h3>
+      ${areas.map(a=>`
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+            <span>${a.nome}</span>
+            <span style="font-weight:700;color:${barCor(a.nota)}">${a.nota} pts (${a.acertos}/${a.total})</span>
+          </div>
+          <div class="progress"><div class="progress-bar" style="width:${Math.round((a.nota-300)/600*100)}%;background:${barCor(a.nota)}"></div></div>
+        </div>`).join('')}
+      ${red>0?`<div style="margin-bottom:4px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span>Redação</span><span style="font-weight:700;color:${barCor(red)}">${red} pts</span>
+        </div>
+        <div class="progress"><div class="progress-bar" style="width:${Math.round(red/10)}%;background:${barCor(red)}"></div></div>
+      </div>`:''}
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">🎯 Referências de notas (SISU)</h3>
+      <div style="font-size:12px;color:var(--text2);line-height:2">
+        📌 Medicina federal top: <strong style="color:var(--red)">≥ 750–820</strong><br>
+        📌 Direito federal top: <strong style="color:var(--orange)">≥ 650–700</strong><br>
+        📌 Engenharia federal: <strong style="color:var(--blue2)">≥ 600–680</strong><br>
+        📌 Cursos de ampla concorrência: <strong style="color:var(--green)">≥ 500–580</strong><br>
+        📌 Sua nota: <strong style="color:${barCor(notaGeral)}">${notaGeral}</strong>
+      </div>
+    </div>`;
+}
+
+function salvarSimulacao() {
+  if(!_sReady()) return;
+  const lc=parseInt(document.getElementById('sim-lc').value)||0;
+  const ch=parseInt(document.getElementById('sim-ch').value)||0;
+  const cn=parseInt(document.getElementById('sim-cn').value)||0;
+  const mt=parseInt(document.getElementById('sim-mt').value)||0;
+  const red=parseInt(document.getElementById('sim-red').value)||0;
+  if(!lc&&!ch&&!cn&&!mt){toast('Preencha pelo menos uma área','error');return;}
+  const triCalc=(a,t,m,d)=>{if(a<=0)return Math.max(300,m-2*d);if(a>=t)return Math.min(900,m+2.5*d);const p=a/t;return Math.round(Math.max(300,Math.min(900,m+d*(Math.log(p/(1-p))*0.8))));};
+  const notas={lc:triCalc(lc,45,524,82),ch:triCalc(ch,45,512,79),cn:triCalc(cn,45,509,91),mt:triCalc(mt,45,516,108)};
+  const geral=red>0?Math.round((notas.lc+notas.ch+notas.cn+notas.mt+red)/5):Math.round((notas.lc+notas.ch+notas.cn+notas.mt)/4);
+  if(!S.simHistorico) S.simHistorico=[];
+  S.simHistorico.unshift({data:new Date().toLocaleDateString('pt-BR'),lc:notas.lc,ch:notas.ch,cn:notas.cn,mt:notas.mt,red,geral});
+  S.simHistorico=S.simHistorico.slice(0,12);
+  save();renderHistoricoSimulacoes();
+  toast('Simulação salva! 💾','success');
+}
+
+function renderHistoricoSimulacoes() {
+  const el=document.getElementById('sim-historico');if(!el||!_sReady())return;
+  if(!S.simHistorico?.length){el.innerHTML='<p style="font-size:12px;color:var(--text3)">Salve simulações para acompanhar sua evolução</p>';return;}
+  el.innerHTML=`<div class="table-wrap"><table>
+    <thead><tr><th>Data</th><th>LC</th><th>CH</th><th>CN</th><th>MT</th><th>Red.</th><th>Geral</th></tr></thead>
+    <tbody>${S.simHistorico.map(h=>`<tr>
+      <td style="font-size:11px">${h.data}</td>
+      <td style="color:var(--blue2);font-weight:600">${h.lc}</td>
+      <td style="color:var(--blue2);font-weight:600">${h.ch}</td>
+      <td style="color:var(--blue2);font-weight:600">${h.cn}</td>
+      <td style="color:var(--blue2);font-weight:600">${h.mt}</td>
+      <td>${h.red||'—'}</td>
+      <td style="font-weight:700;color:${h.geral>=700?'var(--green)':h.geral>=600?'var(--orange)':'var(--red)'}">${h.geral}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+// ══════════════ CHANCES NA FACULDADE ══════════════
+function initChancesFaculdade() {
+  if(!_sReady()) return;
+  // Auto-preencher com simulações salvas se disponível
+  if(S.simHistorico?.length) {
+    const ultima = S.simHistorico[0];
+    document.getElementById('ch-lc').value=ultima.lc||'';
+    document.getElementById('ch-ch').value=ultima.ch||'';
+    document.getElementById('ch-cn').value=ultima.cn||'';
+    document.getElementById('ch-mt').value=ultima.mt||'';
+    document.getElementById('ch-red').value=ultima.red||'';
+  }
+}
+
+function toggleTipoNotaChance() {
+  const tipo=document.getElementById('chance-tipo-nota').value;
+  document.getElementById('chance-notas-enem').style.display=tipo==='media'?'none':'block';
+  document.getElementById('chance-nota-media').style.display=tipo==='media'?'block':'none';
+  if(tipo==='simulado' && S.simHistorico?.length){
+    const u=S.simHistorico[0];
+    document.getElementById('ch-lc').value=u.lc||'';document.getElementById('ch-ch').value=u.ch||'';
+    document.getElementById('ch-cn').value=u.cn||'';document.getElementById('ch-mt').value=u.mt||'';
+    document.getElementById('ch-red').value=u.red||'';
+  }
+}
+
+function calcChances() {
+  // Cálculo local rápido sem IA
+  const tipo=document.getElementById('chance-tipo-nota').value;
+  let media = 0;
+  if(tipo==='media'){
+    media=parseFloat(document.getElementById('ch-media').value)||0;
+  } else {
+    const lc=parseFloat(document.getElementById('ch-lc').value)||0;
+    const ch=parseFloat(document.getElementById('ch-ch').value)||0;
+    const cn=parseFloat(document.getElementById('ch-cn').value)||0;
+    const mt=parseFloat(document.getElementById('ch-mt').value)||0;
+    const red=parseFloat(document.getElementById('ch-red').value)||0;
+    media = red>0 ? (lc+ch+cn+mt+red)/5 : (lc+ch+cn+mt)/4;
+  }
+  if(!media) return;
+  // Exibe estimativa rápida sem IA
+  document.getElementById('chances-resultado').innerHTML=`
+    <div class="card" style="border-color:var(--blue3)">
+      <div style="text-align:center;padding:10px 0;margin-bottom:14px">
+        <div style="font-size:11px;color:var(--text2);letter-spacing:1px">SUA MÉDIA ESTIMADA</div>
+        <div style="font-family:var(--font2);font-size:48px;font-weight:800;color:${media>=700?'var(--green)':media>=600?'var(--orange)':'var(--red)'}">${Math.round(media)}</div>
+      </div>
+      <p style="font-size:12px;color:var(--text2);text-align:center">Clique em "Calcular chances com IA" para análise detalhada por curso e universidade</p>
+    </div>`;
+}
+
+async function calcChancesIA() {
+  if(!_sReady()) return;
+  const tipo=document.getElementById('chance-tipo-nota').value;
+  const curso=document.getElementById('ch-curso').value;
+  const cursoCustom=document.getElementById('ch-curso-custom').value.trim();
+  const uni=document.getElementById('ch-uni').value;
+  const uniCustom=document.getElementById('ch-uni-nome').value.trim();
+  let notasTexto = '';
+  let media = 0;
+
+  if(tipo==='media'){
+    media=parseFloat(document.getElementById('ch-media').value)||0;
+    notasTexto=`Média geral: ${media}`;
+  } else {
+    const lc=parseFloat(document.getElementById('ch-lc').value)||0;
+    const ch=parseFloat(document.getElementById('ch-ch').value)||0;
+    const cn=parseFloat(document.getElementById('ch-cn').value)||0;
+    const mt=parseFloat(document.getElementById('ch-mt').value)||0;
+    const red=parseFloat(document.getElementById('ch-red').value)||0;
+    media=red>0?(lc+ch+cn+mt+red)/5:(lc+ch+cn+mt)/4;
+    notasTexto=`LC:${lc}, CH:${ch}, CN:${cn}, MT:${mt}${red?', Redação:'+red:''}. Média: ${Math.round(media)}`;
+  }
+
+  if(!media){toast('Preencha suas notas primeiro','error');return;}
+
+  const btn=document.getElementById('btn-chances');
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Calculando...';
+  const el=document.getElementById('chances-resultado');
+  el.innerHTML='<div class="card"><div style="display:flex;align-items:center;gap:10px"><span class="loading"></span><span style="font-size:14px;color:var(--text2)">Analisando chances...</span></div></div>';
+
+  const cursoNome = curso==='outro'?(cursoCustom||'Outro'):curso;
+  const uniNome = uni==='outra'?(uniCustom||'Universidade'):{federal_top:'Federal de ponta (USP/UNICAMP/UFRJ/UFMG)',federal_media:'Federal média (UFC/UFPE/UFBA)',federal_regional:'Federal regional (URCA/UECE/UFCA)',estadual:'Estadual',particular_top:'Particular conceituada (PUC/Mackenzie/FGV)',particular_comum:'Particular comum',sisu:'SISU',outra:uniCustom}[uni]||uni;
+
+  const prompt=`Você é um especialista em vestibulares e SISU brasileiro com dados atualizados de notas de corte.
+
+Notas do candidato: ${notasTexto}
+Curso desejado: ${cursoNome}
+Universidade/tipo: ${uniNome}
+
+Faça uma análise detalhada das chances de aprovação. Inclua:
+1. Análise do perfil de notas para este curso
+2. Notas de corte típicas para este curso nesta universidade (use dados reais do SISU/vestibular, cite anos recentes)
+3. Chance estimada em % (seja realista e honesto)
+4. Cursos alternativos com boas chances nessa faixa de nota
+5. O que precisa melhorar para aumentar as chances
+6. Plano de ação específico
+
+Seja específico, cite notas de corte reais quando possível. Em português. Seja honesto mas motivador.
+
+Responda SOMENTE JSON:
+{
+  "media_candidato": ${Math.round(media)},
+  "curso": "${cursoNome}",
+  "universidade": "${uniNome}",
+  "nota_corte_tipica": "ex: 720–780 (últimos anos)",
+  "chance_pct": 45,
+  "nivel_chance": "baixa/media/alta/muito_alta",
+  "analise": "texto completo da análise",
+  "cursos_alternativos": [{"curso":"nome","uni":"tipo","nota_corte":"ex: 580–620","chance_pct":75}],
+  "o_que_melhorar": ["item 1","item 2","item 3"],
+  "plano_acao": "texto com plano específico"
+}`;
+
+  try {
+    const txt=await callGemini(prompt);
+    const data=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    renderResultadoChances(data);
+    toast('Análise de chances concluída! 🎓','success');
+  } catch(e) {
+    el.innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;
+  }
+  btn.disabled=false;btn.innerHTML='🎓 Calcular chances com IA';
+}
+
+function renderResultadoChances(data) {
+  const el=document.getElementById('chances-resultado');
+  const cor={baixa:'var(--red)',media:'var(--orange)',alta:'var(--blue2)',muito_alta:'var(--green)'}[data.nivel_chance]||'var(--blue2)';
+  const label={baixa:'Baixa',media:'Média',alta:'Alta',muito_alta:'Muito alta'}[data.nivel_chance]||data.nivel_chance;
+  el.innerHTML=`
+    <div class="card" style="margin-bottom:14px;border-color:${cor}">
+      <div style="text-align:center;padding:8px 0">
+        <div style="font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:4px">CHANCE ESTIMADA</div>
+        <div style="font-family:var(--font2);font-size:52px;font-weight:800;color:${cor}">${data.chance_pct}%</div>
+        <div style="font-size:14px;font-weight:700;color:${cor}">${label}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px">${data.curso} · ${data.universidade}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">Nota de corte típica: ${data.nota_corte_tipica}</div>
+        <div class="progress" style="margin:10px 0"><div class="progress-bar" style="width:${data.chance_pct}%;background:${cor}"></div></div>
+        <div style="font-size:11px;color:var(--text2)">Sua média: <strong style="color:${cor}">${data.media_candidato}</strong></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">📊 Análise</h3>
+      <p style="font-size:13px;line-height:1.8;color:var(--text)">${(data.analise||'').replace(/\n/g,'<br>')}</p>
+    </div>
+    ${(data.cursos_alternativos||[]).length?`
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🎯 Cursos alternativos com boas chances</h3>
+      ${data.cursos_alternativos.map(c=>{
+        const cc=c.chance_pct>=70?'var(--green)':c.chance_pct>=50?'var(--orange)':'var(--red)';
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+          <div><div style="font-size:13px;font-weight:600">${c.curso}</div><div style="font-size:11px;color:var(--text3)">${c.uni} · Corte: ${c.nota_corte}</div></div>
+          <span class="badge" style="background:${cc}22;color:${cc}">${c.chance_pct}%</span>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">📈 O que melhorar</h3>
+      ${(data.o_que_melhorar||[]).map(item=>`<div style="display:flex;align-items:start;gap:8px;padding:5px 0;font-size:12px;color:var(--text)"><span style="color:var(--orange);flex-shrink:0">→</span>${item}</div>`).join('')}
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,#0a1628,#0d1f3c);border-color:var(--blue3)">
+      <h3 style="font-size:13px;margin-bottom:10px;color:var(--blue2)">🚀 Plano de ação</h3>
+      <p style="font-size:13px;line-height:1.8;color:var(--text)">${(data.plano_acao||'').replace(/\n/g,'<br>')}</p>
+    </div>`;
+}
+
+// Atualiza seleção de curso para mostrar campo customizado
+document.addEventListener('change', e => {
+  if(e.target.id==='ch-curso') {
+    document.getElementById('ch-outro-curso').style.display = e.target.value==='outro'?'block':'none';
+  }
+  if(e.target.id==='ch-uni') {
+    document.getElementById('ch-uni-custom').style.display = e.target.value==='outra'?'block':'none';
+  }
+});
+
   document.querySelectorAll('.mob-nav-item').forEach(i => i.classList.remove('active'));
   if (el) el.classList.add('active');
   // Atualiza menu overlay também
@@ -4191,7 +6349,8 @@ function toggleMobMenu() {
   else document.body.style.overflow = '';
 }
 
-// Sobrescrever navigate para atualizar mobile nav
+// navigate override consolidado no script anterior
+// Atualizar mobile nav e fechar menu
 const _navigateOriginal = navigate;
 window.navigate = function(page) {
   _navigateOriginal(page);
