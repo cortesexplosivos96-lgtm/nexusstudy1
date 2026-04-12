@@ -3378,7 +3378,7 @@ function iniciarSimulacao(simId,area){
   if(labAnimFrame)cancelAnimationFrame(labAnimFrame);
   const canvas=document.getElementById('lab-canvas');
   const ctx=canvas.getContext('2d');
-  labSimAtual={simId,area,t:0,running:false,particles:[]};
+  labSimAtual={simId,area,t:0,running:false,particles:[],expNome};
   // Desenha estado inicial
   desenharSimulacao(ctx,labSimAtual);
 }
@@ -3399,6 +3399,40 @@ function animarLab(ctx){
   labAnimFrame=requestAnimationFrame(()=>animarLab(ctx));
 }
 
+// ══════════════ LABORATÓRIO — ANIMAÇÕES COMPLETAS ══════════════
+function txt(ctx,text,x,y,size,color,bold){
+  ctx.fillStyle=color||'#94a3b8';
+  ctx.font=(bold?'bold ':'')+`${size||11}px "Space Grotesk",sans-serif`;
+  ctx.fillText(text,x,y);
+}
+function beaker(ctx,x,y,w,h,cor,label){
+  // corpo
+  ctx.strokeStyle='#475569';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-8,y+h);ctx.lineTo(x+w+8,y+h);ctx.lineTo(x+w,y);ctx.stroke();
+  // borda superior
+  ctx.beginPath();ctx.moveTo(x-14,y);ctx.lineTo(x+w+14,y);ctx.stroke();
+  // líquido
+  if(cor){ctx.fillStyle=cor;ctx.fillRect(x+1,y+h*0.3,w-1,h*0.69);}
+  if(label){txt(ctx,label,x+w/2-ctx.measureText(label).width/2,y+h+16,10,'#94a3b8');}
+}
+function arrow(ctx,x1,y1,x2,y2,cor){
+  ctx.strokeStyle=cor||'#00cfff';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.fillStyle=cor||'#00cfff';
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-10*Math.cos(ang-0.4),y2-10*Math.sin(ang-0.4));
+  ctx.lineTo(x2-10*Math.cos(ang+0.4),y2-10*Math.sin(ang+0.4));
+  ctx.closePath();ctx.fill();
+}
+function bubble(ctx,x,y,r,cor){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=cor||'#ffffff22';ctx.fill();}
+function label(ctx,text,x,y,cor,bg){
+  const m=ctx.measureText(text).width;
+  if(bg){ctx.fillStyle=bg;ctx.fillRect(x-4,y-12,m+8,16);ctx.fillStyle=cor||'#e2e8f0';}
+  else ctx.fillStyle=cor||'#e2e8f0';
+  ctx.font='11px "Space Grotesk",sans-serif';ctx.fillText(text,x,y);
+}
+
 function desenharSimulacao(ctx,state){
   const w=ctx.canvas.width,h=ctx.canvas.height;
   ctx.clearRect(0,0,w,h);
@@ -3406,63 +3440,657 @@ function desenharSimulacao(ctx,state){
   const t=state.t||0;
   const sim=state.simId;
   const area=state.area;
+  const run=state.running;
   const status=document.getElementById('lab-sim-status');
 
-  if(area==='quimica'||sim==='acidbase'){
-    // Béquer com líquido colorido
-    const ph=state.running?Math.min(14,t/40):7;
-    const cor=ph<7?`hsl(${ph*15},80%,50%)`:ph===7?'#4ade80':`hsl(${200+ph*5},80%,50%)`;
-    ctx.strokeStyle='#334155';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(120,40);ctx.lineTo(100,180);ctx.lineTo(300,180);ctx.lineTo(280,40);ctx.stroke();
-    ctx.fillStyle=cor+'99';ctx.fillRect(101,80,198,99);
-    // Bolhas
-    if(state.running){
-      for(let i=0;i<5;i++){
-        ctx.beginPath();ctx.arc(120+i*36,(80+99)-(t*1.2+i*20)%99,3,0,Math.PI*2);
-        ctx.fillStyle='#ffffff44';ctx.fill();
+  // ── QUÍMICA ────────────────────────────────────────────────────────────────
+  if(sim==='acidbase'){
+    // Béquer com indicador que muda de cor conforme pH
+    const ph=run?Math.min(14,t/35):7;
+    const cor=ph<7?`hsla(${ph*15+10},85%,55%,0.85)`:ph===7?'rgba(74,222,128,0.7)':`hsla(${220+ph*4},80%,55%,0.8)`;
+    const label_ph=ph<7?'Ácido':ph>7?'Básico':'Neutro';
+    // Béquer principal
+    beaker(ctx,120,30,160,160,cor,'Solução');
+    // Gotas caindo
+    if(run){
+      const drop_y=(t*3)%80;
+      ctx.beginPath();ctx.arc(200,drop_y,4,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
+      // bolhas
+      for(let i=0;i<6;i++){
+        const bx=130+i*26,by=190-(t*1.5+i*25)%130;
+        bubble(ctx,bx,by,3+(i%2)*2,'#ffffff33');
       }
     }
-    ctx.fillStyle='#94a3b8';ctx.font='12px sans-serif';ctx.fillText(`pH: ${ph.toFixed(1)}`,170,150);
-    if(status) status.textContent=state.running?`pH mudando: ${ph.toFixed(1)} — ${ph<7?'Ácido':ph>7?'Básico':'Neutro'}`:'Clique em Executar para ver a reação';
-  } else if(sim==='pendulo'){
-    const amp=60;const freq=0.04;
-    const angulo=Math.sin(t*freq)*amp*(state.running?1:1);
-    const rad=angulo*Math.PI/180;
-    const px=200+Math.sin(rad)*150,py=40+Math.cos(rad)*150;
+    // Frasco de reagente
     ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(200,40);ctx.lineTo(px,py);ctx.stroke();
-    ctx.beginPath();ctx.arc(px,py,16,0,Math.PI*2);
-    ctx.fillStyle='#1e90ff';ctx.fill();ctx.strokeStyle='#00cfff';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#475569';ctx.beginPath();ctx.arc(200,40,6,0,Math.PI*2);ctx.fill();
-    if(status) status.textContent=state.running?`Ângulo: ${angulo.toFixed(1)}°`:'Clique para animar o pêndulo';
-  } else if(sim==='quedalivre'){
-    const g=0.3;const y=state.running?Math.min(160,0.5*g*t*t):20;
-    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';
-    for(let i=0;i<=5;i++){ctx.fillText(`${i*40}m`,10,40+i*30);ctx.strokeStyle='#1e293b';ctx.beginPath();ctx.moveTo(30,40+i*30);ctx.lineTo(w-20,40+i*30);ctx.stroke();}
-    ctx.beginPath();ctx.arc(200,20+y,18,0,Math.PI*2);
-    ctx.fillStyle='#f59e0b';ctx.fill();
-    const vel=state.running?g*t:0;
-    if(status) status.textContent=state.running?`v = ${vel.toFixed(1)} m/s · h = ${y.toFixed(1)}m`:'Clique para soltar o objeto';
-  } else if(sim==='osmose'){
-    const membrana=200;
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(membrana,20);ctx.lineTo(membrana,h-20);ctx.stroke();ctx.setLineDash([]);
-    const nEsq=state.running?Math.max(5,20-Math.floor(t/8)):20;
-    const nDir=state.running?Math.min(35,20+Math.floor(t/8)):20;
-    const drawParticles=(n,xmin,xmax,cor)=>{for(let i=0;i<n;i++){const x=xmin+((i*73+t*2)%(xmax-xmin-20));const y=30+((i*47+t)%(h-60));ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=cor;ctx.fill();}};
-    drawParticles(nEsq,10,membrana-10,'#60a5fa');
-    drawParticles(nDir,membrana+10,w-10,'#60a5fa99');
-    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText('Alta conc.',20,h-10);ctx.fillText('Baixa conc.',membrana+10,h-10);
-    if(status) status.textContent=state.running?`Moléculas migrando: ${20-nEsq} passaram`:'Osmose: moléculas do maior para menor concentração';
-  } else {
-    // Genérico animado
-    const cores=['#1e90ff','#00e676','#ffab40','#b388ff'];
-    for(let i=0;i<8;i++){
-      const x=50+i*45,y=h/2+Math.sin(t*0.05+i)*40;
-      ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);
-      ctx.fillStyle=cores[i%4];ctx.fill();
+    ctx.beginPath();ctx.moveTo(170,10);ctx.lineTo(185,10);ctx.stroke();
+    ctx.beginPath();ctx.arc(190,10,10,0,Math.PI*2);ctx.fillStyle='#7dd3fc44';ctx.fill();ctx.stroke();
+    // Info
+    const grad=ctx.createLinearGradient(10,180,390,180);
+    grad.addColorStop(0,'#ef4444');grad.addColorStop(0.5,'#4ade80');grad.addColorStop(1,'#3b82f6');
+    ctx.fillStyle=grad;ctx.fillRect(10,190,380,8);
+    ctx.fillStyle='#e2e8f0';ctx.font='bold 14px sans-serif';
+    ctx.fillText(`pH ${ph.toFixed(1)} — ${label_ph}`,w/2-50,210);
+    if(status)status.textContent=run?`pH: ${ph.toFixed(1)} (${label_ph}) — reação acontecendo...`:'▶ Execute para adicionar reagente';
+
+  } else if(sim==='eletrolise'){
+    // Cubeta com água, eletrodos, bolhas O2 e H2
+    ctx.strokeStyle='#334155';ctx.lineWidth=2;
+    ctx.beginPath();ctx.rect(60,60,280,130);ctx.stroke();
+    ctx.fillStyle='rgba(96,165,250,0.25)';ctx.fillRect(61,61,278,128);
+    // Eletrodos
+    ctx.fillStyle='#94a3b8';ctx.fillRect(120,50,8,130);ctx.fillRect(272,50,8,130);
+    ctx.fillStyle='#ef4444';txt(ctx,'─',106,48,14,'#ef4444',true);txt(ctx,'Cátodo (─)',86,170,10,'#ef4444');
+    ctx.fillStyle='#3b82f6';txt(ctx,'+',276,48,14,'#3b82f6',true);txt(ctx,'Ânodo (+)',270,170,10,'#3b82f6');
+    // Bolhas H2 (cátodo) e O2 (ânodo)
+    if(run){
+      for(let i=0;i<8;i++){
+        const bx=124+(i%2)*4,by=170-(t*1.8+i*22)%120;
+        bubble(ctx,bx,by,3,'#60a5fa88');
+      }
+      for(let i=0;i<4;i++){
+        const bx=276+(i%2)*4,by=170-(t*0.9+i*32)%120;
+        bubble(ctx,bx,by,4,'#f87171aa');
+      }
+      txt(ctx,'H₂↑',108,30,12,'#60a5fa',true);
+      txt(ctx,'O₂↑',270,30,12,'#f87171',true);
+      txt(ctx,'2H₂O → 2H₂ + O₂',100,210,11,'#94a3b8');
     }
-    if(status) status.textContent=state.running?'Simulação em andamento...':'Clique em Executar para animar';
+    if(status)status.textContent=run?'Eletrólise: água se decompondo em H₂ e O₂':'▶ Execute para ligar a corrente elétrica';
+
+  } else if(sim==='destilacao'){
+    // Balão + coluna + condensador + coletor
+    // Balão
+    ctx.beginPath();ctx.arc(90,150,40,0,Math.PI*2);ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='rgba(251,191,36,0.3)';ctx.fill();
+    // Chama
+    if(run){
+      const flame=Math.sin(t*0.3)*4;
+      ctx.fillStyle='#f97316';ctx.beginPath();ctx.ellipse(90,195+flame,12,14,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.ellipse(90,197+flame,7,9,0,0,Math.PI*2);ctx.fill();
+    }
+    // Tubo de destilação
+    ctx.strokeStyle='#475569';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(115,130);ctx.lineTo(200,80);ctx.lineTo(300,80);ctx.stroke();
+    // Condensador
+    ctx.strokeStyle='#60a5fa';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(300,80);ctx.lineTo(350,140);ctx.stroke();
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(295,75);ctx.lineTo(355,145);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(305,85);ctx.lineTo(345,135);ctx.stroke();
+    // Gotas condensadas
+    if(run){
+      const drop=(t*2)%60;
+      ctx.beginPath();ctx.arc(352,145+drop,4,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
+    }
+    // Erlenmeyer coletor
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(340,185);ctx.lineTo(330,215);ctx.lineTo(370,215);ctx.lineTo(360,185);ctx.stroke();
+    ctx.fillStyle='rgba(96,165,250,0.3)';ctx.fillRect(331,200,38,14);
+    txt(ctx,'Mistura',65,220,10,'#94a3b8');txt(ctx,'Vapor',145,75,10,'#fbbf24');txt(ctx,'Líquido puro',325,230,10,'#60a5fa');
+    if(status)status.textContent=run?'Destilando: componente mais volátil evaporando primeiro...':'▶ Execute para aquecer a mistura';
+
+  } else if(sim==='titulacao'){
+    // Bureta + erlenmeyer com mudança de cor
+    const vol=run?Math.min(25,t/10):0;
+    const pEq=15;const passou=vol>=pEq;
+    const cor=passou?'rgba(179,136,255,0.6)':'rgba(255,182,193,0.6)';
+    // Bureta
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;
+    ctx.beginPath();ctx.rect(175,10,25,150);ctx.stroke();
+    ctx.fillStyle='rgba(96,165,250,0.5)';ctx.fillRect(176,11,23,150-vol*5.5);
+    ctx.beginPath();ctx.moveTo(185,160);ctx.lineTo(185,175);ctx.stroke();
+    txt(ctx,`${vol.toFixed(1)} mL`,158,200,10,'#60a5fa');
+    txt(ctx,'Bureta (NaOH)',148,8,9,'#94a3b8');
+    // Erlenmeyer
+    ctx.beginPath();ctx.moveTo(150,175);ctx.lineTo(120,215);ctx.lineTo(280,215);ctx.lineTo(250,175);ctx.stroke();
+    ctx.fillStyle=cor;ctx.beginPath();ctx.moveTo(151,190);ctx.lineTo(121,215);ctx.lineTo(279,215);ctx.lineTo(249,190);ctx.closePath();ctx.fill();
+    if(passou){
+      ctx.fillStyle='#b388ff';txt(ctx,'Ponto de equivalência!',115,208,11,'#b388ff',true);
+    }
+    // Gotas caindo
+    if(run&&!passou){
+      const dy=(t*4)%60;ctx.beginPath();ctx.arc(185,175+dy,3,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
+    }
+    txt(ctx,'HCl (ácido)',165,230,10,'#94a3b8');
+    if(status)status.textContent=run?(passou?`Ponto de equivalência atingido em ${pEq}mL!`:`Volume adicionado: ${vol.toFixed(1)}mL`):'▶ Execute para iniciar a titulação';
+
+  } else if(sim==='combustao'){
+    // Chama + CO2 + H2O saindo
+    const int=run?0.8+Math.sin(t*0.2)*0.2:0.3;
+    // Superfície
+    ctx.fillStyle='#334155';ctx.fillRect(130,175,140,8);
+    // Vela
+    ctx.fillStyle='#f1f5f9';ctx.fillRect(193,130,14,45);
+    ctx.fillStyle='#94a3b8';ctx.fillRect(191,128,18,6);
+    ctx.fillStyle='#78350f';ctx.fillRect(199,124,2,6);
+    // Chama
+    if(run||!run){
+      const fl=run?Math.sin(t*0.25)*5:0;
+      ctx.fillStyle=`rgba(239,68,68,${int})`;
+      ctx.beginPath();ctx.ellipse(200,118+fl,10,20,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=`rgba(251,191,36,${int+0.2})`;
+      ctx.beginPath();ctx.ellipse(200,122+fl,6,13,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=`rgba(255,255,255,${int})`;
+      ctx.beginPath();ctx.ellipse(200,126+fl,3,6,0,0,Math.PI*2);ctx.fill();
+    }
+    // Partículas CO2 e H2O subindo
+    if(run){
+      for(let i=0;i<6;i++){
+        const px=185+((i*57+t*2)%50),py=100-(t*1.2+i*18)%90;
+        ctx.fillStyle=i%2===0?'#94a3b840':'#60a5fa40';
+        ctx.beginPath();ctx.arc(px,py,i%2===0?5:3,0,Math.PI*2);ctx.fill();
+        txt(ctx,i%2===0?'CO₂':'H₂O',px-8,py-6,9,i%2===0?'#94a3b8':'#60a5fa');
+      }
+      txt(ctx,'C₃H₈ + 5O₂ → 3CO₂ + 4H₂O',60,210,10,'#fbbf24');
+    }
+    if(status)status.textContent=run?'Combustão: carbono + oxigênio → CO₂ + H₂O + energia':'▶ Execute para acender a chama';
+
+  } else if(sim==='precipitado'){
+    // Dois béqueres + reação de precipitação
+    const mix=run?Math.min(1,t/80):0;
+    beaker(ctx,50,50,110,140,'rgba(252,211,77,0.6)','AgNO₃');
+    beaker(ctx,240,50,110,140,'rgba(96,165,250,0.5)','NaCl');
+    // Mistura central com precipitado
+    if(mix>0){
+      beaker(ctx,145,80,110,110,`rgba(240,240,240,${mix*0.9})`,'AgCl↓');
+      // precipitado branco acumulando
+      ctx.fillStyle=`rgba(248,250,252,${mix})`;
+      ctx.fillRect(146,155,108,Math.min(34,mix*50));
+      txt(ctx,'Precipitado branco!',130,212,10,'#f1f5f9',true);
+    }
+    // Setas de despejo
+    if(run){
+      arrow(ctx,160,90,200,100,'#fbbf24');
+      arrow(ctx,240,90,200,100,'#60a5fa');
+    }
+    txt(ctx,'AgNO₃ + NaCl → AgCl↓ + NaNO₃',60,225,10,'#94a3b8');
+    if(status)status.textContent=run?`Precipitado formando... ${Math.round(mix*100)}% concluído`:'▶ Execute para misturar as soluções';
+
+  // ── FÍSICA ─────────────────────────────────────────────────────────────────
+  } else if(sim==='quedalivre'){
+    const g=0.28;const vy=run?g*t:0;const y=run?Math.min(h-40,0.5*g*t*t):20;
+    // Régua lateral
+    for(let i=0;i<=5;i++){
+      ctx.strokeStyle='#1e293b';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(28,30+i*32);ctx.lineTo(38,30+i*32);ctx.stroke();
+      txt(ctx,`${i*10}m`,5,34+i*32,10,'#475569');
+    }
+    ctx.strokeStyle='#334155';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(35,18);ctx.lineTo(35,h-10);ctx.stroke();
+    // Rastro
+    if(run){
+      for(let i=1;i<=5;i++){
+        const ty=y-i*18;if(ty<0)break;
+        ctx.beginPath();ctx.arc(200,ty,4-i*0.5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(251,191,36,${0.15*i})`;ctx.fill();
+      }
+    }
+    // Objeto
+    ctx.beginPath();ctx.arc(200,20+y,18,0,Math.PI*2);
+    const grd=ctx.createRadialGradient(196,16+y,2,200,20+y,18);
+    grd.addColorStop(0,'#fde68a');grd.addColorStop(1,'#f59e0b');
+    ctx.fillStyle=grd;ctx.fill();
+    ctx.strokeStyle='#d97706';ctx.lineWidth=2;ctx.stroke();
+    // Vetor velocidade
+    if(run&&vy>0){
+      arrow(ctx,200,38+y,200,38+y+Math.min(vy*4,60),'#ef4444');
+      txt(ctx,'v',206,50+y+Math.min(vy*4,60)/2,11,'#ef4444',true);
+    }
+    // Chão
+    ctx.fillStyle='#334155';ctx.fillRect(60,h-8,320,8);
+    txt(ctx,run?`v=${vy.toFixed(1)}m/s  h=${y.toFixed(1)}m  t=${(t/20).toFixed(1)}s`:'Queda livre: apenas gravidade age',w/2-100,h-12,10,'#94a3b8');
+    if(status)status.textContent=run?`↓ v=${vy.toFixed(1)} m/s · distância=${y.toFixed(0)} m`:'▶ Execute para soltar o objeto';
+
+  } else if(sim==='pendulo'){
+    const L=120;const freq=run?0.045:0;const amp=55;
+    const theta=Math.sin(t*freq-Math.PI/2)*amp;
+    const rad=theta*Math.PI/180;
+    const px=200+Math.sin(rad)*L,py=30+Math.cos(rad)*L;
+    // Suporte
+    ctx.fillStyle='#475569';ctx.fillRect(160,20,80,10);
+    ctx.beginPath();ctx.arc(200,30,5,0,Math.PI*2);ctx.fillStyle='#94a3b8';ctx.fill();
+    // Fio com sombra
+    ctx.strokeStyle='#334155';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(200,30);ctx.lineTo(px+2,py+2);ctx.stroke();
+    ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(200,30);ctx.lineTo(px,py);ctx.stroke();
+    // Posição de equilíbrio (tracejado)
+    ctx.setLineDash([4,4]);ctx.strokeStyle='#334155';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(200,30);ctx.lineTo(200,30+L);ctx.stroke();
+    ctx.setLineDash([]);
+    // Bob
+    const grd2=ctx.createRadialGradient(px-4,py-4,2,px,py,16);
+    grd2.addColorStop(0,'#93c5fd');grd2.addColorStop(1,'#1d4ed8');
+    ctx.beginPath();ctx.arc(px,py,16,0,Math.PI*2);ctx.fillStyle=grd2;ctx.fill();
+    ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;ctx.stroke();
+    // Arco de trajetória
+    if(run){
+      ctx.strokeStyle='rgba(96,165,250,0.2)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(200,30,L,-Math.PI/2-amp*Math.PI/180,-Math.PI/2+amp*Math.PI/180);ctx.stroke();
+    }
+    // Energia
+    const Ec=run?Math.cos(rad)*100:0;const Ep=100-Ec;
+    ctx.fillStyle='rgba(239,68,68,0.7)';ctx.fillRect(320,50,15,Ep*1.2);
+    ctx.fillStyle='rgba(96,165,250,0.7)';ctx.fillRect(340,50+(120-Ec*1.2),15,Ec*1.2);
+    txt(ctx,'Ep',320,48,9,'#f87171');txt(ctx,'Ec',340,48,9,'#60a5fa');
+    txt(ctx,run?`θ=${theta.toFixed(1)}° T=${(2*Math.PI/freq/60).toFixed(2)}s`:'Pêndulo simples — energia se converte',w/2-90,210,10,'#94a3b8');
+    if(status)status.textContent=run?`Ângulo: ${theta.toFixed(1)}° · Ep⇄Ec`:'▶ Execute para soltar o pêndulo';
+
+  } else if(sim==='ohm'){
+    // Circuito elétrico: fonte + resistor + amperímetro
+    const V=run?Math.min(12,t/12):0;const R=4;const I=V/R;
+    // Fios do circuito
+    ctx.strokeStyle='#475569';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(60,80);ctx.lineTo(340,80);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(60,160);ctx.lineTo(340,160);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(60,80);ctx.lineTo(60,160);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(340,80);ctx.lineTo(340,160);ctx.stroke();
+    // Fonte de tensão
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(60,120,22,0,Math.PI*2);ctx.fillStyle='#1e293b';ctx.fill();ctx.stroke();
+    txt(ctx,'+',52,114,14,'#4ade80',true);txt(ctx,'─',52,132,14,'#f87171',true);
+    txt(ctx,`${V.toFixed(1)}V`,44,150,9,'#fbbf24');
+    // Resistor (zigue-zague)
+    ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(160,80);
+    for(let i=0;i<8;i++){ctx.lineTo(168+i*10,i%2===0?68:92);}
+    ctx.lineTo(248,80);ctx.stroke();
+    ctx.fillStyle='#1e293b';ctx.fillRect(158,70,10,20);ctx.fillRect(246,70,10,20);
+    txt(ctx,`R=${R}Ω`,190,65,10,'#fbbf24');
+    // Amperímetro
+    ctx.beginPath();ctx.arc(200,160,18,0,Math.PI*2);ctx.fillStyle='#1e293b';ctx.fill();ctx.strokeStyle='#475569';ctx.stroke();
+    txt(ctx,'A',194,165,12,'#94a3b8',true);
+    txt(ctx,`${I.toFixed(2)}A`,186,185,10,'#00cfff');
+    // Elétrons fluindo
+    if(run&&V>0){
+      for(let i=0;i<6;i++){
+        const pos=(t*3+i*60)%400;
+        let ex,ey;
+        if(pos<100){ex=60+pos*2.8;ey=80;}
+        else if(pos<200){ex=340;ey=80+(pos-100)*0.8;}
+        else if(pos<300){ex=340-(pos-200)*2.8;ey=160;}
+        else{ex=60;ey=160-(pos-300)*0.8;}
+        ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);ctx.fillStyle='#60a5fa';ctx.fill();
+        txt(ctx,'e⁻',ex+5,ey-5,8,'#60a5fa');
+      }
+      txt(ctx,`V=${V.toFixed(1)}  I=${I.toFixed(2)}A  R=${R}Ω  → V=IR`,80,210,10,'#fbbf24');
+    }
+    if(status)status.textContent=run?`V=${V.toFixed(1)}V  I=${I.toFixed(2)}A  P=${(V*I).toFixed(1)}W`:'▶ Execute para ligar o circuito';
+
+  } else if(sim==='refracao'){
+    // Raio de luz entrando na água — refração de Snell
+    const ang1=35;const n1=1;const n2=1.33;
+    const ang2=Math.asin(n1*Math.sin(ang1*Math.PI/180)/n2)*180/Math.PI;
+    // Interface
+    ctx.fillStyle='rgba(96,165,250,0.15)';ctx.fillRect(0,h/2,w,h/2);
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=1;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+    txt(ctx,'Ar (n=1.0)',10,h/2-10,10,'#e2e8f0');
+    txt(ctx,'Água (n=1.33)',10,h/2+15,10,'#60a5fa');
+    // Normal (tracejado)
+    ctx.setLineDash([5,5]);ctx.strokeStyle='#475569';
+    ctx.beginPath();ctx.moveTo(200,10);ctx.lineTo(200,h-10);ctx.stroke();
+    ctx.setLineDash([]);
+    // Raio incidente
+    const ix=200-Math.sin(ang1*Math.PI/180)*140;const iy=h/2-Math.cos(ang1*Math.PI/180)*140;
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(ix,iy);ctx.lineTo(200,h/2);ctx.stroke();
+    // Raio refletido
+    const rx=200+Math.sin(ang1*Math.PI/180)*80;const ry=h/2-Math.cos(ang1*Math.PI/180)*80;
+    ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(200,h/2);ctx.lineTo(rx,ry);ctx.stroke();
+    // Raio refratado
+    const rfx=200+Math.sin(ang2*Math.PI/180)*120;const rfy=h/2+Math.cos(ang2*Math.PI/180)*120;
+    ctx.strokeStyle='#00cfff';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(200,h/2);ctx.lineTo(rfx,rfy);ctx.stroke();
+    // Ângulos
+    ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(200,h/2,40,-Math.PI/2,-Math.PI/2+ang1*Math.PI/180);ctx.stroke();
+    ctx.strokeStyle='#00cfff';
+    ctx.beginPath();ctx.arc(200,h/2,40,Math.PI/2,Math.PI/2-ang2*Math.PI/180,true);ctx.stroke();
+    txt(ctx,`θ₁=${ang1}°`,150,h/2-45,10,'#fbbf24');
+    txt(ctx,`θ₂=${ang2.toFixed(1)}°`,215,h/2+55,10,'#00cfff');
+    txt(ctx,`n₁·sin(θ₁) = n₂·sin(θ₂)`,80,210,11,'#94a3b8');
+    if(status)status.textContent=`Lei de Snell: ângulo incidente ${ang1}° → refratado ${ang2.toFixed(1)}°`;
+
+  } else if(sim==='ondas'){
+    // Duas ondas com interferência
+    const f1=run?0.08:0.05;const f2=run?0.12:0.05;const A=35;
+    const phase=t*0.04;
+    // Onda 1
+    ctx.beginPath();ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;
+    for(let x=0;x<w;x++){const y=h/3+A*Math.sin(f1*x-phase);if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    // Onda 2
+    ctx.beginPath();ctx.strokeStyle='#f87171';ctx.lineWidth=2;
+    for(let x=0;x<w;x++){const y=h/3+A*Math.sin(f2*x-phase*0.7);if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    // Interferência (soma)
+    ctx.beginPath();ctx.strokeStyle='#4ade80';ctx.lineWidth=2.5;
+    for(let x=0;x<w;x++){
+      const y=2*h/3+A*Math.sin(f1*x-phase)+A*0.6*Math.sin(f2*x-phase*0.7);
+      if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }ctx.stroke();
+    // Legenda
+    ctx.fillStyle='#60a5fa';ctx.fillRect(10,10,14,3);txt(ctx,'Onda 1',28,14,10,'#60a5fa');
+    ctx.fillStyle='#f87171';ctx.fillRect(10,22,14,3);txt(ctx,'Onda 2',28,26,10,'#f87171');
+    ctx.fillStyle='#4ade80';ctx.fillRect(10,34,14,3);txt(ctx,'Interferência',28,38,10,'#4ade80');
+    if(status)status.textContent=run?'Interferência construtiva e destrutiva ocorrendo':'▶ Execute para ver as ondas';
+
+  } else if(sim==='colisao'){
+    // Colisão entre dois blocos
+    const hit=run?t>50:false;const pos=run?Math.min(50,t):0;const rebote=run&&t>50?t-50:0;
+    const v1i=4;const v2i=-2;
+    const v1f=(v1i+2*1*v2i)/2; // elástica mesma massa aproximada
+    const v2f=v1i;
+    const x1=60+pos*2-(hit?rebote*Math.abs(v1f)*0.4:0);
+    const x2=280-(hit?rebote*v2f*0.5:0);
+    // Chão
+    ctx.fillStyle='#334155';ctx.fillRect(20,165,360,6);
+    // Bloco 1
+    const grd1=ctx.createLinearGradient(x1,100,x1+60,140);
+    grd1.addColorStop(0,'#3b82f6');grd1.addColorStop(1,'#1d4ed8');
+    ctx.fillStyle=grd1;ctx.fillRect(x1,110,60,55);
+    ctx.strokeStyle='#60a5fa';ctx.lineWidth=1;ctx.strokeRect(x1,110,60,55);
+    txt(ctx,'m=2kg',x1+5,145,9,'#e2e8f0');
+    // Bloco 2
+    const grd2=ctx.createLinearGradient(x2,100,x2+60,140);
+    grd2.addColorStop(0,'#ef4444');grd2.addColorStop(1,'#dc2626');
+    ctx.fillStyle=grd2;ctx.fillRect(x2,110,60,55);
+    ctx.strokeStyle='#f87171';ctx.lineWidth=1;ctx.strokeRect(x2,110,60,55);
+    txt(ctx,'m=2kg',x2+5,145,9,'#e2e8f0');
+    // Vetores
+    if(!hit){arrow(ctx,x1+60,132,x1+80,132,'#60a5fa');txt(ctx,'→v₁',x1+82,136,9,'#60a5fa');}
+    if(hit&&rebote>5){arrow(ctx,x1,132,x1-25,132,'#60a5fa');arrow(ctx,x2+60,132,x2+85,132,'#f87171');}
+    txt(ctx,hit?'Colisão elástica — momentum conservado!':'Dois blocos em colisão',70,200,10,'#94a3b8');
+    if(status)status.textContent=hit?'Colisão! Momentum e energia cinética conservados':'▶ Execute para ver a colisão';
+
+  // ── BIOLOGIA ───────────────────────────────────────────────────────────────
+  } else if(sim==='osmose'){
+    // Célula em meios hipotônico, isotônico, hipertônico
+    const membrana=w/2;const fase=run?Math.floor(t/60)%3:0;
+    const nomes=['Hipotônico','Isotônico','Hipertônico'];
+    const descr=['Água entra → célula incha','Equilíbrio → célula normal','Água sai → célula murcha'];
+    const raios=[42,32,22];const raio=raios[fase];
+    ctx.setLineDash([6,4]);ctx.strokeStyle='#334155';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(membrana,15);ctx.lineTo(membrana,h-15);ctx.stroke();
+    ctx.setLineDash([]);
+    // Célula lado esquerdo
+    const grd3=ctx.createRadialGradient(120,h/2,3,120,h/2,raio);
+    grd3.addColorStop(0,'rgba(96,165,250,0.5)');grd3.addColorStop(1,'rgba(30,64,175,0.3)');
+    ctx.beginPath();ctx.arc(120,h/2,raio,0,Math.PI*2);ctx.fillStyle=grd3;ctx.fill();
+    ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;ctx.stroke();
+    // Núcleo
+    ctx.beginPath();ctx.arc(120,h/2,raio*0.3,0,Math.PI*2);ctx.fillStyle='rgba(139,92,246,0.6)';ctx.fill();
+    // Moléculas de água no meio externo
+    const nMol=fase===0?15:fase===1?8:3;
+    for(let i=0;i<nMol;i++){
+      const ax=180+((i*47+t*0.5)%(membrana-200));
+      const ay=30+((i*37+t*0.3)%(h-60));
+      ctx.beginPath();ctx.arc(ax,ay,3,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
+    }
+    // Setas de fluxo
+    if(run){
+      const dir=fase===0?-1:fase===2?1:0;
+      if(dir!==0){
+        for(let i=0;i<3;i++){
+          arrow(ctx,membrana+dir*40,h/2-20+i*20,membrana+dir*15,h/2-20+i*20,'#00cfff');
+        }
+      }
+    }
+    // Descrição
+    const bg=fase===0?'rgba(96,165,250,0.1)':fase===1?'rgba(74,222,128,0.1)':'rgba(239,68,68,0.1)';
+    const cor2=fase===0?'#60a5fa':fase===1?'#4ade80':'#f87171';
+    ctx.fillStyle=bg;ctx.fillRect(10,h-35,w-20,30);
+    txt(ctx,nomes[fase],w/2-30,h-20,12,cor2,true);
+    txt(ctx,descr[fase],w/2-ctx.measureText(descr[fase]).width/2,h-8,10,'#94a3b8');
+    if(status)status.textContent=run?`${nomes[fase]}: ${descr[fase]}`:'▶ Execute para ver os 3 meios';
+
+  } else if(sim==='fotossintese'){
+    // Cloroplasto com luz + CO2 → O2 + glicose
+    const energia=run?Math.min(100,t*0.8):0;
+    // Folha/cloroplasto
+    ctx.beginPath();ctx.ellipse(200,h/2,140,70,0.2,0,Math.PI*2);
+    ctx.fillStyle='rgba(34,197,94,0.3)';ctx.fill();
+    ctx.strokeStyle='#16a34a';ctx.lineWidth=2;ctx.stroke();
+    // Granas (empilhamento de tilacoides)
+    for(let i=0;i<4;i++){
+      ctx.beginPath();ctx.ellipse(120+i*28,h/2,12,20,0,0,Math.PI*2);
+      ctx.fillStyle='rgba(21,128,61,0.7)';ctx.fill();
+      ctx.strokeStyle='#15803d';ctx.lineWidth=1;ctx.stroke();
+    }
+    // Raios de luz
+    if(run){
+      ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+      for(let i=0;i<5;i++){
+        const phase2=Math.sin(t*0.05+i)*5;
+        ctx.globalAlpha=0.6+Math.sin(t*0.1+i)*0.4;
+        ctx.beginPath();ctx.moveTo(50+i*20,10);ctx.lineTo(130+i*12,h/2-30+phase2);ctx.stroke();
+      }
+      ctx.globalAlpha=1;
+    }
+    // CO2 entrando
+    for(let i=0;i<3;i++){
+      const cx=run?320+(i*20)-(t*0.5+i*30)%100:350+i*20;
+      txt(ctx,'CO₂',cx,h/2-10+i*18,10,'#94a3b8');
+    }
+    // O2 saindo
+    if(run&&energia>20){
+      for(let i=0;i<3;i++){
+        const ox=340+((t+i*40)%80);const oy=h/2-20+i*20;
+        txt(ctx,'O₂',ox,oy,10,'#4ade80');
+      }
+    }
+    // Glicose produzida
+    if(energia>10){
+      ctx.fillStyle='rgba(251,191,36,0.2)';ctx.fillRect(150,h/2-15,100,30);
+      txt(ctx,`C₆H₁₂O₆ ${Math.round(energia)}%`,155,h/2+5,10,'#fbbf24');
+    }
+    // Equação
+    txt(ctx,'6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂',50,210,10,'#4ade80');
+    if(status)status.textContent=run?`Fotossíntese: ${energia.toFixed(0)}% de glicose produzida`:'▶ Execute para ver a fotossíntese';
+
+  } else if(sim==='mitose'){
+    // Fases da mitose animadas
+    const fase=run?Math.floor(t/40)%5:0;
+    const fases=['Interfase','Prófase','Metáfase','Anáfase','Telófase'];
+    const cx=200,cy=110,cr=80;
+    // Célula
+    const grd4=ctx.createRadialGradient(cx,cy,5,cx,cy,cr);
+    grd4.addColorStop(0,'rgba(30,58,138,0.4)');grd4.addColorStop(1,'rgba(15,23,42,0.6)');
+    ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2);ctx.fillStyle=grd4;ctx.fill();
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.stroke();
+    // Cromossomos por fase
+    const cores2=['#c084fc','#f472b6','#fb923c','#34d399','#60a5fa'];
+    if(fase===0){ // Interfase — núcleo intacto
+      ctx.beginPath();ctx.arc(cx,cy,35,0,Math.PI*2);ctx.strokeStyle='#7c3aed';ctx.lineWidth=2;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(124,58,237,0.15)';ctx.fill();
+      txt(ctx,'DNA duplicando...',155,cy+5,10,'#c084fc');
+    } else if(fase===1){ // Prófase
+      for(let i=0;i<4;i++){
+        const px=cx-20+i*14,py=cy-15+Math.sin(i)*20;
+        ctx.beginPath();ctx.moveTo(px,py-15);ctx.lineTo(px,py+15);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
+      }
+      txt(ctx,'Cromossomos condensando',130,cy+60,10,'#c084fc');
+    } else if(fase===2){ // Metáfase
+      for(let i=0;i<4;i++){
+        const px=cx-30+i*20;
+        ctx.beginPath();ctx.moveTo(px,cy-18);ctx.lineTo(px,cy+18);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
+        ctx.beginPath();ctx.moveTo(cx-cr+5,cy);ctx.lineTo(px,cy);ctx.strokeStyle='#47474733';ctx.lineWidth=1;ctx.stroke();
+        ctx.beginPath();ctx.moveTo(cx+cr-5,cy);ctx.lineTo(px,cy);ctx.stroke();
+      }
+      ctx.strokeStyle='#334155';ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(cx,cy-cr+10);ctx.lineTo(cx,cy+cr-10);ctx.stroke();ctx.setLineDash([]);
+      txt(ctx,'Placa metafásica',155,cy+65,10,'#fbbf24');
+    } else if(fase===3){ // Anáfase
+      for(let i=0;i<4;i++){
+        const sep=Math.min(30,t%40);
+        const px=cx-10+i*7;
+        ctx.beginPath();ctx.moveTo(px,cy-sep-10);ctx.lineTo(px,cy-sep+10);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
+        ctx.beginPath();ctx.moveTo(px,cy+sep-10);ctx.lineTo(px,cy+sep+10);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.stroke();
+      }
+      txt(ctx,'Cromátides separando!',140,cy+65,10,'#4ade80');
+    } else { // Telófase
+      ctx.beginPath();ctx.arc(cx,cy-30,30,0,Math.PI*2);ctx.strokeStyle='#7c3aed';ctx.lineWidth=2;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.arc(cx,cy+30,30,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle='#3b82f6';ctx.setLineDash([5,5]);ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(cx-cr+5,cy);ctx.lineTo(cx+cr-5,cy);ctx.stroke();ctx.setLineDash([]);
+      txt(ctx,'2 células filhas formadas',130,cy+65,10,'#60a5fa');
+    }
+    // Indicador de fase
+    txt(ctx,fases[fase],cx-ctx.measureText(fases[fase]).width/2,h-12,13,'#e2e8f0',true);
+    fases.forEach((f,i)=>{
+      ctx.fillStyle=i===fase?'#3b82f6':'#1e293b';
+      ctx.beginPath();ctx.arc(40+i*70,h-20,6,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=i===fase?'#60a5fa':'#334155';ctx.lineWidth=1;ctx.stroke();
+    });
+    if(status)status.textContent=run?`Fase atual: ${fases[fase]} (${fase+1}/5)`:'▶ Execute para ver as fases da mitose';
+
+  } else if(sim==='dna'){
+    // Extração de DNA — dupla hélice animada
+    const twist=run?t*0.04:0;
+    for(let i=0;i<20;i++){
+      const y=20+i*9;const x1=200+60*Math.sin(twist+i*0.6);const x2=200-60*Math.sin(twist+i*0.6);
+      // Bases nitrogenadas
+      ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);
+      const par=i%4;ctx.strokeStyle=['#f87171','#60a5fa','#4ade80','#fbbf24'][par];ctx.lineWidth=2;ctx.stroke();
+      ctx.beginPath();ctx.arc(x1,y,4,0,Math.PI*2);ctx.fillStyle='#e2e8f0';ctx.fill();
+      ctx.beginPath();ctx.arc(x2,y,4,0,Math.PI*2);ctx.fill();
+    }
+    // Fita de açúcar-fosfato
+    ctx.strokeStyle='#475569';ctx.lineWidth=3;
+    ctx.beginPath();
+    for(let i=0;i<21;i++){const y=20+i*9;const x=200+60*Math.sin(twist+i*0.6);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    ctx.beginPath();
+    for(let i=0;i<21;i++){const y=20+i*9;const x=200-60*Math.sin(twist+i*0.6);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
+    // Legenda bases
+    ['A-T','T-A','G-C','C-G'].forEach((b,i)=>{
+      ctx.fillStyle=['#f87171','#60a5fa','#4ade80','#fbbf24'][i];
+      ctx.fillRect(10,10+i*18,10,10);txt(ctx,b,24,19+i*18,10,['#f87171','#60a5fa','#4ade80','#fbbf24'][i]);
+    });
+    txt(ctx,'Dupla Hélice do DNA',125,210,11,'#94a3b8');
+    if(status)status.textContent=run?'DNA girando — bases nitrogenadas A-T e G-C':'▶ Execute para ver a dupla hélice';
+
+  } else if(sim==='cadeialimentar'){
+    // Cadeia alimentar com setas e energia
+    const itens=[{n:'☀️',l:'Sol',x:60,y:110},
+      {n:'🌿',l:'Planta',x:160,y:110},
+      {n:'🐛',l:'Herbívoro',x:255,y:90},
+      {n:'🦎',l:'Carnívoro',x:340,y:110},
+    ];
+    const energias=[100,10,1,0.1];
+    itens.forEach((it,i)=>{
+      ctx.font='28px serif';ctx.fillText(it.n,it.x-14,it.y+10);
+      txt(ctx,it.l,it.x-ctx.measureText(it.l).width*0.4,it.y+30,10,'#94a3b8');
+      txt(ctx,`${energias[i]}%`,it.x-8,it.y-15,9,'#fbbf24');
+      if(i<itens.length-1){
+        arrow(ctx,it.x+22,it.y,itens[i+1].x-22,itens[i+1].y,run?'#4ade80':'#334155');
+      }
+    });
+    // Fluxo de energia
+    if(run){
+      const ep=(t*2)%280;
+      ctx.beginPath();ctx.arc(60+ep*0.95,140,5,0,Math.PI*2);
+      ctx.fillStyle='#fbbf24';ctx.fill();
+      txt(ctx,'Energia fluindo →',130,170,10,'#fbbf24');
+    }
+    txt(ctx,'Regra dos 10%: apenas 10% da energia passa de nível',40,200,10,'#94a3b8');
+    if(status)status.textContent=run?'Energia fluindo pela cadeia (regra dos 10%)':'▶ Execute para ver o fluxo de energia';
+
+  } else if(sim==='fermentacao'){
+    // Fermentação alcoólica — leveduras + glicose → CO2 + etanol
+    beaker(ctx,100,40,200,150,'rgba(251,191,36,0.3)','Leveduras + Glicose');
+    // Leveduras (bolinhas)
+    for(let i=0;i<8;i++){
+      const lx=115+i*24,ly=130+Math.sin(t*0.05+i)*10;
+      ctx.beginPath();ctx.arc(lx,ly,8,0,Math.PI*2);
+      ctx.fillStyle='#78350f';ctx.fill();
+      ctx.strokeStyle='#92400e';ctx.lineWidth=1;ctx.stroke();
+      // Broto
+      ctx.beginPath();ctx.arc(lx+7,ly-5,4,0,Math.PI*2);ctx.fill();
+    }
+    // Bolhas CO2 subindo
+    if(run){
+      for(let i=0;i<8;i++){
+        const bx=115+i*24,by=140-(t*1.8+i*28)%130;
+        bubble(ctx,bx,by,4,'#94a3b855');
+        if(by<60)txt(ctx,'CO₂',bx-8,by-8,8,'#94a3b8');
+      }
+      // Etanol acumulando
+      ctx.fillStyle='rgba(167,243,208,0.25)';
+      ctx.fillRect(101,170,198,Math.min(18,t/10));
+      txt(ctx,'Etanol formando',135,185,9,'#34d399');
+    }
+    txt(ctx,'C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂',80,210,10,'#fbbf24');
+    if(status)status.textContent=run?'Leveduras convertendo glicose em etanol + CO₂':'▶ Execute para ver a fermentação';
+
+  } else {
+    // ── GENÉRICO: desenha animação baseada no nome do experimento ──────────
+    const nome=(state.expNome||'').toLowerCase();
+    const t2=t*0.04;
+    if(nome.includes('calor')||nome.includes('temperatura')){
+      // Termômetro + partículas acelerando
+      ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.beginPath();ctx.rect(185,20,30,160);ctx.stroke();
+      ctx.beginPath();ctx.arc(200,185,18,0,Math.PI*2);ctx.fillStyle='#ef444433';ctx.fill();ctx.stroke();
+      const temp=run?Math.min(140,t*0.7):0;
+      ctx.fillStyle='#ef4444';ctx.fillRect(194,165-temp,12,temp);
+      ctx.beginPath();ctx.arc(200,185,14,0,Math.PI*2);ctx.fill();
+      txt(ctx,`${Math.round(temp/140*100)}°C`,210,185,12,'#f87171');
+      // Partículas
+      for(let i=0;i<12;i++){
+        const vel=run?1+temp/30:0.2;
+        const px=60+((i*47+t*vel)%280);const py=50+((i*33+t*vel*0.7)%120);
+        ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fillStyle=`hsl(${10+temp},80%,60%)`;ctx.fill();
+      }
+    } else if(nome.includes('mag')||nome.includes('campo')){
+      // Campo magnético — linhas de força
+      const cx2=200,cy2=h/2;
+      for(let a=0;a<Math.PI*2;a+=Math.PI/6){
+        for(let r2=30;r2<120;r2+=25){
+          const px=cx2+r2*Math.cos(a+t2*0.3);const py=cy2+r2*Math.sin(a+t2*0.3)*0.6;
+          ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);
+          ctx.fillStyle=`hsl(${200+a*30},70%,60%)`;ctx.fill();
+        }
+      }
+      ctx.beginPath();ctx.arc(cx2,cy2,12,0,Math.PI*2);
+      ctx.fillStyle='#f87171';ctx.fill();txt(ctx,'N',cx2-4,cy2+4,11,'#fff',true);
+      ctx.beginPath();ctx.arc(cx2+80,cy2,12,0,Math.PI*2);
+      ctx.fillStyle='#60a5fa';ctx.fill();txt(ctx,'S',cx2+76,cy2+4,11,'#fff',true);
+    } else if(nome.includes('gas')||nome.includes('pressao')||nome.includes('pressão')){
+      // Lei dos gases — partículas em recipiente
+      if(!state.particles||!state.particles.length){
+        state.particles=Array.from({length:20},(_,i)=>({x:80+Math.random()*240,y:30+Math.random()*150,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3}));
+      }
+      ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.strokeRect(70,25,260,160);
+      const speed=run?1+t/100:0.3;
+      state.particles.forEach(p=>{
+        if(run){p.x+=p.vx*speed;p.y+=p.vy*speed;
+          if(p.x<75||p.x>325){p.vx*=-1;}if(p.y<30||p.y>180){p.vy*=-1;}}
+        ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);
+        ctx.fillStyle=`hsl(${200+speed*20},70%,60%)`;ctx.fill();
+      });
+      txt(ctx,run?`P·V=nRT  T=${Math.round(20+t/3)}K`:'Lei dos gases ideais: PV=nRT',80,210,10,'#94a3b8');
+    } else {
+      // Animação genérica elegante — partículas em órbita
+      const n=8;
+      for(let i=0;i<n;i++){
+        const a=t2+i*(Math.PI*2/n);
+        const r2=60+Math.sin(t2*0.7+i)*20;
+        const px=w/2+r2*Math.cos(a);const py=h/2+r2*0.6*Math.sin(a);
+        ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);
+        ctx.fillStyle=`hsl(${190+i*25},80%,60%)`;ctx.fill();
+        if(i>0){
+          const a2=t2+(i-1)*(Math.PI*2/n);
+          const r3=60+Math.sin(t2*0.7+i-1)*20;
+          const px2=w/2+r3*Math.cos(a2);const py2=h/2+r3*0.6*Math.sin(a2);
+          ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px2,py2);
+          ctx.strokeStyle=`hsla(${190+i*25},60%,50%,0.3)`;ctx.lineWidth=1;ctx.stroke();
+        }
+      }
+      ctx.beginPath();ctx.arc(w/2,h/2,10,0,Math.PI*2);
+      ctx.fillStyle='#1e90ff';ctx.fill();
+      txt(ctx,state.expNome||'Simulação',w/2-50,h-15,11,'#94a3b8');
+    }
+    if(status)status.textContent=run?'Simulação em andamento...':'▶ Execute para animar';
   }
 }
 
