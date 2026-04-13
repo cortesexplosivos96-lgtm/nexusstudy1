@@ -1642,8 +1642,8 @@ tr:hover td{background:rgba(30,144,255,.04)}
 // ══ CONFIG ══════════════════════════════════════════
 // 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
 const OPENROUTER_KEY = '';  // chave no servidor Railway
-const AI_MODEL = 'openrouter/free';        // roteador GRATUITO — nunca cobra créditos
-const AI_MODEL_VISION = 'google/gemma-4-27b-it:free'; // visão gratuita do Google (abr/2026)
+const AI_MODEL = 'google/gemma-3-27b-it:free';   // Google Gemma 3 27B — rápido e gratuito
+const AI_MODEL_VISION = 'google/gemma-3-27b-it:free'; // suporta visão + texto, gratuito
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1724,7 +1724,9 @@ async function callGemini(prompt, imageB64, imageMime, maxTok){
   }
   const data = await resp.json();
   if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
-  return data.choices?.[0]?.message?.content || '';
+  const result = data.choices?.[0]?.message?.content || '';
+  if(!result) throw new Error('Resposta vazia da IA. Tente novamente.');
+  return result;
 }
 
 // ── Análise de comida via visão (OpenRouter) ──────────────
@@ -2610,7 +2612,7 @@ function gerarSinonimos(){
   callGemini(`Dê 8 sinônimos formais e elegantes para usar em redação do ENEM para a palavra/expressão: "${word}". Responda SOMENTE JSON sem markdown: {"sinonimos":["palavra1","palavra2",..."]}`)
   .then(txt=>{
     loading.style.display='none';
-    const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const parsed=safeParseJSON(txt);
     el.innerHTML=(parsed.sinonimos||[]).map(s=>`<span class="sino-tag" onclick="copySino('${s.replace(/'/g,"\\'")}')"> ${s}</span>`).join('');
   }).catch(()=>{loading.style.display='none';el.innerHTML='<p style="font-size:12px;color:var(--red)">❌ Erro ao buscar sinônimos</p>';});
 }
@@ -2624,23 +2626,10 @@ function corrigirRedacao(){
   const resEl=document.getElementById('correcao-result');
   resEl.style.display='block';
   resEl.innerHTML='<div class="card2" style="text-align:center;padding:20px"><span class="loading"></span><p style="margin-top:10px;font-size:13px;color:var(--text2)">Analisando nos 5 critérios do ENEM...</p></div>';
-  callGemini(`Você é um corretor oficial do ENEM com anos de experiência. Corrija esta redação com precisão e rigor nos 5 critérios oficiais (cada um vale 0 a 200 pontos, em múltiplos de 40).
-${tema?'Tema: '+tema:''}
-
-CRITÉRIOS:
-1. Domínio da norma culta (ortografia, gramática, pontuação)
-2. Compreensão do tema (desenvolvimento temático)  
-3. Organização textual (coesão, coerência, paragrafação)
-4. Repertório e argumentação (qualidade dos argumentos)
-5. Proposta de intervenção (agente, ação, meio, finalidade, efeito)
-
-Seja preciso: uma redação excelente fica entre 800-960. Mediana fica 500-700. Fraca abaixo de 400.
-
-Responda APENAS este JSON, sem texto antes ou depois:
-{"nota_total":800,"criterios":[{"nome":"Norma culta","nota":160,"comentario":"comentario especifico"},{"nome":"Compreensão do tema","nota":160,"comentario":"comentario especifico"},{"nome":"Organização","nota":160,"comentario":"comentario especifico"},{"nome":"Repertório","nota":160,"comentario":"comentario especifico"},{"nome":"Proposta de intervenção","nota":160,"comentario":"comentario especifico"}],"pontos_positivos":["ponto1","ponto2","ponto3"],"pontos_melhorar":["melhoria1","melhoria2"],"comentario_geral":"avaliação geral objetiva"}
-
-REDAÇÃO A CORRIGIR:
-${texto.slice(0,3000)}`,null,null,1500)
+  callGemini(`Corrija esta redação ENEM nos 5 critérios (0-200 pts cada, múltiplos de 40).${tema?' Tema: '+tema:''}
+Responda SOMENTE JSON puro, sem texto antes/depois:
+{"nota_total":800,"criterios":[{"nome":"Norma culta","nota":160,"comentario":"..."},{"nome":"Tema","nota":160,"comentario":"..."},{"nome":"Organização","nota":160,"comentario":"..."},{"nome":"Repertório","nota":160,"comentario":"..."},{"nome":"Proposta","nota":160,"comentario":"..."}],"pontos_positivos":["...","..."],"pontos_melhorar":["...","..."],"comentario_geral":"..."}
+REDAÇÃO: ${texto.slice(0,2500)}`,null,null,2000)
   .then(txt=>{
     const r=safeParseJSON(txt);
     const nc=r.nota_total>=800?'var(--green)':r.nota_total>=600?'var(--orange)':'var(--red)';
@@ -2750,7 +2739,7 @@ Responda SOMENTE JSON puro, sem markdown:
       const data=await resp.json();
       if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
       const raw=data.choices?.[0]?.message?.content||'';
-      const r=JSON.parse(raw.replace(/```json|```/g,'').trim());
+      const r=safeParseJSON(raw);
       finish(r);
     }catch(e){ fail(e.message); }
   })();
@@ -3117,7 +3106,7 @@ Crie os 7 dias da semana. Distribua os treinos conforme os dias informados, marc
     const data = await resp.json();
     if (data.error) throw new Error(data.error.message);
     const raw = data.choices?.[0]?.message?.content || '';
-    const plano = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    const plano = safeParseJSON(raw);
     S.exPerfil = exRespostas;
     S.exPlano = plano;
     S.exDiaAtual = new Date().getDay(); // 0=dom, usaremos índice da semana
@@ -3367,7 +3356,7 @@ Perfil: objetivo=${perfil.objetivo||''}, local=${perfil.local||'casa'}, limitaç
 Sugira 3 exercícios substitutos que trabalhem os mesmos músculos, adequados ao perfil.
 Responda SOMENTE JSON: {"substitutos":[{"nome":"Nome","series":"3x12","motivo":"Por que é bom substituto","como":"Instrução rápida de execução"}]}`);
 
-    const data = JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const data = safeParseJSON(txt);
     const subs = data.substitutos || [];
 
     // Mostrar opções de substituição
@@ -3599,7 +3588,7 @@ Responda SOMENTE JSON puro sem markdown:
 {"titulo":"${titulo}","autor":"${autor||'desconhecido'}","tipo":"${tipo}","secoes":[{"titulo":"Nome da seção","conteudo":"Texto detalhado aqui..."}],"destaque":"Fato ou citação marcante sobre o livro"}`;
   try{
     const txt=await callGemini(prompt);
-    const livro=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const livro=safeParseJSON(txt);
     renderLivroResultado(livro);
     if(!S.livrosHistorico)S.livrosHistorico=[];
     S.livrosHistorico.unshift({titulo,autor,tipo,data:new Date().toLocaleDateString('pt-BR')});
@@ -3765,7 +3754,7 @@ Responda SOMENTE JSON puro sem markdown:
 
   try{
     const txt=await callGemini(prompt);
-    const exp=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const exp=safeParseJSON(txt);
     renderExperimento(exp,simId);
     // Para experimentos customizados, pede animação à IA
     if(custom){
@@ -4539,7 +4528,7 @@ async function gerarMapaMentalVisual(){
     const txt=await callGemini(`Crie um mapa mental sobre "${tema}" com no máximo 6 ramos.
 Responda SOMENTE JSON puro sem markdown:
 {"tema":"${tema}","ramos":[{"label":"Ramo","cor":"#1e90ff","filhos":["filho1","filho2","filho3"]}]}`);
-    const mm=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    const mm=safeParseJSON(txt);
     renderMapaMentalCanvas(mm);
     toast('Mapa visual gerado! 🎨','success');
   }catch(e){toast('Erro: '+e.message,'error');}
@@ -4634,7 +4623,7 @@ Responda SOMENTE JSON puro sem markdown:
   ],
   "status_texto": "O que mostrar no status durante animação"
 }`);
-    const anim=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    const anim=safeParseJSON(txt);
     return anim;
   }catch(e){return null;}
 }
@@ -5207,7 +5196,7 @@ async function carregarNoticias(){
     const txt=await callGemini(`Você é um jornalista educacional brasileiro. Gere 6 notícias fictícias mas realistas e educativas sobre: ${temaMap[filtro]||temaMap.geral}. As notícias devem ser relevantes para estudantes do ENEM 2025, informativas e baseadas em tendências reais.
 Responda SOMENTE JSON puro:
 {"noticias":[{"titulo":"Título da notícia","resumo":"2-3 frases de resumo informativo","categoria":"Categoria","relevancia":"Por que importa para o ENEM","emoji":"🎓","data":"data fictícia recente"}]}`);
-    const data=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
+    const data=safeParseJSON(txt);
     noticiasSessao=data.noticias||[];
     renderNoticias();
   }catch(e){grid.innerHTML=`<p style="color:var(--red);font-size:13px;padding:20px">❌ ${e.message}</p>`;}
@@ -5402,7 +5391,7 @@ Responda SOMENTE JSON puro:
 }`;
   try{
     const txt=await callGemini(prompt);
-    const r=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const r=safeParseJSON(txt);
     document.getElementById('revisao-loading').style.display='none';
     document.getElementById('revisao-resultado').innerHTML=`
       <div class="card glow-card" style="margin-bottom:14px;border-color:var(--blue3)">
