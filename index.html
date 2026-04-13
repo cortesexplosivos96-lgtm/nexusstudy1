@@ -1641,8 +1641,10 @@ tr:hover td{background:rgba(30,144,255,.04)}
 <script>
 // ══ CONFIG ══════════════════════════════════════════
 // 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
-const OPENROUTER_KEY = '';  // chave no servidor
-const AI_MODEL = 'deepseek/deepseek-r1-0528:free';
+const OPENROUTER_KEY = '';  // ⚠️ COLE SUA CHAVE AQUI → openrouter.ai/keys
+// Exemplo: const OPENROUTER_KEY = 'sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+// Sem a chave, TODAS as funções de IA vão falhar com erro 401.
+const AI_MODEL = 'deepseek/deepseek-r1:free';
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1742,7 +1744,7 @@ Responda SOMENTE JSON puro, sem markdown, sem texto extra:
       'X-Title': 'Nexus Study'
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
+      model: 'meta-llama/llama-3.2-90b-vision-instruct:free',
       messages: [{
         role: 'user',
         content: [
@@ -1753,6 +1755,13 @@ Responda SOMENTE JSON puro, sem markdown, sem texto extra:
       max_tokens: 1500
     })
   });
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => '');
+    if (resp.status === 401) throw new Error('Chave OpenRouter inválida ou expirada.');
+    if (resp.status === 429) throw new Error('Limite de requisições atingido. Aguarde alguns minutos.');
+    if (resp.status === 402) throw new Error('Créditos esgotados. Adicione créditos em openrouter.ai.');
+    throw new Error(`Erro ${resp.status} na API. ${errText.slice(0, 120)}`);
+  }
   const data = await resp.json();
   if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
   const raw = data.choices?.[0]?.message?.content || '';
@@ -5295,8 +5304,8 @@ async function enviarTutor(){
   const sistema=`Você é um tutor especializado em ${materia==='geral'?'todas as matérias do ENEM':materia}. Responda de forma didática, clara e objetiva. Use exemplos práticos. Se for matemática ou ciências, mostre o passo a passo. Use emojis para deixar mais dinâmico. Máximo 300 palavras por resposta. Em português brasileiro.`;
   const msgs=tutorHistorico.slice(-6).map(m=>m);
   try{
-    const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'openrouter/auto',max_tokens:1000,
+    const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${OPENROUTER_KEY}`,'HTTP-Referer':'https://nexusstudy.app','X-Title':'Nexus Study'},
+      body:JSON.stringify({model:AI_MODEL,max_tokens:1000,
         messages:[{role:'user',content:sistema+'\n\nPergunta: '+texto}]})});
     const data=await resp.json();
     const txt=data.choices?.[0]?.message?.content||'Desculpe, não consegui responder. Tente novamente.';
