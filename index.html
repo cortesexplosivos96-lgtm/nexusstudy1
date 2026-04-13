@@ -1491,85 +1491,49 @@ tr:hover td{background:rgba(30,144,255,.04)}
 
 <div id="toast-container"></div>
 <script>
-// ══ CONFIG ══════════════════════════════════════════
-// 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
-const OPENROUTER_KEY = '';  // chave no servidor
-const AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
-// Clarifai — reconhecimento de alimentos via foto
-const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
-const CLARIFAI_USER_ID = '7vrf1j2j67uf';
-const CLARIFAI_APP_ID = 'main';
-const CLARIFAI_MODEL_ID = 'food-item-recognition';
-const CLARIFAI_MODEL_VERSION = '1d5fd481e0cf4826aa72ec3ff049e044';
+// ══ CONFIG — API Anthropic ═══════════════════════════
+const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
 // ══════════════════════════════════════════════════
 
-// ── Função central de chamada à IA ──────────────────
+// ── Função central de chamada à IA (Anthropic) ──────
 async function callGemini(prompt, imageB64, imageMime){
   const content = [];
-  if(imageB64) content.push({type:'image_url',image_url:{url:`data:${imageMime||'image/jpeg'};base64,${imageB64}`}});
-  content.push({type:'text',text:prompt});
-  let resp;
-  try{
-    resp = await fetch('/api/chat',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${OPENROUTER_KEY}`,
-        'HTTP-Referer':'https://nexusstudy.app',
-        'X-Title':'Nexus Study'
-      },
-      body: JSON.stringify({
-        model: AI_MODEL,
-        messages:[{role:'user',content}],
-        max_tokens: 2000
-      })
+  if(imageB64){
+    content.push({
+      type:'image',
+      source:{type:'base64', media_type: imageMime||'image/jpeg', data: imageB64}
     });
-  }catch(e){
-    throw new Error('Sem conexão com a IA. Verifique sua internet ou a chave em OPENROUTER_KEY (openrouter.ai/keys).');
   }
+  content.push({type:'text', text: prompt});
+  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 2000,
+      messages:[{role:'user', content}]
+    })
+  });
   if(!resp.ok){
-    const errText = await resp.text().catch(()=>'');
-    if(resp.status===401) throw new Error('Chave OpenRouter inválida ou expirada. Gere uma nova em openrouter.ai/keys e atualize OPENROUTER_KEY no código.');
-    if(resp.status===429) throw new Error('Limite de requisições atingido. Aguarde alguns minutos ou troque de chave em openrouter.ai/keys.');
-    if(resp.status===402) throw new Error('Créditos esgotados. Adicione créditos em openrouter.ai ou use uma chave diferente.');
-    throw new Error(`Erro ${resp.status} na API. ${errText.slice(0,120)}`);
+    const err = await resp.json().catch(()=>({}));
+    throw new Error(err?.error?.message || `Erro ${resp.status} na IA`);
   }
   const data = await resp.json();
-  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
-  return data.choices?.[0]?.message?.content || '';
+  return data.content?.[0]?.text || '';
 }
 
-// ── Análise de comida via visão (OpenRouter) ──────────────
+// ── Análise de comida via visão (Anthropic) ──────────
 async function analyzeFoodVision(imageB64, imageMime, ingStr, descricao) {
   const extra = [ingStr && `Ingredientes informados: ${ingStr}`, descricao && `Descrição: ${descricao}`].filter(Boolean).join('. ');
   const prompt = `Você é um nutricionista especializado. Analise esta foto de prato de comida${extra ? '. ' + extra : ''}.
 Identifique CADA alimento visível e estime calorias e macronutrientes por porção típica servida.
 Responda SOMENTE JSON puro, sem markdown, sem texto extra:
 {"alimentos":[{"nome":"Arroz branco","quantidade":"150g","kcal":195,"proteina":4.2,"carbo":42.1,"gordura":0.3}],"total_kcal":650,"observacao":"Dica nutricional curta em português"}`;
-
-  const resp = await fetch('/api/chat', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENROUTER_KEY}`,
-      'HTTP-Referer': 'https://nexusstudy.app',
-      'X-Title': 'Nexus Study'
-    },
-    body: JSON.stringify({
-      model: AI_MODEL,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image_url', image_url: { url: `data:${imageMime};base64,${imageB64}` } },
-          { type: 'text', text: prompt }
-        ]
-      }],
-      max_tokens: 1500
-    })
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-  const raw = data.choices?.[0]?.message?.content || '';
+  const raw = await callGemini(prompt, imageB64, imageMime||'image/jpeg');
   return JSON.parse(raw.replace(/```json|```/g, '').trim());
 }
 
@@ -2532,14 +2496,7 @@ function analyzeFood(){
 ${partes}
 Responda SOMENTE JSON puro, sem markdown:
 {"alimentos":[{"nome":"Arroz branco","quantidade":"4 conchas (200g)","kcal":260,"proteina":5,"carbo":56,"gordura":0.6}],"total_kcal":650,"observacao":"Dica nutricional curta em português"}`;
-      const resp=await fetch('/api/chat',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${OPENROUTER_KEY}`,'HTTP-Referer':'https://nexusstudy.app','X-Title':'Nexus Study'},
-        body:JSON.stringify({model:AI_MODEL,messages:[{role:'user',content:prompt}],max_tokens:1000})
-      });
-      const data=await resp.json();
-      if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
-      const raw=data.choices?.[0]?.message?.content||'';
+      const raw = await callGemini(prompt);
       const r=JSON.parse(raw.replace(/```json|```/g,'').trim());
       finish(r);
     }catch(e){ fail(e.message); }
@@ -2899,14 +2856,7 @@ Responda SOMENTE JSON puro, sem markdown:
 Crie os 7 dias da semana. Distribua os treinos conforme os dias informados, marcando os outros como descanso ativo.`;
 
   try {
-    const resp = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENROUTER_KEY}`, 'HTTP-Referer': 'https://nexusstudy.app', 'X-Title': 'Nexus Study' },
-      body: JSON.stringify({ model: AI_MODEL, messages: [{ role: 'user', content: prompt }], max_tokens: 3000 })
-    });
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error.message);
-    const raw = data.choices?.[0]?.message?.content || '';
+    const raw = await callGemini(prompt);
     const plano = JSON.parse(raw.replace(/```json|```/g, '').trim());
     S.exPerfil = exRespostas;
     S.exPlano = plano;
@@ -5118,13 +5068,9 @@ async function enviarTutor(){
   const sistema=`Você é um tutor especializado em ${materia==='geral'?'todas as matérias do ENEM':materia}. Responda de forma didática, clara e objetiva. Use exemplos práticos. Se for matemática ou ciências, mostre o passo a passo. Use emojis para deixar mais dinâmico. Máximo 300 palavras por resposta. Em português brasileiro.`;
   const msgs=tutorHistorico.slice(-6).map(m=>m);
   try{
-    const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'meta-llama/llama-3.3-70b-instruct:free',max_tokens:1000,
-        messages:[{role:'user',content:sistema+'\n\nPergunta: '+texto}]})});
-    const data=await resp.json();
-    const txt=data.choices?.[0]?.message?.content||'Desculpe, não consegui responder. Tente novamente.';
+    const txt = await callGemini(sistema+'\n\nPergunta: '+texto);
     loading.remove();
-    adicionarBolhaTutor('ia',txt);
+    adicionarBolhaTutor('ia', txt||'Desculpe, não consegui responder. Tente novamente.');
     tutorHistorico.push({role:'assistant',content:txt});
     if(tutorHistorico.length>20)tutorHistorico=tutorHistorico.slice(-16);
   }catch(e){loading.remove();adicionarBolhaTutor('ia','❌ Erro: '+e.message);}
