@@ -303,14 +303,13 @@ tr:hover td{background:rgba(30,144,255,.04)}
 
 /* ══════════════ MOBILE NAVBAR (bottom) ══════════════ */
 #mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--bg2);border-top:1px solid var(--border);padding:6px 0 max(6px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch}
-#mobile-nav::-webkit-scrollbar{display:none}
-.mob-nav-inner{display:flex;gap:0;min-width:max-content;padding:0 4px}
+#mobile-nav::-webkit-scrollbar{display:none}.mob-nav-inner{display:flex;gap:0;min-width:max-content;padding:0 4px}
 .mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:10px;cursor:pointer;color:var(--text2);font-size:10px;font-weight:500;min-width:56px;transition:all .2s;white-space:nowrap}
 .mob-nav-item.active{color:var(--blue2);background:rgba(30,144,255,.12)}
 .mob-nav-item .mni{font-size:20px;line-height:1}
-#mob-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;backdrop-filter:blur(4px)}
+#mob-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;backdrop-filter:blur(4px)}
 #mob-menu-overlay.open{display:block}
-#mob-menu-panel{position:fixed;bottom:0;left:0;right:0;z-index:260;background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border2);max-height:75vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(70px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+#mob-menu-panel{position:fixed;bottom:0;left:0;right:0;z-index:410;background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border2);max-height:75vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(70px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
 #mob-menu-panel.open{transform:translateY(0)}
 .mob-menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .mob-menu-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:11px;color:var(--text2);text-align:center;transition:all .2s;line-height:1.2}
@@ -455,6 +454,11 @@ tr:hover td{background:rgba(30,144,255,.04)}
     <div class="nav-item sidebar-bottom" data-page="alarmes"><span class="nav-icon">🔔</span><span class="nav-label">Alarmes</span></div>
   </div>
   <div class="streak-badge" id="sidebar-streak">🔥 0 dias seguidos</div>
+  <div style="width:100%;padding:0 8px;margin-bottom:4px">
+    <div class="nav-item" onclick="promptApiKey('Trocar chave OpenRouter.\n\n')" title="Configurar chave OpenRouter">
+      <span class="nav-icon">🔑</span><span class="nav-label">Chave OpenRouter</span>
+    </div>
+  </div>
   <div id="user-chip" onclick="doLogout()" title="Trocar perfil">
     <div class="uc-av" id="uc-av">?</div>
     <span class="uc-lbl" id="uc-lbl">Sair</span>
@@ -1491,39 +1495,80 @@ tr:hover td{background:rgba(30,144,255,.04)}
 
 <div id="toast-container"></div>
 <script>
-// ══ CONFIG — API Anthropic ═══════════════════════════
-const ANTHROPIC_MODEL = 'claude-sonnet-4-20250514';
+// ══ CONFIG — OpenRouter ═══════════════════════════
+const ANTHROPIC_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 // ══════════════════════════════════════════════════
 
-// ── Função central de chamada à IA (Anthropic) ──────
+function getApiKey(){ return localStorage.getItem('nexus_openrouter_key')||''; }
+function setApiKey(k){ localStorage.setItem('nexus_openrouter_key', k.trim()); }
+
+function promptApiKey(msg){
+  const cur = getApiKey();
+  const k = window.prompt((msg||'')+'Cole sua chave do OpenRouter (começa com sk-or-):\nObtanha GRÁTIS em: https://openrouter.ai/keys', cur||'');
+  if(k && k.trim().startsWith('sk-')){
+    setApiKey(k.trim());
+    toast('Chave salva! ✅','success');
+    return k.trim();
+  } else if(k !== null){
+    toast('Chave inválida. Deve começar com sk-or-','error');
+  }
+  return null;
+}
+
+// ── Função central de chamada à IA (OpenRouter) ──────
 async function callGemini(prompt, imageB64, imageMime){
+  let key = getApiKey();
+  if(!key){
+    key = promptApiKey('Chave OpenRouter não configurada.\n\n');
+    if(!key) throw new Error('Configure sua chave OpenRouter gratuita em openrouter.ai/keys');
+  }
+
+  // Modelos com suporte a imagem
+  const imageModel = 'meta-llama/llama-3.2-11b-vision-instruct:free';
+  const textModel  = 'meta-llama/llama-3.3-70b-instruct:free';
+  const model = imageB64 ? imageModel : textModel;
+
   const content = [];
   if(imageB64){
-    content.push({
-      type:'image',
-      source:{type:'base64', media_type: imageMime||'image/jpeg', data: imageB64}
-    });
+    content.push({type:'image_url', image_url:{url:`data:${imageMime||'image/jpeg'};base64,${imageB64}`}});
   }
   content.push({type:'text', text: prompt});
-  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+
+  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions',{
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
+      'Authorization': `Bearer ${key}`,
+      'HTTP-Referer': 'https://nexusstudy.app',
+      'X-Title': 'Nexus Study'
     },
     body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
+      model,
       max_tokens: 2000,
       messages:[{role:'user', content}]
     })
   });
+
   if(!resp.ok){
     const err = await resp.json().catch(()=>({}));
+    if(resp.status===401){ localStorage.removeItem('nexus_openrouter_key'); }
+    if(resp.status===429) throw new Error('Limite de requisições atingido. Aguarde alguns minutos.');
     throw new Error(err?.error?.message || `Erro ${resp.status} na IA`);
   }
   const data = await resp.json();
-  return data.content?.[0]?.text || '';
+  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// ── Análise de comida via visão (OpenRouter) ──────────
+async function analyzeFoodVision(imageB64, imageMime, ingStr, descricao) {
+  const extra = [ingStr && `Ingredientes informados: ${ingStr}`, descricao && `Descrição: ${descricao}`].filter(Boolean).join('. ');
+  const prompt = `Você é um nutricionista especializado. Analise esta foto de prato de comida${extra ? '. ' + extra : ''}.
+Identifique CADA alimento visível e estime calorias e macronutrientes por porção típica servida.
+Responda SOMENTE JSON puro, sem markdown, sem texto extra:
+{"alimentos":[{"nome":"Arroz branco","quantidade":"150g","kcal":195,"proteina":4.2,"carbo":42.1,"gordura":0.3}],"total_kcal":650,"observacao":"Dica nutricional curta em português"}`;
+  const raw = await callGemini(prompt, imageB64, imageMime||'image/jpeg');
+  return JSON.parse(raw.replace(/```json|```/g, '').trim());
 }
 
 // ── Análise de comida via visão (Anthropic) ──────────
@@ -6311,3 +6356,5 @@ window.navigate = function(page) {
 };
 </script>
 </body></html>
+
+  
