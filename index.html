@@ -1641,10 +1641,9 @@ tr:hover td{background:rgba(30,144,255,.04)}
 <script>
 // ══ CONFIG ══════════════════════════════════════════
 // 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
-const OPENROUTER_KEY = '';  // ⚠️ COLE SUA CHAVE AQUI → openrouter.ai/keys
-// Exemplo: const OPENROUTER_KEY = 'sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-// Sem a chave, TODAS as funções de IA vão falhar com erro 401.
-const AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
+const OPENROUTER_KEY = '';  // chave no servidor Railway
+const AI_MODEL = 'openrouter/auto';
+const AI_MODEL_VISION = 'openrouter/auto'; // roteador automático — escolhe o melhor modelo disponível
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1696,6 +1695,7 @@ async function callGemini(prompt, imageB64, imageMime, maxTok){
   const content = [];
   if(imageB64) content.push({type:'image_url',image_url:{url:`data:${imageMime||'image/jpeg'};base64,${imageB64}`}});
   content.push({type:'text',text:prompt});
+  const modeloUsar = imageB64 ? AI_MODEL_VISION : AI_MODEL;
   let resp;
   try{
     resp = await fetch('/api/chat',{
@@ -1707,19 +1707,19 @@ async function callGemini(prompt, imageB64, imageMime, maxTok){
         'X-Title':'Nexus Study'
       },
       body: JSON.stringify({
-        model: AI_MODEL,
+        model: modeloUsar,
         messages:[{role:'user',content}],
         max_tokens: maxTok||2000
       })
     });
   }catch(e){
-    throw new Error('Sem conexão com a IA. Verifique sua internet ou a chave em OPENROUTER_KEY (openrouter.ai/keys).');
+    throw new Error('Sem conexão com a IA. Verifique sua internet.');
   }
   if(!resp.ok){
     const errText = await resp.text().catch(()=>'');
-    if(resp.status===401) throw new Error('Chave OpenRouter inválida ou expirada. Gere uma nova em openrouter.ai/keys e atualize OPENROUTER_KEY no código.');
-    if(resp.status===429) throw new Error('Limite de requisições atingido. Aguarde alguns minutos ou troque de chave em openrouter.ai/keys.');
-    if(resp.status===402) throw new Error('Créditos esgotados. Adicione créditos em openrouter.ai ou use uma chave diferente.');
+    if(resp.status===401) throw new Error('Chave OpenRouter inválida ou expirada.');
+    if(resp.status===429) throw new Error('Limite de requisições atingido. Aguarde alguns minutos.');
+    if(resp.status===402) throw new Error('Créditos esgotados em openrouter.ai.');
     throw new Error(`Erro ${resp.status} na API. ${errText.slice(0,120)}`);
   }
   const data = await resp.json();
@@ -1744,7 +1744,7 @@ Responda SOMENTE JSON puro, sem markdown, sem texto extra:
       'X-Title': 'Nexus Study'
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-4-maverick:free',
+      model: AI_MODEL_VISION,
       messages: [{
         role: 'user',
         content: [
@@ -1758,8 +1758,8 @@ Responda SOMENTE JSON puro, sem markdown, sem texto extra:
   if (!resp.ok) {
     const errText = await resp.text().catch(() => '');
     if (resp.status === 401) throw new Error('Chave OpenRouter inválida ou expirada.');
-    if (resp.status === 429) throw new Error('Limite de requisições atingido. Aguarde alguns minutos.');
-    if (resp.status === 402) throw new Error('Créditos esgotados. Adicione créditos em openrouter.ai.');
+    if (resp.status === 429) throw new Error('Limite de requisições. Aguarde alguns minutos.');
+    if (resp.status === 402) throw new Error('Créditos esgotados em openrouter.ai.');
     throw new Error(`Erro ${resp.status} na API. ${errText.slice(0, 120)}`);
   }
   const data = await resp.json();
