@@ -1642,7 +1642,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
 // ══ CONFIG ══════════════════════════════════════════
 // 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
 const OPENROUTER_KEY = '';  // chave no servidor
-const AI_MODEL = 'openrouter/auto';
+const AI_MODEL = 'deepseek/deepseek-r1-0528:free';
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1742,7 +1742,7 @@ Responda SOMENTE JSON puro, sem markdown, sem texto extra:
       'X-Title': 'Nexus Study'
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.0-flash-exp:free',
+      model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
       messages: [{
         role: 'user',
         content: [
@@ -2615,11 +2615,23 @@ function corrigirRedacao(){
   const resEl=document.getElementById('correcao-result');
   resEl.style.display='block';
   resEl.innerHTML='<div class="card2" style="text-align:center;padding:20px"><span class="loading"></span><p style="margin-top:10px;font-size:13px;color:var(--text2)">Analisando nos 5 critérios do ENEM...</p></div>';
-  callGemini(`Corrija esta redação ENEM${tema?' (tema: '+tema+')':''} em 5 critérios (0-200 cada).
-JSON PURO sem markdown:
-{"nota_total":800,"criterios":[{"nome":"Norma culta","nota":160,"comentario":"breve"},{"nome":"Tema","nota":160,"comentario":"breve"},{"nome":"Organização","nota":160,"comentario":"breve"},{"nome":"Coesão","nota":160,"comentario":"breve"},{"nome":"Proposta","nota":160,"comentario":"breve"}],"pontos_positivos":["p1","p2"],"pontos_melhorar":["m1","m2"],"comentario_geral":"resumo"}
-REDAÇÃO:
-${texto.slice(0,2000)}`)
+  callGemini(`Você é um corretor oficial do ENEM com anos de experiência. Corrija esta redação com precisão e rigor nos 5 critérios oficiais (cada um vale 0 a 200 pontos, em múltiplos de 40).
+${tema?'Tema: '+tema:''}
+
+CRITÉRIOS:
+1. Domínio da norma culta (ortografia, gramática, pontuação)
+2. Compreensão do tema (desenvolvimento temático)  
+3. Organização textual (coesão, coerência, paragrafação)
+4. Repertório e argumentação (qualidade dos argumentos)
+5. Proposta de intervenção (agente, ação, meio, finalidade, efeito)
+
+Seja preciso: uma redação excelente fica entre 800-960. Mediana fica 500-700. Fraca abaixo de 400.
+
+Responda APENAS este JSON, sem texto antes ou depois:
+{"nota_total":800,"criterios":[{"nome":"Norma culta","nota":160,"comentario":"comentario especifico"},{"nome":"Compreensão do tema","nota":160,"comentario":"comentario especifico"},{"nome":"Organização","nota":160,"comentario":"comentario especifico"},{"nome":"Repertório","nota":160,"comentario":"comentario especifico"},{"nome":"Proposta de intervenção","nota":160,"comentario":"comentario especifico"}],"pontos_positivos":["ponto1","ponto2","ponto3"],"pontos_melhorar":["melhoria1","melhoria2"],"comentario_geral":"avaliação geral objetiva"}
+
+REDAÇÃO A CORRIGIR:
+${texto.slice(0,3000)}`,null,null,1500)
   .then(txt=>{
     const r=safeParseJSON(txt);
     const nc=r.nota_total>=800?'var(--green)':r.nota_total>=600?'var(--orange)':'var(--red)';
@@ -4928,42 +4940,50 @@ function clickDiaCal(dataStr){
       <div><div style="font-weight:700;font-size:14px;color:${e.cor||'#1e90ff'}">${e.nome}</div>
       ${e.obs?`<div style="font-size:12px;color:var(--text2);margin-top:3px">${e.obs}</div>`:''}
       <div style="font-size:13px;font-weight:600;margin-top:6px">${diffTexto}</div></div>
-      ${!e.fixo?`<button onclick="removerEventoCal('${e.id}')" class="btn btn-danger btn-sm" style="font-size:10px">✕</button>`:'<span class="badge badge-red" style="font-size:10px">FIXO</span>'}
+      ${!e.fixo?`<button onclick="removerEventoCal('${e.id}','${e.data}')" class="btn btn-danger btn-sm" style="font-size:10px">✕</button>`:'<span class="badge badge-red" style="font-size:10px">FIXO</span>'}
     </div>
   </div>`).join('');
   const overlay=document.createElement('div');
-  overlay.className='modal-overlay open';overlay.innerHTML=`<div class="modal" style="max-width:400px"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button><h2>${new Date(dataStr+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</h2><div style="margin-top:14px">${info}</div></div>`;
+  overlay.className='modal-overlay open';overlay.innerHTML=`<div class="modal" style="max-width:400px"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button><h2>${new Date(dataStr+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</h2><div style="margin-top:14px">${info}</div></div>`;
   overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
   document.body.appendChild(overlay);
 }
 
-function removerEventoCal(id){
+function removerEventoCal(id,dataStr){
   S.calEventos=S.calEventos.filter(e=>e.id!==id);save();
-  document.querySelectorAll('.modal-overlay').forEach(o=>o.remove());
+  document.querySelectorAll('.modal-overlay:not(#modal-cal-evento):not(#modal-confirm-del):not(#modal-rotina):not(#modal-meta):not(#modal-alarm):not(#modal-ex-dia)').forEach(o=>o.remove());
   renderCalGrade();renderCalProximas();toast('Evento removido','info');
+  // Se ainda há eventos no dia, reabre o popup; senão abre modal para adicionar
+  if(dataStr){
+    setTimeout(()=>{
+      const restantes=(S.calEventos||[]).filter(e=>e.data===dataStr);
+      if(restantes.length) clickDiaCal(dataStr);
+      else { document.getElementById('cal-ev-data').value=dataStr; openModal('modal-cal-evento'); }
+    },150);
+  }
 }
 
 function renderCalProximas(){
   if(!_sReady())return;
   const hoje=new Date();hoje.setHours(0,0,0,0);
-  const proximas=(S.calEventos||[]).filter(e=>new Date(e.data+'T12:00:00')>=hoje).sort((a,b)=>new Date(a.data)-new Date(b.data)).slice(0,8);
+  const proximas=(S.calEventos||[]).filter(e=>new Date(e.data+'T00:00:00')>=hoje).sort((a,b)=>new Date(a.data)-new Date(b.data)).slice(0,8);
   const cd=document.getElementById('cal-countdown');
   const pr=document.getElementById('cal-proximas');
   if(!proximas.length){cd.innerHTML='<p style="font-size:13px;color:var(--text3)">Nenhuma prova futura</p>';pr.innerHTML='';return;}
-  const prox=proximas[0];const diff=Math.ceil((new Date(prox.data+'T12:00:00')-hoje)/(1000*60*60*24));
+  const prox=proximas[0];const diff=Math.round((new Date(prox.data+'T00:00:00')-hoje)/(1000*60*60*24));
   const semanas=Math.floor(diff/7);const dias=diff%7;
   cd.innerHTML=`<div style="text-align:center;padding:10px 0">
     <div style="font-family:var(--font2);font-size:42px;font-weight:800;color:${prox.cor||'var(--blue2)'};">${diff}</div>
     <div style="font-size:13px;color:var(--text2)">dias para</div>
     <div style="font-size:16px;font-weight:700;margin:4px 0">${prox.nome}</div>
-    <div style="font-size:12px;color:var(--text3)">${semanas>0?semanas+'sem '+dias+'d':diff+'d'} · ${new Date(prox.data+'T12:00:00').toLocaleDateString('pt-BR')}</div>
+    <div style="font-size:12px;color:var(--text3)">${semanas>0?semanas+'sem '+dias+'d':diff+'d'} · ${new Date(prox.data+'T00:00:00').toLocaleDateString('pt-BR')}</div>
   </div>`;
   pr.innerHTML=proximas.map(e=>{
     const d=Math.round((new Date(e.data+'T00:00:00')-hoje)/(1000*60*60*24));
     return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
       <div style="width:8px;height:8px;border-radius:50%;background:${e.cor||'#1e90ff'};flex-shrink:0"></div>
       <div style="flex:1"><div style="font-size:13px;font-weight:600">${e.nome}</div>
-      <div style="font-size:11px;color:var(--text3)">${new Date(e.data+'T12:00:00').toLocaleDateString('pt-BR')}</div></div>
+      <div style="font-size:11px;color:var(--text3)">${new Date(e.data+'T00:00:00').toLocaleDateString('pt-BR')}</div></div>
       <span class="badge badge-blue" style="font-size:10px">${d}d</span>
     </div>`;
   }).join('');
@@ -5422,32 +5442,66 @@ function toggleGerTipo(){
 async function gerarProva(){
   const tipo=document.getElementById('ger-tipo').value;
   const area=document.getElementById('ger-area').value;
-  const qtd=document.getElementById('ger-qtd').value;
+  const qtd=parseInt(document.getElementById('ger-qtd').value)||5;
   const dif=document.getElementById('ger-dif').value;
   const tema=document.getElementById('ger-tema').value;
   const vest=document.getElementById('ger-vestibular')?.value||'FUVEST';
   const btn=document.getElementById('btn-gerar-prova');
-  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando prova...';
+  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando...';
   const res=document.getElementById('ger-resultado');
-  res.innerHTML='<div class="empty"><span class="loading"></span><p style="margin-top:10px">Criando sua prova personalizada...</p></div>';
 
-  let contexto='';
-  if(tipo==='tema') contexto=`Crie questões originais sobre: ${tema||area}`;
-  else if(tipo==='enem') contexto=`Crie questões no estilo e padrão do ENEM, com contexto, texto de apoio quando necessário, área: ${area}`;
-  else if(tipo==='vestibular') contexto=`Crie questões no estilo e padrão do vestibular ${vest}, área: ${area}`;
-  else contexto=`Misture questões no estilo ENEM e vestibulares variados (FUVEST, UNICAMP, UERJ), área: ${area}`;
+  let estilo='';
+  if(tipo==='tema') estilo=`sobre: ${tema||area}`;
+  else if(tipo==='enem') estilo=`estilo ENEM, área ${area}`;
+  else if(tipo==='vestibular') estilo=`estilo ${vest}, área ${area}`;
+  else estilo=`estilo ENEM/vestibular misto, área ${area}`;
 
-  const prompt=`Crie ${qtd} questoes multipla escolha. ${contexto}. Dificuldade: ${dif}.
-JSON PURO sem markdown. Use apenas aspas duplas. Sem quebras de linha dentro de strings:
-{"prova":{"titulo":"Titulo da prova","area":"${area}","questoes":[{"numero":1,"enunciado":"enunciado aqui","alternativas":{"A":"alt A","B":"alt B","C":"alt C","D":"alt D","E":"alt E"},"gabarito":"A","explicacao":"explicacao breve","nivel":"medio","fonte":"Elaborada"}]}}`;
+  // Gera questões em lotes de 3 para não estourar tokens
+  const loteSize=3;
+  const lotes=Math.ceil(qtd/loteSize);
+  const todasQuestoes=[];
+  let tituloProva='Prova Gerada';
 
-  try{
-    const txt=await callGemini(prompt,null,null,4000);
-    const data=safeParseJSON(txt);
-    const prova=data.prova;
-    renderProvaGerada(prova);
-    toast(`Prova com ${prova.questoes?.length||0} questões gerada!`,'success');
-  }catch(e){res.innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
+  res.innerHTML=`<div class="card"><div style="text-align:center;padding:20px"><span class="loading"></span><p style="margin-top:10px;color:var(--text2)">Gerando questão 0/${qtd}...</p></div></div>`;
+
+  for(let lote=0;lote<lotes;lote++){
+    const numNeste=Math.min(loteSize,qtd-lote*loteSize);
+    const inicio=lote*loteSize+1;
+    res.querySelector('p').textContent=`Gerando questões ${inicio}-${inicio+numNeste-1} de ${qtd}...`;
+
+    const prompt=`Crie ${numNeste} questão(ões) de múltipla escolha ${estilo}, dificuldade ${dif}, numerando a partir do ${inicio}.
+JSON PURO sem markdown:
+{"titulo":"Nome da prova","questoes":[{"numero":${inicio},"enunciado":"enunciado completo","A":"alternativa A","B":"alternativa B","C":"alternativa C","D":"alternativa D","E":"alternativa E","gabarito":"B","explicacao":"Por que B é correto","nivel":"${dif}","fonte":"Elaborada"}]}`;
+
+    try{
+      const txt=await callGemini(prompt,null,null,1200);
+      const data=safeParseJSON(txt);
+      if(lote===0) tituloProva=data.titulo||'Prova Gerada';
+      const qs=(data.questoes||[]).map(q=>({
+        numero:q.numero||inicio,
+        enunciado:q.enunciado||'',
+        alternativas:{A:q.A||'',B:q.B||'',C:q.C||'',D:q.D||'',E:q.E||''},
+        gabarito:q.gabarito||'A',
+        explicacao:q.explicacao||'',
+        nivel:q.nivel||dif,
+        fonte:q.fonte||'Elaborada'
+      }));
+      todasQuestoes.push(...qs);
+    }catch(e){
+      toast(`Erro no lote ${lote+1}: ${e.message}`,'error');
+    }
+    // Pausa entre lotes para não sobrecarregar
+    if(lote<lotes-1) await new Promise(r=>setTimeout(r,800));
+  }
+
+  if(!todasQuestoes.length){
+    res.innerHTML=`<div class="card"><p style="color:var(--red)">❌ Não foi possível gerar as questões. Tente com menos questões.</p></div>`;
+    btn.disabled=false;btn.innerHTML='📄 Gerar Prova';
+    return;
+  }
+
+  renderProvaGerada({titulo:tituloProva,area,questoes:todasQuestoes});
+  toast(`✅ ${todasQuestoes.length} questões geradas!`,'success');
   btn.disabled=false;btn.innerHTML='📄 Gerar Prova';
 }
 
