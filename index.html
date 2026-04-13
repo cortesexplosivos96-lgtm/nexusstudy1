@@ -1644,7 +1644,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
 const OPENROUTER_KEY = '';  // ⚠️ COLE SUA CHAVE AQUI → openrouter.ai/keys
 // Exemplo: const OPENROUTER_KEY = 'sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 // Sem a chave, TODAS as funções de IA vão falhar com erro 401.
-const AI_MODEL = 'deepseek/deepseek-r1:free';
+const AI_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1744,7 +1744,7 @@ Responda SOMENTE JSON puro, sem markdown, sem texto extra:
       'X-Title': 'Nexus Study'
     },
     body: JSON.stringify({
-      model: 'meta-llama/llama-3.2-90b-vision-instruct:free',
+      model: 'meta-llama/llama-4-maverick:free',
       messages: [{
         role: 'user',
         content: [
