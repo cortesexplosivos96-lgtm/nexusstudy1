@@ -4,71 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 8080;
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 
-// â”€â”€ Chama DeepSeek para texto, OpenRouter para visÃ£o (foto de comida) â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function callAI(body) {
-  return new Promise((resolve, reject) => {
-    const hasImage = (body.messages || []).some(m =>
-      Array.isArray(m.content) && m.content.some(b => b.type === 'image_url')
-    );
-
-    // Se tem imagem â†’ OpenRouter (modelo com visÃ£o)
-    if (hasImage) {
-      body.model = 'meta-llama/llama-3.2-11b-vision-instruct:free';
-      return callOpenRouter(body, resolve, reject);
-    }
-
-    // Texto â†’ DeepSeek (mais preciso e gratuito)
-    body.model = 'deepseek-chat';
-    return callDeepSeek(body, resolve, reject);
-  });
-}
-
-function callDeepSeek(body, resolve, reject) {
-  const json = JSON.stringify(body);
-  const req = https.request({
-    hostname: 'api.deepseek.com',
-    path: '/chat/completions',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-      'Content-Length': Buffer.byteLength(json),
-    },
-  }, (res) => {
-    let data = '';
-    res.on('data', c => data += c);
-    res.on('end', () => resolve({ status: res.statusCode, raw: data }));
-  });
-  req.on('error', reject);
-  req.write(json);
-  req.end();
-}
-
-function callOpenRouter(body, resolve, reject) {
-  const json = JSON.stringify(body);
-  const req = https.request({
-    hostname: 'openrouter.ai',
-    path: '/api/v1/chat/completions',
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-      'HTTP-Referer': 'https://nexusstudy1-production-f223.up.railway.app',
-      'X-Title': 'Nexus Study',
-      'Content-Length': Buffer.byteLength(json),
-    },
-  }, (res) => {
-    let data = '';
-    res.on('data', c => data += c);
-    res.on('end', () => resolve({ status: res.statusCode, raw: data }));
-  });
-  req.on('error', reject);
-  req.write(json);
-  req.end();
-}
+// ── Pega qualquer chave disponível ────────────────────────────────────────────
+const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY || '';
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -80,6 +19,84 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
+// ── Detecta se a requisição tem imagem ───────────────────────────────────────
+function hasImage(body) {
+  return (body.messages || []).some(m =>
+    Array.isArray(m.content) && m.content.some(b => b.type === 'image_url')
+  );
+}
+
+// ── Chama DeepSeek ────────────────────────────────────────────────────────────
+function callDeepSeek(body) {
+  body.model = 'deepseek-chat';
+  const json = JSON.stringify(body);
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'api.deepseek.com',
+      path: '/chat/completions',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DEEPSEEK_KEY}`,
+        'Content-Length': Buffer.byteLength(json),
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => resolve({ status: res.statusCode, raw: data }));
+    });
+    req.on('error', reject);
+    req.write(json);
+    req.end();
+  });
+}
+
+// ── Chama OpenRouter ──────────────────────────────────────────────────────────
+function callOpenRouter(body) {
+  if (!body.model || body.model === '') body.model = 'openrouter/auto';
+  const json = JSON.stringify(body);
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'openrouter.ai',
+      path: '/api/v1/chat/completions',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENROUTER_KEY}`,
+        'HTTP-Referer': 'https://nexusstudy1-production-f223.up.railway.app',
+        'X-Title': 'Nexus Study',
+        'Content-Length': Buffer.byteLength(json),
+      },
+    }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => resolve({ status: res.statusCode, raw: data }));
+    });
+    req.on('error', reject);
+    req.write(json);
+    req.end();
+  });
+}
+
+// ── Escolhe qual IA usar ──────────────────────────────────────────────────────
+async function callAI(body) {
+  const temImagem = hasImage(body);
+
+  // Com imagem → sempre OpenRouter (tem visão)
+  if (temImagem) {
+    body.model = 'meta-llama/llama-3.2-11b-vision-instruct:free';
+    return callOpenRouter(body);
+  }
+
+  // Sem imagem → tenta DeepSeek primeiro, cai no OpenRouter se não tiver chave
+  if (DEEPSEEK_KEY) {
+    return callDeepSeek(body);
+  }
+
+  return callOpenRouter(body);
+}
+
+// ── Servidor ──────────────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -104,6 +121,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Arquivos estáticos
   let filePath = req.url === '/' ? '/index.html' : req.url;
   filePath = path.join(__dirname, filePath);
   const ext = path.extname(filePath);
@@ -115,7 +133,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`âœ… Nexus Study rodando na porta ${PORT}`);
-  console.log(`   IA texto: DeepSeek Chat`);
-  console.log(`   IA visÃ£o: OpenRouter (fotos de comida)`);
+  const modo = DEEPSEEK_KEY ? 'DeepSeek Chat' : 'OpenRouter/auto';
+  console.log(`✅ Nexus Study rodando na porta ${PORT}`);
+  console.log(`   IA ativa: ${modo}`);
 });
