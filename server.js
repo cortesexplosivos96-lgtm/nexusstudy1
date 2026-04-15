@@ -4,31 +4,31 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = process.env.PORT || 8080;
-
-// ── Pega qualquer chave disponível ────────────────────────────────────────────
-const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY || '';
+const DEEPSEEK_KEY  = process.env.DEEPSEEK_API_KEY   || '';
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
+
+// Modelos gratuitos estáveis (sem rate limit 429)
+const MODEL_TEXTO  = 'meta-llama/llama-3.3-70b-instruct:free';
+const MODEL_VISAO  = 'google/gemini-2.0-flash-thinking-exp:free';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
-  '.css': 'text/css',
-  '.js': 'application/javascript',
+  '.css':  'text/css',
+  '.js':   'application/javascript',
   '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.ico': 'image/x-icon',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
+  '.ico':  'image/x-icon',
 };
 
-// ── Detecta se a requisição tem imagem ───────────────────────────────────────
 function hasImage(body) {
   return (body.messages || []).some(m =>
     Array.isArray(m.content) && m.content.some(b => b.type === 'image_url')
   );
 }
 
-// ── Chama DeepSeek ────────────────────────────────────────────────────────────
 function callDeepSeek(body) {
-  body.model = 'deepseek-chat';
+  body = { ...body, model: 'deepseek-chat' };
   const json = JSON.stringify(body);
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -40,20 +40,18 @@ function callDeepSeek(body) {
         'Authorization': `Bearer ${DEEPSEEK_KEY}`,
         'Content-Length': Buffer.byteLength(json),
       },
-    }, (res) => {
+    }, res => {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => resolve({ status: res.statusCode, raw: data }));
     });
     req.on('error', reject);
-    req.write(json);
-    req.end();
+    req.write(json); req.end();
   });
 }
 
-// ── Chama OpenRouter ──────────────────────────────────────────────────────────
-function callOpenRouter(body) {
-  if (!body.model || body.model === '') body.model = 'openrouter/auto';
+function callOpenRouter(body, model) {
+  body = { ...body, model: model || MODEL_TEXTO };
   const json = JSON.stringify(body);
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -67,36 +65,32 @@ function callOpenRouter(body) {
         'X-Title': 'Nexus Study',
         'Content-Length': Buffer.byteLength(json),
       },
-    }, (res) => {
+    }, res => {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => resolve({ status: res.statusCode, raw: data }));
     });
     req.on('error', reject);
-    req.write(json);
-    req.end();
+    req.write(json); req.end();
   });
 }
 
-// ── Escolhe qual IA usar ──────────────────────────────────────────────────────
 async function callAI(body) {
-  const temImagem = hasImage(body);
+  const imagem = hasImage(body);
 
-  // Com imagem → sempre OpenRouter (tem visão)
-  if (temImagem) {
-    body.model = 'meta-llama/llama-3.2-11b-vision-instruct:free';
-    return callOpenRouter(body);
+  // Com imagem → OpenRouter com modelo de visão
+  if (imagem) {
+    if (!OPENROUTER_KEY) throw new Error('Chave OpenRouter não configurada para análise de imagens.');
+    return callOpenRouter(body, MODEL_VISAO);
   }
 
-  // Sem imagem → tenta DeepSeek primeiro, cai no OpenRouter se não tiver chave
-  if (DEEPSEEK_KEY) {
-    return callDeepSeek(body);
-  }
+  // Texto → DeepSeek se tiver chave, senão OpenRouter com llama gratuito
+  if (DEEPSEEK_KEY) return callDeepSeek(body);
+  if (OPENROUTER_KEY) return callOpenRouter(body, MODEL_TEXTO);
 
-  return callOpenRouter(body);
+  throw new Error('Nenhuma chave de IA configurada. Adicione DEEPSEEK_API_KEY ou OPENROUTER_API_KEY no Railway.');
 }
 
-// ── Servidor ──────────────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -121,7 +115,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Arquivos estáticos
+  // Estáticos
   let filePath = req.url === '/' ? '/index.html' : req.url;
   filePath = path.join(__dirname, filePath);
   const ext = path.extname(filePath);
@@ -133,7 +127,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
-  const modo = DEEPSEEK_KEY ? 'DeepSeek Chat' : 'OpenRouter/auto';
-  console.log(`✅ Nexus Study rodando na porta ${PORT}`);
-  console.log(`   IA ativa: ${modo}`);
+  const modo = DEEPSEEK_KEY ? 'DeepSeek Chat' : OPENROUTER_KEY ? `OpenRouter (${MODEL_TEXTO})` : '⚠️ SEM CHAVE';
+  console.log(`✅ Nexus Study — porta ${PORT} — IA: ${modo}`);
 });
