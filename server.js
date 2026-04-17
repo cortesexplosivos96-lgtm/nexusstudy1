@@ -5,7 +5,7 @@ const path  = require('path');
 
 const PORT           = process.env.PORT             || 8080;
 const DEEPSEEK_KEY   = process.env.DEEPSEEK_API_KEY || '';
-const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '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';
 
 // ── Modelos válidos e estáveis (verificados abril 2026) ───────────────────────
 const MODEL_TEXTO = 'meta-llama/llama-3.3-70b-instruct:free';
