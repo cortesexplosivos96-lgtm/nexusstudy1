@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
 /* SIDEBAR */
-#sidebar{position:fixed;left:0;top:0;width:72px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;z-index:200;transition:width .3s cubic-bezier(.4,0,.2,1);overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-ms-overflow-style:none}#sidebar::-webkit-scrollbar{display:none}
+#sidebar{position:fixed;left:0;top:0;width:72px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;z-index:200;transition:width .3s cubic-bezier(.4,0,.2,1)}
 #sidebar:hover{width:224px}
 .logo-wrap{width:100%;padding:8px 16px;margin-bottom:20px;overflow:hidden;white-space:nowrap}
 .logo-icon{font-family:var(--font2);font-size:22px;font-weight:800;color:var(--blue2);letter-spacing:1px}
@@ -45,7 +45,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .nav-label{font-size:13px;opacity:0;transition:opacity .15s}
 #sidebar:hover .nav-label{opacity:1}
 .nav-sep{height:1px;background:var(--border);margin:8px 12px}
-.sidebar-bottom{margin-top:0}
+.sidebar-bottom{margin-top:auto}
 .streak-badge{background:rgba(255,171,64,.15);border:1px solid rgba(255,171,64,.3);border-radius:8px;padding:6px 12px;margin:8px;text-align:center;white-space:nowrap;overflow:hidden;font-size:12px;color:var(--orange);display:none}
 #sidebar:hover .streak-badge{display:block}
 
@@ -298,98 +298,6 @@ tr:hover td{background:rgba(30,144,255,.04)}
 .ex-dia-card:hover{border-color:var(--blue2)}
 .ex-dia-card.hoje{border-color:var(--green);background:rgba(0,230,118,.05)}
 .ex-dia-card.descanso{opacity:.6}
-
-/* ══════════════ MOBILE NAVBAR (bottom) ══════════════ */
-#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--bg2);border-top:1px solid var(--border);padding:6px 0 max(6px,env(safe-area-inset-bottom));overflow-x:auto;-webkit-overflow-scrolling:touch}
-#mobile-nav::-webkit-scrollbar{display:none}
-.mob-nav-inner{display:flex;gap:0;min-width:max-content;padding:0 4px}
-.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:10px;cursor:pointer;color:var(--text2);font-size:10px;font-weight:500;min-width:56px;transition:all .2s;white-space:nowrap}
-.mob-nav-item.active{color:var(--blue2);background:rgba(30,144,255,.12)}
-.mob-nav-item .mni{font-size:20px;line-height:1}
-#mob-menu-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;backdrop-filter:blur(4px)}
-#mob-menu-overlay.open{display:block}
-#mob-menu-panel{position:fixed;bottom:0;left:0;right:0;z-index:260;background:var(--card);border-radius:20px 20px 0 0;border:1px solid var(--border2);max-height:75vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(70px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-#mob-menu-panel.open{transform:translateY(0)}
-.mob-menu-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.mob-menu-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:11px;color:var(--text2);text-align:center;transition:all .2s;line-height:1.2}
-.mob-menu-item:active{transform:scale(.95)}
-.mob-menu-item.active{border-color:var(--blue2);color:var(--blue2);background:rgba(30,144,255,.1)}
-.mob-menu-item span{font-size:22px}
-
-/* ══════════════ RESPONSIVE BREAKPOINTS ══════════════ */
-@media(max-width:768px){
-  #sidebar{display:none!important}
-  #main{margin-left:0!important;padding:16px 14px 80px!important}
-  #mobile-nav{display:block}
-  .page-header{margin-bottom:18px}
-  .page-header h1{font-size:20px!important}
-  .grid2,.grid3,.grid4{grid-template-columns:1fr!important}
-  .grid2[style*="max-width"],.grid3[style*="max-width"],.grid4[style*="max-width"]{max-width:100%!important}
-  /* Pomodoro */
-  .pomo-circle{width:180px;height:180px}
-  .pomo-svg{width:180px;height:180px}
-  .pomo-time .ptime{font-size:32px}
-  /* Flashcard */
-  .fc-card{height:180px}
-  /* Modal */
-  .modal{padding:18px;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-width:100%!important;max-height:90vh;margin:0}
-  .modal-overlay.open{align-items:flex-end;padding:0}
-  /* Toast */
-  #toast-container{top:auto;bottom:90px;right:10px;left:10px}
-  .toast{max-width:100%}
-  /* Tables */
-  .table-wrap{font-size:11px}
-  th,td{padding:7px 9px}
-  /* Agua grid */
-  [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important;display:grid!important}
-  /* Lab canvas */
-  #lab-canvas{height:160px}
-  /* Night cards */
-  .night-card{padding:14px}
-  /* Stat cards */
-  .stat-num{font-size:24px!important}
-  /* Heatmap */
-  .heatmap-cell{width:11px;height:11px}
-  /* Pomo chart */
-  .bar-chart{height:60px}
-  /* Page header flex */
-  .page-header{flex-direction:column;align-items:flex-start!important}
-  /* Exercicios chat */
-  #ex-chat{max-height:260px}
-  /* Notif banner */
-  #notif-banner{flex-direction:column;gap:10px;align-items:flex-start}
-  /* Alarm time */
-  .alarm-time{font-size:18px;min-width:60px}
-  /* Botões lado a lado em mobile */
-  .btn-row-mob{display:flex;flex-wrap:wrap;gap:6px}
-}
-
-@media(max-width:480px){
-  #main{padding:12px 10px 80px!important}
-  .card{padding:14px}
-  .card2{padding:10px}
-  .page-header h1{font-size:18px!important}
-  .fc-card{height:160px}
-  .fc-front,.fc-back{padding:14px;font-size:14px}
-  .pomo-circle{width:160px;height:160px}
-  .pomo-svg{width:160px;height:160px}
-  .pomo-time .ptime{font-size:28px}
-  .mob-menu-grid{grid-template-columns:repeat(3,1fr)}
-  .stat-num{font-size:20px!important}
-  .heatmap-cell{width:9px;height:9px}
-  .modal{padding:14px}
-}
-
-@media(min-width:769px) and (max-width:1024px){
-  #main{padding:20px 22px}
-  .grid3{grid-template-columns:1fr 1fr!important}
-  .grid4{grid-template-columns:repeat(2,1fr)!important}
-}
-
-@media(min-width:1025px){
-  #sidebar:hover~#main{margin-left:224px}
-}
-
 </style>
 </head>
 <body>
@@ -440,15 +348,6 @@ tr:hover td{background:rgba(30,144,255,.04)}
     <div class="nav-item" data-page="redacaoguia"><span class="nav-icon">🖊️</span><span class="nav-label">Guia de Redação</span></div>
     <div class="nav-item" data-page="laboratorio"><span class="nav-icon">🧪</span><span class="nav-label">Laboratório Virtual</span></div>
     <div class="nav-item" data-page="noturno"><span class="nav-icon">🌙</span><span class="nav-label">Revisão Noturna</span></div>
-    <div class="nav-item" data-page="calendario"><span class="nav-icon">📅</span><span class="nav-label">Calendário de Provas</span></div>
-    <div class="nav-item" data-page="estatisticas"><span class="nav-icon">📊</span><span class="nav-label">Estatísticas</span></div>
-    <div class="nav-item" data-page="desafios"><span class="nav-icon">🏆</span><span class="nav-label">Desafios</span></div>
-    <div class="nav-item" data-page="noticias"><span class="nav-icon">📰</span><span class="nav-label">Notícias ENEM</span></div>
-    <div class="nav-item" data-page="tutor"><span class="nav-icon">🤖</span><span class="nav-label">Tutor IA</span></div>
-    <div class="nav-item" data-page="revisao"><span class="nav-icon">🔄</span><span class="nav-label">Revisão Inteligente</span></div>
-    <div class="nav-item" data-page="gerador"><span class="nav-icon">📄</span><span class="nav-label">Gerador de Provas</span></div>
-    <div class="nav-item" data-page="simuladornota"><span class="nav-icon">🎯</span><span class="nav-label">Simulador ENEM</span></div>
-    <div class="nav-item" data-page="scanner"><span class="nav-icon">📸</span><span class="nav-label">Scanner de Questões</span></div>
     <div class="nav-item sidebar-bottom" data-page="alarmes"><span class="nav-icon">🔔</span><span class="nav-label">Alarmes</span></div>
   </div>
   <div class="streak-badge" id="sidebar-streak">🔥 0 dias seguidos</div>
@@ -545,7 +444,6 @@ tr:hover td{background:rgba(30,144,255,.04)}
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-primary" style="flex:1" onclick="salvarDiario()">💾 Salvar entrada</button>
           <button class="btn btn-ghost btn-sm" onclick="resumirSemana()">🤖 Resumo da semana com IA</button>
-          <button class="btn btn-ghost btn-sm" onclick="exportarDiarioPDF()">📥 Exportar PDF</button>
         </div>
         <div id="resumo-ia" style="display:none;margin-top:14px;background:var(--bg3);border-radius:10px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;border:1px solid var(--blue3)"></div>
       </div>
@@ -709,26 +607,38 @@ tr:hover td{background:rgba(30,144,255,.04)}
     <div class="card" style="max-width:800px">
       <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📄 Provas Completas por Ano</h3>
       <p style="font-size:12px;color:var(--text3);margin-bottom:12px">Clique para acessar a prova oficial no site do INEP</p>
-      <div style="background:rgba(30,144,255,.07);border:1px solid rgba(30,144,255,.2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.7">
-        🔍 <strong style="color:var(--blue2)">Links dinâmicos</strong> — ao clicar, busca a prova diretamente no Google com os termos certos. Assim nunca quebra mesmo se o governo mudar o domínio!
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2009_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2009 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2009_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2009 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2010_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2010 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2010_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2010 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2011_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2011 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2011_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2011 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2012_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2012 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2012_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2012 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2013_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2013 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2013_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2013 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2014_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2014 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2014_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2014 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2015_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2015 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2015_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2015 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2016_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2016 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2016_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2016 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2017_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2017 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2017_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2017 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2018_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2018 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2018_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2018 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2019_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2019 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2019_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2019 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2020_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2020 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2020_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2020 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2021_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2021 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2021_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2021 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2022_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2022 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2022_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2022 — Dia 2</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2023_PV_impresso_D1_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2023 — Dia 1</a>
+        <a href="https://download.inep.gov.br/enem/provas_e_gabaritos/2023_PV_impresso_D2_CD1.pdf" target="_blank" class="prova-link">📄 ENEM 2023 — Dia 2</a>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px" id="provas-lista"></div>
-      <script>
-      (function renderProvas(){
-        const anos=[2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
-        const el=document.getElementById('provas-lista');
-        if(!el)return;
-        const html=anos.flatMap(a=>[1,2].map(d=>{
-          const q=encodeURIComponent(`ENEM ${a} prova dia ${d} PDF filetype:pdf`);
-          const google=`https://www.google.com/search?q=${q}`;
-          return `<div style="display:flex;gap:8px">
-            <a href="${google}" target="_blank" class="prova-link" style="flex:1">📄 ENEM ${a} — Dia ${d}</a>
-            <a href="https://www.qconcursos.com/questoes-do-enem" target="_blank" class="prova-link" style="flex:0;white-space:nowrap;font-size:11px">💻 Resolver online</a>
-          </div>`;
-        })).join('');
-        el.innerHTML=html;
-      })();
-      </script>
     </div>
     <div class="card" style="max-width:800px;margin-top:16px">
       <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📈 Histórico de Simulados</h3>
@@ -802,7 +712,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
           <input type="text" id="sino-input" placeholder="Ex: importante, dificuldade..." onkeypress="if(event.key==='Enter')gerarSinonimos()">
           <button class="btn btn-primary btn-sm" onclick="gerarSinonimos()" style="white-space:nowrap">Gerar</button>
         </div>
-        <div id="sino-loading" style="display:none;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span class="loading"></span> Buscando sinônimos...</div>
+        <div id="sino-loading" style="display:none;margin-bottom:10px;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span class="loading"></span> Buscando sinônimos...</div>
         <div id="sino-tags" style="display:flex;flex-wrap:wrap;gap:6px"></div>
         <p style="font-size:11px;color:var(--text3);margin-top:8px">💡 Clique para copiar</p>
       </div>
@@ -815,7 +725,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
       <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📝 Rascunho da Redação</h3>
       <textarea id="redacao-text" rows="14" placeholder="Escreva sua redação aqui..." style="resize:vertical"></textarea>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:var(--text2);flex-wrap:wrap;gap:8px">
-        <span id="redacao-linha-info" style="color:var(--text2);font-size:12px">0 linhas (~0 palavras) · Ideal: 25–30 linhas</span>
+        <span>Palavras: <strong id="word-count" style="color:var(--blue2)">0</strong> · Recomendado: 25–30 linhas</span>
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost btn-sm" onclick="copyRedacao()">📋 Copiar</button>
           <button class="btn btn-primary btn-sm" onclick="corrigirRedacao()">🤖 Corrigir com IA</button>
@@ -1014,8 +924,8 @@ tr:hover td{background:rgba(30,144,255,.04)}
       </div>
       <div class="card" style="border-color:rgba(179,136,255,.3)">
         <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">🤖 Dica de Hoje da IA</h3>
-        <div id="ex-dica-ia" style="font-size:13px;color:var(--text);line-height:1.7"></div>
-        <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="gerarDicaEx()">↻ Nova dica</button>
+        <div id="ex-dica-ia" style="font-size:13px;color:var(--text2);line-height:1.7;min-height:40px">Clique no botão para receber uma dica personalizada 💡</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="gerarDicaEx()">✨ Gerar dica</button>
       </div>
     </div>
   </div>
@@ -1037,8 +947,7 @@ tr:hover td{background:rgba(30,144,255,.04)}
         <div class="form-group"><label>Estilo</label>
           <select id="mm-estilo"><option value="estudo">Estudo / revisão</option><option value="resumo">Resumo rápido</option><option value="enem">ENEM / vestibular</option></select>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="gerarMapaMental()" id="mm-btn">🗺️ Gerar Mapa Mental (texto)</button>
-      <button class="btn btn-ghost" style="width:100%" onclick="gerarMapaMentalVisual()" id="mm-btn-visual">🎨 Gerar Mapa Visual (desenho)</button>
+        <button class="btn btn-primary" style="width:100%" onclick="gerarMapaMental()" id="mm-btn">🗺️ Gerar Mapa Mental</button>
       </div>
       <div class="card">
         <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">📚 Mapas Salvos</h3>
@@ -1196,349 +1105,6 @@ tr:hover td{background:rgba(30,144,255,.04)}
   </div>
 </div>
 
-
-<!-- ══════════════ CALENDÁRIO DE PROVAS ══════════════ -->
-<div class="page" id="page-calendario">
-  <div class="page-header">
-    <div><h1>📅 Calendário de Provas</h1><p>ENEM, vestibulares e provas escolares — nunca perca uma data</p></div>
-    <button class="btn btn-primary" onclick="openModal('modal-cal-evento')">+ Adicionar Prova</button>
-  </div>
-  <!-- Busca de vestibular -->
-  <div class="card" style="margin-bottom:18px">
-    <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🔍 Buscar Vestibular</h3>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <input type="text" id="cal-busca" placeholder="Ex: FUVEST, UNICAMP, UEL, UERJ..." style="flex:1;min-width:200px" oninput="filtrarVestibulares()">
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('cal-busca').value='';filtrarVestibulares()">✕ Limpar</button>
-    </div>
-    <div id="cal-vestibulares-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
-  </div>
-  <!-- Grade do calendário -->
-  <div class="grid2" style="align-items:start">
-    <div>
-      <div class="card" style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <button class="btn btn-ghost btn-sm" onclick="calNavMes(-1)">‹ Anterior</button>
-          <h3 style="font-size:14px;font-weight:700" id="cal-mes-label"></h3>
-          <button class="btn btn-ghost btn-sm" onclick="calNavMes(1)">Próximo ›</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px">
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Dom</div>
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Seg</div>
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Ter</div>
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Qua</div>
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Qui</div>
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Sex</div>
-          <div style="text-align:center;font-size:10px;color:var(--text3);padding:4px">Sáb</div>
-        </div>
-        <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
-      </div>
-    </div>
-    <div>
-      <div class="card" style="margin-bottom:14px;border-color:var(--blue3)">
-        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">⏳ Contagem Regressiva</h3>
-        <div id="cal-countdown"></div>
-      </div>
-      <div class="card">
-        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📋 Próximas Provas</h3>
-        <div id="cal-proximas"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════ ESTATÍSTICAS ══════════════ -->
-<div class="page" id="page-estatisticas">
-  <div class="page-header"><div><h1>📊 Estatísticas Avançadas</h1><p>Visualize seu progresso e evolução detalhada</p></div></div>
-  <div class="grid2" style="margin-bottom:16px">
-    <div class="card">
-      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📈 Flashcards por Semana</h3>
-      <canvas id="chart-cards" height="120"></canvas>
-    </div>
-    <div class="card">
-      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">⏱️ Pomodoros por Semana</h3>
-      <canvas id="chart-pomo" height="120"></canvas>
-    </div>
-  </div>
-  <div class="grid2" style="margin-bottom:16px">
-    <div class="card">
-      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🎯 Acerto por Área do ENEM</h3>
-      <div id="stats-enem-area"></div>
-    </div>
-    <div class="card">
-      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🔥 Streaks e Recordes</h3>
-      <div id="stats-streaks"></div>
-    </div>
-  </div>
-  <div class="card">
-    <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🧠 Análise de Desempenho com IA</h3>
-    <button class="btn btn-primary btn-sm" onclick="gerarAnaliseIA()" id="btn-analise-ia">🤖 Gerar análise personalizada</button>
-    <div id="stats-analise-ia" style="margin-top:14px;display:none;background:var(--bg3);border-radius:10px;padding:14px;font-size:13px;line-height:1.8;border:1px solid var(--blue3)"></div>
-  </div>
-</div>
-
-<!-- ══════════════ DESAFIOS ══════════════ -->
-<div class="page" id="page-desafios">
-  <div class="page-header"><div><h1>🏆 Desafios e Conquistas</h1><p>Complete desafios, ganhe pontos e suba de nível</p></div></div>
-  <div class="grid2" style="margin-bottom:16px">
-    <div class="card glow-card" style="border-color:var(--yellow);text-align:center">
-      <div style="font-size:48px;margin-bottom:6px" id="desafio-nivel-icon">🥉</div>
-      <div style="font-family:var(--font2);font-size:22px;font-weight:800" id="desafio-nivel">Nível 1</div>
-      <div style="font-size:12px;color:var(--text2);margin:6px 0" id="desafio-titulo-nivel">Estudante Iniciante</div>
-      <div class="progress" style="margin:10px 0"><div class="progress-bar" id="desafio-xp-bar" style="width:0%;background:var(--yellow)"></div></div>
-      <div style="font-size:11px;color:var(--text2)"><span id="desafio-xp-atual">0</span> / <span id="desafio-xp-prox">100</span> XP</div>
-    </div>
-    <div class="card">
-      <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">⚡ Desafios de Hoje</h3>
-      <div id="desafios-diarios"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="gerarDesafioIA()">🤖 Gerar desafio personalizado</button>
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:16px">
-    <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🎯 Desafios Semanais</h3>
-    <div id="desafios-semanais"></div>
-  </div>
-  <div class="card">
-    <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🏅 Conquistas Desbloqueadas</h3>
-    <div id="desafios-conquistas" style="display:flex;flex-wrap:wrap;gap:10px"></div>
-  </div>
-</div>
-
-<!-- ══════════════ NOTÍCIAS ENEM ══════════════ -->
-<div class="page" id="page-noticias">
-  <div class="page-header"><div><h1>📰 Notícias e Atualidades</h1><p>Temas quentes para redação e informações dos vestibulares</p></div></div>
-  <div class="grid2" style="margin-bottom:14px">
-    <div class="form-group" style="margin:0"><label>Filtrar por tema</label>
-      <select id="noticias-filtro" onchange="carregarNoticias()">
-        <option value="geral">Todas as notícias</option>
-        <option value="enem">ENEM e vestibulares</option>
-        <option value="redacao">Temas de redação</option>
-        <option value="ciencia">Ciência e tecnologia</option>
-        <option value="social">Questões sociais</option>
-        <option value="politica">Política e economia</option>
-        <option value="ambiental">Meio ambiente</option>
-      </select>
-    </div>
-    <div style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="carregarNoticias()" style="width:100%">🔄 Atualizar com IA</button></div>
-  </div>
-  <div id="noticias-grid" style="display:grid;gap:12px"></div>
-</div>
-
-<!-- ══════════════ TUTOR IA ══════════════ -->
-<div class="page" id="page-tutor">
-  <div class="page-header"><div><h1>🤖 Tutor IA</h1><p>Tire dúvidas sobre qualquer matéria — seu professor particular 24h</p></div></div>
-  <div style="max-width:800px;margin:0 auto">
-    <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-        <span style="font-size:12px;color:var(--text2);align-self:center">Matéria:</span>
-        <select id="tutor-materia" style="width:auto;flex:1;min-width:140px">
-          <option value="geral">Geral</option>
-          <option value="matematica">Matemática</option>
-          <option value="portugues">Português</option>
-          <option value="historia">História</option>
-          <option value="geografia">Geografia</option>
-          <option value="biologia">Biologia</option>
-          <option value="quimica">Química</option>
-          <option value="fisica">Física</option>
-          <option value="ingles">Inglês</option>
-          <option value="redacao">Redação</option>
-        </select>
-        <button class="btn btn-ghost btn-sm" onclick="limparTutor()">🗑 Limpar chat</button>
-      </div>
-      <div id="tutor-chat" style="min-height:300px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px;margin-bottom:12px;border-radius:10px;background:var(--bg3);padding:12px"></div>
-      <div style="display:flex;gap:8px">
-        <textarea id="tutor-input" rows="2" placeholder="Digite sua dúvida... Ex: Explique mitose, Como resolver equação do 2° grau, O que é ironia?" style="flex:1;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviarTutor();}"></textarea>
-        <button class="btn btn-primary" onclick="enviarTutor()" style="align-self:flex-end">Enviar →</button>
-      </div>
-      <p style="font-size:11px;color:var(--text3);margin-top:6px">Enter para enviar · Shift+Enter para nova linha</p>
-    </div>
-    <div class="card">
-      <h3 style="font-size:13px;margin-bottom:10px;color:var(--text2)">💡 Perguntas rápidas</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:6px" id="tutor-sugestoes"></div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CALENDÁRIO -->
-<div class="modal-overlay" id="modal-cal-evento">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('modal-cal-evento')">✕</button>
-    <h2>📅 Adicionar Prova/Evento</h2>
-    <div class="form-group"><label>Nome do evento</label><input type="text" id="cal-ev-nome" placeholder="Ex: Prova de Física, FUVEST 1ª Fase..."></div>
-    <div class="form-group"><label>Data</label><input type="date" id="cal-ev-data"></div>
-    <div class="form-group"><label>Tipo</label>
-      <select id="cal-ev-tipo">
-        <option value="vestibular">🎓 Vestibular</option>
-        <option value="enem">📝 ENEM</option>
-        <option value="escolar">🏫 Prova Escolar</option>
-        <option value="concurso">📋 Concurso</option>
-        <option value="outro">📌 Outro</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Cor</label>
-      <div style="display:flex;gap:8px;margin-top:6px">
-        <div class="cal-cor-opt" data-cor="#1e90ff" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#1e90ff;cursor:pointer;border:3px solid #1e90ff"></div>
-        <div class="cal-cor-opt" data-cor="#00e676" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#00e676;cursor:pointer"></div>
-        <div class="cal-cor-opt" data-cor="#ffab40" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#ffab40;cursor:pointer"></div>
-        <div class="cal-cor-opt" data-cor="#ff5252" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#ff5252;cursor:pointer"></div>
-        <div class="cal-cor-opt" data-cor="#b388ff" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#b388ff;cursor:pointer"></div>
-        <div class="cal-cor-opt" data-cor="#ffd740" onclick="selCor(this)" style="width:28px;height:28px;border-radius:50%;background:#ffd740;cursor:pointer"></div>
-      </div>
-    </div>
-    <div class="form-group"><label>Observação (opcional)</label><textarea id="cal-ev-obs" rows="2" placeholder="Local, horário, o que vai cair..."></textarea></div>
-    <button class="btn btn-primary" style="width:100%" onclick="salvarEventoCal()">💾 Salvar</button>
-  </div>
-</div>
-
-<!-- ══════════════ REVISÃO INTELIGENTE ══════════════ -->
-<div class="page" id="page-revisao">
-  <div class="page-header"><div><h1>🔄 Revisão Inteligente</h1><p>A IA analisa seu histórico e sugere exatamente o que revisar agora</p></div>
-  <button class="btn btn-primary" onclick="gerarPlanoRevisao()">🤖 Analisar e gerar plano</button></div>
-  <div id="revisao-loading" style="display:none;text-align:center;padding:30px"><span class="loading"></span><p style="margin-top:10px;color:var(--text2)">Analisando seu histórico...</p></div>
-  <div id="revisao-resultado"></div>
-</div>
-
-<!-- ══════════════ GERADOR DE PROVAS ══════════════ -->
-<div class="page" id="page-gerador">
-  <div class="page-header"><div><h1>📄 Gerador de Provas</h1><p>Crie provas personalizadas com questões do ENEM, vestibulares ou qualquer tema</p></div></div>
-  <div class="grid2" style="max-width:1000px">
-    <div>
-      <div class="card" style="margin-bottom:14px">
-        <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">⚙️ Configurar Prova</h3>
-        <div class="form-group"><label>Tipo de prova</label>
-          <select id="ger-tipo" onchange="toggleGerTipo()">
-            <option value="tema">📚 Por tema/matéria (IA cria)</option>
-            <option value="enem">📝 Questões que caíram no ENEM</option>
-            <option value="vestibular">🎓 Vestibular específico</option>
-            <option value="misto">🎲 ENEM + Vestibulares misturados</option>
-          </select>
-        </div>
-        <div id="ger-tema-box" class="form-group"><label>Tema ou matéria</label>
-          <input type="text" id="ger-tema" placeholder="Ex: Segunda Guerra Mundial, Funções do 2° grau, Genética...">
-        </div>
-        <div id="ger-vest-box" class="form-group" style="display:none"><label>Vestibular</label>
-          <select id="ger-vestibular">
-            <option value="FUVEST">FUVEST (USP)</option>
-            <option value="UNICAMP">UNICAMP</option>
-            <option value="UNESP">UNESP</option>
-            <option value="UERJ">UERJ</option>
-            <option value="UFMG">UFMG</option>
-            <option value="UFRGS">UFRGS</option>
-            <option value="UEL">UEL</option>
-            <option value="URCA">URCA</option>
-            <option value="UFC">UFC</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Matéria/Área</label>
-          <select id="ger-area">
-            <option value="todas">Todas as áreas</option>
-            <option value="matematica">Matemática</option>
-            <option value="portugues">Português / Linguagens</option>
-            <option value="historia">História</option>
-            <option value="geografia">Geografia</option>
-            <option value="biologia">Biologia</option>
-            <option value="quimica">Química</option>
-            <option value="fisica">Física</option>
-            <option value="ingles">Inglês</option>
-          </select>
-        </div>
-        <div class="grid2">
-          <div class="form-group"><label>Nº de questões</label>
-            <select id="ger-qtd"><option value="5">5 questões</option><option value="10" selected>10 questões</option><option value="15">15 questões</option><option value="20">20 questões</option></select>
-          </div>
-          <div class="form-group"><label>Dificuldade</label>
-            <select id="ger-dif"><option value="facil">Fácil</option><option value="medio" selected>Médio</option><option value="dificil">Difícil</option><option value="misto">Misto</option></select>
-          </div>
-        </div>
-        <button class="btn btn-primary" style="width:100%" onclick="gerarProva()" id="btn-gerar-prova">📄 Gerar Prova</button>
-      </div>
-    </div>
-    <div id="ger-resultado"><div class="empty"><div class="empty-icon">📄</div><p>Configure e clique em Gerar Prova</p></div></div>
-  </div>
-</div>
-
-<!-- ══════════════ SIMULADOR ENEM ══════════════ -->
-<div class="page" id="page-simuladornota">
-  <div class="page-header"><div><h1>🎯 Simulador de Nota ENEM</h1><p>Calcule sua nota estimada com TRI e suas chances nas faculdades</p></div></div>
-  <div class="grid2" style="max-width:1000px">
-    <div>
-      <div class="card" style="margin-bottom:14px">
-        <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📊 Insira seus acertos</h3>
-        <div style="background:rgba(30,144,255,.07);border:1px solid var(--blue3);border-radius:8px;padding:10px;margin-bottom:14px;font-size:12px;color:var(--text2);line-height:1.6">
-          💡 Baseado no seu histórico de simulados, calculamos uma estimativa da nota TRI e probabilidade de aprovação.
-        </div>
-        <div class="form-group"><label>Linguagens e Códigos (45 questões)</label>
-          <input type="number" id="sim-lc" min="0" max="45" placeholder="Quantas acertou?" oninput="calcSimulador()">
-        </div>
-        <div class="form-group"><label>Ciências Humanas (45 questões)</label>
-          <input type="number" id="sim-ch" min="0" max="45" placeholder="Quantas acertou?" oninput="calcSimulador()">
-        </div>
-        <div class="form-group"><label>Ciências da Natureza (45 questões)</label>
-          <input type="number" id="sim-cn" min="0" max="45" placeholder="Quantas acertou?" oninput="calcSimulador()">
-        </div>
-        <div class="form-group"><label>Matemática (45 questões)</label>
-          <input type="number" id="sim-mt" min="0" max="45" placeholder="Quantas acertou?" oninput="calcSimulador()">
-        </div>
-        <div class="form-group"><label>Redação (0–1000)</label>
-          <input type="number" id="sim-red" min="0" max="1000" placeholder="Nota da redação" oninput="calcSimulador()">
-        </div>
-        <div class="sep"></div>
-        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">🎓 Calcular chances</h3>
-        <div class="form-group"><label>Usar nota de</label>
-          <select id="sim-fonte">
-            <option value="simulador">Notas acima (simulador)</option>
-            <option value="historico">Média dos meus simulados</option>
-            <option value="manual">Digitar nota manualmente</option>
-          </select>
-        </div>
-        <div id="sim-manual-box" style="display:none">
-          <div class="form-group"><label>Sua nota média (0–1000)</label>
-            <input type="number" id="sim-nota-manual" min="0" max="1000" placeholder="Ex: 650">
-          </div>
-        </div>
-        <button class="btn btn-primary" style="width:100%" onclick="calcularChances()">🎯 Calcular chances de aprovação</button>
-      </div>
-    </div>
-    <div>
-      <div id="sim-resultado-nota" style="margin-bottom:14px"></div>
-      <div id="sim-resultado-chances"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════ SCANNER DE QUESTÕES ══════════════ -->
-<div class="page" id="page-scanner">
-  <div class="page-header"><div><h1>📸 Scanner de Questões</h1><p>Fotografe qualquer questão — a IA resolve e explica o passo a passo</p></div></div>
-  <div class="grid2" style="max-width:900px">
-    <div>
-      <div class="card" style="margin-bottom:14px">
-        <h3 style="font-size:13px;margin-bottom:12px;color:var(--text2)">📷 Enviar Questão</h3>
-        <div class="cal-upload" onclick="document.getElementById('scanner-file').click()" id="scanner-drop">
-          <div id="scanner-preview" style="display:none"><img id="scanner-img" style="max-width:100%;max-height:250px;border-radius:10px"></div>
-          <div id="scanner-placeholder"><div style="font-size:40px;margin-bottom:8px">📸</div>
-            <p style="font-weight:600;font-size:13px">Clique para enviar foto da questão</p>
-            <p style="font-size:11px;color:var(--text2)">JPG, PNG, WEBP — Qualquer questão, de qualquer matéria</p>
-          </div>
-        </div>
-        <input type="file" id="scanner-file" accept="image/*" capture="environment" style="display:none" onchange="handleScannerFile()">
-        <div class="form-group" style="margin-top:12px"><label>Ou cole/descreva a questão em texto</label>
-          <textarea id="scanner-texto" rows="4" placeholder="Cole o texto da questão aqui..."></textarea>
-        </div>
-        <div class="form-group"><label>Modo de resolução</label>
-          <select id="scanner-modo">
-            <option value="completo">Resolução completa com explicação</option>
-            <option value="passo">Passo a passo detalhado</option>
-            <option value="rapido">Resposta rápida</option>
-            <option value="dica">Só uma dica (não revelar resposta)</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" style="width:100%" onclick="resolverQuestao()" id="btn-scanner">🔍 Resolver com IA</button>
-      </div>
-    </div>
-    <div>
-      <div id="scanner-resultado"><div class="empty"><div class="empty-icon">🔍</div><p>Envie uma foto ou cole o texto da questão</p></div></div>
-    </div>
-  </div>
-</div>
 <!-- MODAL DETALHE DIA EXERCÍCIO -->
 <div class="modal-overlay" id="modal-ex-dia">
   <div class="modal" style="max-width:600px">
@@ -1640,9 +1206,10 @@ tr:hover td{background:rgba(30,144,255,.04)}
 <div id="toast-container"></div>
 <script>
 // ══ CONFIG ══════════════════════════════════════════
-// 👇 Se der "Failed to fetch", gere nova chave em openrouter.ai/keys e cole aqui
-const OPENROUTER_KEY = ''; // não usado — servidor gerencia a chave
-const AI_MODEL = ''; // não usado — servidor decide o modelo
+// Google Gemini API — 1.500 requisições GRÁTIS por dia
+// Gere sua chave em: aistudio.google.com/apikey (gratuito, sem cartão)
+const GEMINI_KEY = 'AIzaSyC7OsJokXY9iCAf4g0jdcza71odXcshNsM';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 // Clarifai — reconhecimento de alimentos via foto
 const CLARIFAI_PAT = 'COLE_SEU_PAT_CLARIFAI_AQUI';
 const CLARIFAI_USER_ID = '7vrf1j2j67uf';
@@ -1652,88 +1219,51 @@ const CLARIFAI_MODEL_VERSION = '1d5fd481e0cf4826aa72ec3ff049e044';
 // ══════════════════════════════════════════════════
 
 // ── Função central de chamada à IA ──────────────────
+let _lastAiCall = 0;
+async function callGemini(prompt, imageB64, imageMime, _tentativa=0){
+  // Rate limiting: espera 4s entre chamadas
+  const espera = Math.max(0, 4000 - (Date.now() - _lastAiCall));
+  if(espera > 0) await new Promise(r => setTimeout(r, espera));
+  _lastAiCall = Date.now();
 
-// ── Parser JSON robusto — lida com truncamentos e caracteres problemáticos ──
-function safeParseJSON(raw) {
-  if(!raw) throw new Error('Resposta vazia da IA');
-  // Remove blocos de markdown
-  let txt = raw.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
-  // Tenta parse direto
-  try { return JSON.parse(txt); } catch(e1) {}
-  // Tenta extrair o primeiro objeto JSON completo
-  const start = txt.indexOf('{');
-  if(start >= 0) {
-    let depth = 0, inStr = false, escape = false;
-    for(let i = start; i < txt.length; i++) {
-      const c = txt[i];
-      if(escape) { escape = false; continue; }
-      if(c === '\\') { escape = true; continue; }
-      if(c === '"') inStr = !inStr;
-      if(!inStr) {
-        if(c === '{') depth++;
-        else if(c === '}') { depth--; if(depth === 0) { try { return JSON.parse(txt.slice(start, i+1)); } catch(e2) {} } }
-      }
-    }
+  const parts = [];
+  if(imageB64) parts.push({inline_data:{mime_type:imageMime||'image/jpeg',data:imageB64}});
+  parts.push({text: prompt});
+
+  let resp;
+  try{
+    resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents:[{parts}],
+        generationConfig:{maxOutputTokens:4000,temperature:0.7}
+      })
+    });
+  }catch(e){
+    throw new Error('Sem conexão com a IA. Verifique sua internet.');
   }
-  // Tenta fechar JSON aberto (truncado)
-  try {
-    let fixed = txt;
-    // Conta delimitadores não fechados
-    let opens = (fixed.match(/{/g)||[]).length - (fixed.match(/}/g)||[]).length;
-    let arrOpens = (fixed.match(/\[/g)||[]).length - (fixed.match(/\]/g)||[]).length;
-    // Remove trailing vírgula
-    fixed = fixed.replace(/,\s*([}\]])\s*$/,'$1').replace(/,\s*$/,'');
-    for(let i = 0; i < arrOpens; i++) fixed += ']';
-    for(let i = 0; i < opens; i++) fixed += '}';
-    return JSON.parse(fixed);
-  } catch(e3) {}
-  throw new Error('A IA retornou um formato inválido. Tente novamente.');
-}
-
-// ── Fila de requisições para evitar rate limit ───────────────────────────────
-let _filaIA = Promise.resolve();
-function enfileirarIA(fn) {
-  _filaIA = _filaIA.then(() => new Promise(r => setTimeout(r, 300))).then(fn);
-  return _filaIA;
-}
-
-// ── Função central de chamada à IA ───────────────────────────────────────────
-async function callGemini(prompt, imageB64, imageMime, maxTok){
-  return enfileirarIA(async () => {
-    const msgContent = [];
-    if(imageB64) msgContent.push({type:'image_url',image_url:{url:`data:${imageMime||'image/jpeg'};base64,${imageB64}`}});
-    msgContent.push({type:'text', text:prompt});
-
-    let resp;
-    try{
-      resp = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [{role:'user', content: msgContent}],
-          max_tokens: maxTok || 2000
-        })
-      });
-    } catch(e) {
-      throw new Error('Sem conexão com o servidor. Verifique se o site está online.');
+  if(!resp.ok){
+    const errData = await resp.json().catch(()=>({}));
+    const msg = errData?.error?.message || '';
+    if(resp.status===429){
+      if(_tentativa < 3){
+        const esperar = (_tentativa+1) * 20000;
+        await new Promise(r=>setTimeout(r, esperar));
+        return callGemini(prompt, imageB64, imageMime, _tentativa+1);
+      }
+      throw new Error('Limite atingido. Aguarde 1 minuto e tente novamente.');
     }
-
-    let data;
-    try { data = await resp.json(); } catch(e) { throw new Error('Resposta inválida do servidor.'); }
-
-    if(data.error) {
-      const msg = data.error.message || JSON.stringify(data.error);
-      if(resp.status === 429) throw new Error('Muitas requisições simultâneas. Aguarde alguns segundos.');
-      if(resp.status === 401) throw new Error('Chave de IA inválida. Verifique as variáveis no Railway.');
-      if(resp.status === 402) throw new Error('Créditos esgotados na API.');
-      throw new Error(msg);
-    }
-
-    return data.choices?.[0]?.message?.content || '';
-  });
+    if(resp.status===400 && msg.includes('API_KEY')) throw new Error('Chave Gemini inválida. Gere uma nova em aistudio.google.com/apikey.');
+    if(resp.status===403) throw new Error('Chave Gemini sem permissão. Verifique em aistudio.google.com/apikey.');
+    throw new Error(`Erro ${resp.status}: ${msg.slice(0,120)}`);
+  }
+  const data = await resp.json();
+  return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-// ── Análise de comida via visão (OpenRouter) ──────────────
+// ── Análise de comida via visão (OpenRouter — gratuito) ──────────────
+const OPENROUTER_KEY = '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';
 async function analyzeFoodVision(imageB64, imageMime, ingStr, descricao) {
   const extra = [ingStr && `Ingredientes informados: ${ingStr}`, descricao && `Descrição: ${descricao}`].filter(Boolean).join('. ');
   const prompt = `Você é um nutricionista especializado. Analise esta foto de prato de comida${extra ? '. ' + extra : ''}.
@@ -1741,25 +1271,28 @@ Identifique CADA alimento visível e estime calorias e macronutrientes por porç
 Responda SOMENTE JSON puro, sem markdown, sem texto extra:
 {"alimentos":[{"nome":"Arroz branco","quantidade":"150g","kcal":195,"proteina":4.2,"carbo":42.1,"gordura":0.3}],"total_kcal":650,"observacao":"Dica nutricional curta em português"}`;
 
-  const resp = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const content = [];
+  if(imageB64) content.push({type:'image_url',image_url:{url:`data:${imageMime||'image/jpeg'};base64,${imageB64}`}});
+  content.push({type:'text',text:prompt});
+
+  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${OPENROUTER_KEY}`,
+      'HTTP-Referer':'https://nexusstudy.app',
+      'X-Title':'Nexus Study'
+    },
     body: JSON.stringify({
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image_url', image_url: { url: `data:${imageMime};base64,${imageB64}` } },
-          { type: 'text', text: prompt }
-        ]
-      }],
-      max_tokens: 1500
+      model:'qwen/qwen2.5-vl-7b-instruct:free',
+      messages:[{role:'user',content}],
+      max_tokens:1000
     })
   });
-  let data;
-  try { data = await resp.json(); } catch(e) { throw new Error('Resposta inválida do servidor.'); }
-  if (data.error) throw new Error(data.error.message || 'Erro na análise da imagem.');
-  const raw = data.choices?.[0]?.message?.content || '';
-  return safeParseJSON(raw);
+  const data = await resp.json();
+  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
+  const raw = data.choices?.[0]?.message?.content||'';
+  return JSON.parse(raw.replace(/```json|```/g,'').trim());
 }
 
 // Tabela nutricional estimada (kcal/100g) para alimentos comuns
@@ -1820,7 +1353,6 @@ function applyDef(d){
   s('temasSalvos',[]);s('enemHistory',[]);s('correcoes',[]);
   s('exPerfil',null);s('exPlano',null);s('exLog',{});s('exDiaAtual',0);
   s('mmSalvos',[]);s('livrosHistorico',[]);s('streak',0);s('lastStudyDate','');
-  s('calEventos',[]);s('desafios',null);
   return d;
 }
 function getProfiles(){return JSON.parse(localStorage.getItem('nx_profiles')||'[]');}
@@ -1989,11 +1521,7 @@ function navigate(page){
     flashcards:loadFcDeckSelect,alarmes:renderAlarms,enem:renderEnemHistory,
     redacao:renderTemasSalvos,calorias:()=>{renderCalLog();initAgua();},noturno:renderNoturno,
     exercicios:initExercicios,mapamental:initMapaMental,livros:initLivros,
-    redacaoguia:()=>{},laboratorio:initLaboratorio,
-    calendario:initCalendario,estatisticas:initEstatisticas,
-    desafios:initDesafios,noticias:()=>{if(!noticiasSessao.length)carregarNoticias();else renderNoticias();},
-    tutor:initTutor,
-    revisao:()=>{},gerador:toggleGerTipo,simuladornota:()=>{},scanner:()=>{}};
+    redacaoguia:()=>{},laboratorio:initLaboratorio};
   if(fns[page])fns[page]();
 }
 document.querySelectorAll('.nav-item').forEach(n=>{n.addEventListener('click',()=>navigate(n.dataset.page));});
@@ -2617,31 +2145,36 @@ function corrigirRedacao(){
   const tema=document.getElementById('tema-text')?.textContent||'';
   const resEl=document.getElementById('correcao-result');
   resEl.style.display='block';
-  resEl.innerHTML='<div class="card2" style="text-align:center;padding:20px"><span class="loading"></span><p style="margin-top:10px;font-size:13px;color:var(--text2)">Analisando nos 5 critérios do ENEM...</p></div>';
-  callGemini(`Você é um corretor oficial do ENEM com anos de experiência. Corrija esta redação com precisão e rigor nos 5 critérios oficiais (cada um vale 0 a 200 pontos, em múltiplos de 40).
-${tema?'Tema: '+tema:''}
+  resEl.innerHTML='<div class="card2" style="text-align:center;padding:20px"><span class="loading"></span><p style="margin-top:10px;font-size:13px;color:var(--text2)">Analisando nos 5 critérios do ENEM... (pode levar até 30s)</p></div>';
 
-CRITÉRIOS:
-1. Domínio da norma culta (ortografia, gramática, pontuação)
-2. Compreensão do tema (desenvolvimento temático)  
-3. Organização textual (coesão, coerência, paragrafação)
-4. Repertório e argumentação (qualidade dos argumentos)
-5. Proposta de intervenção (agente, ação, meio, finalidade, efeito)
+  // Timeout de 60 segundos
+  const timeoutId = setTimeout(()=>{
+    resEl.innerHTML='<div class="card"><p style="color:var(--red);font-size:13px">❌ Tempo esgotado. Tente novamente.</p></div>';
+  }, 60000);
 
-Seja preciso: uma redação excelente fica entre 800-960. Mediana fica 500-700. Fraca abaixo de 400.
-
-Responda APENAS este JSON, sem texto antes ou depois:
-{"nota_total":800,"criterios":[{"nome":"Norma culta","nota":160,"comentario":"comentario especifico"},{"nome":"Compreensão do tema","nota":160,"comentario":"comentario especifico"},{"nome":"Organização","nota":160,"comentario":"comentario especifico"},{"nome":"Repertório","nota":160,"comentario":"comentario especifico"},{"nome":"Proposta de intervenção","nota":160,"comentario":"comentario especifico"}],"pontos_positivos":["ponto1","ponto2","ponto3"],"pontos_melhorar":["melhoria1","melhoria2"],"comentario_geral":"avaliação geral objetiva"}
-
-REDAÇÃO A CORRIGIR:
-${texto.slice(0,3000)}`,null,null,1500)
+  callGemini(`Corrija esta redação do ENEM${tema?' sobre "'+tema+'"':''} nos 5 critérios (0-200 cada). Responda SOMENTE JSON:\n{"nota_total":750,"criterios":[{"nome":"Domínio da norma culta","nota":150,"comentario":"comentário"},{"nome":"Compreensão do tema","nota":150,"comentario":"comentário"},{"nome":"Organização das informações","nota":150,"comentario":"comentário"},{"nome":"Mecanismos linguísticos","nota":150,"comentario":"comentário"},{"nome":"Proposta de intervenção","nota":150,"comentario":"comentário"}],"pontos_positivos":["ponto1"],"pontos_melhorar":["ponto1"],"comentario_geral":"comentário geral"}\n\nRedação:\n${texto.slice(0,3000)}`)
   .then(txt=>{
-    const r=safeParseJSON(txt);
+    clearTimeout(timeoutId);
+    const r=JSON.parse(txt.replace(/```json|```/g,'').trim());
     const nc=r.nota_total>=800?'var(--green)':r.nota_total>=600?'var(--orange)':'var(--red)';
-    resEl.innerHTML=`<div class="card" style="border-color:var(--blue3)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;color:var(--text2)">🤖 Correção IA</h3><div style="text-align:right"><div style="font-family:var(--font2);font-size:34px;font-weight:800;color:${nc}">${r.nota_total}</div><div style="font-size:11px;color:var(--text2)">de 1000</div></div></div>${r.criterios.map(c=>{const p=(c.nota/200)*100,cor=c.nota>=160?'var(--green)':c.nota>=120?'var(--orange)':'var(--red)';return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${c.nome}</span><span style="font-weight:600;color:${cor}">${c.nota}/200</span></div><div class="progress"><div class="progress-bar" style="width:${p}%;background:${cor}"></div></div><p style="font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5">${c.comentario}</p></div>`;}).join('')}<div class="grid2" style="margin:12px 0"><div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:10px"><p style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:5px">✅ Positivos</p>${r.pontos_positivos.map(p=>`<p style="font-size:11px;color:var(--text2);margin-bottom:3px;line-height:1.4">• ${p}</p>`).join('')}</div><div style="background:rgba(255,171,64,.06);border:1px solid rgba(255,171,64,.2);border-radius:8px;padding:10px"><p style="font-size:11px;font-weight:600;color:var(--orange);margin-bottom:5px">⚠️ Melhorar</p>${r.pontos_melhorar.map(p=>`<p style="font-size:11px;color:var(--text2);margin-bottom:3px;line-height:1.4">• ${p}</p>`).join('')}</div></div><p style="font-size:12px;color:var(--text2);background:var(--bg3);border-radius:8px;padding:10px;line-height:1.6">${r.comentario_geral}</p></div>`;
+    resEl.innerHTML=`<div class="card" style="border-color:var(--blue3)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <h3 style="font-size:14px;color:var(--text2)">🤖 Correção IA</h3>
+        <div style="text-align:right"><div style="font-family:var(--font2);font-size:34px;font-weight:800;color:${nc}">${r.nota_total}</div><div style="font-size:11px;color:var(--text2)">de 1000</div></div>
+      </div>
+      ${r.criterios.map(c=>{const p=(c.nota/200)*100,cor=c.nota>=160?'var(--green)':c.nota>=120?'var(--orange)':'var(--red)';return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${c.nome}</span><span style="font-weight:600;color:${cor}">${c.nota}/200</span></div><div class="progress"><div class="progress-bar" style="width:${p}%;background:${cor}"></div></div><p style="font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5">${c.comentario}</p></div>`;}).join('')}
+      <div class="grid2" style="margin:12px 0">
+        <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:10px"><p style="font-size:11px;font-weight:600;color:var(--green);margin-bottom:5px">✅ Positivos</p>${(r.pontos_positivos||[]).map(p=>`<p style="font-size:11px;color:var(--text2);margin-bottom:3px;line-height:1.4">• ${p}</p>`).join('')}</div>
+        <div style="background:rgba(255,171,64,.06);border:1px solid rgba(255,171,64,.2);border-radius:8px;padding:10px"><p style="font-size:11px;font-weight:600;color:var(--orange);margin-bottom:5px">⚠️ Melhorar</p>${(r.pontos_melhorar||[]).map(p=>`<p style="font-size:11px;color:var(--text2);margin-bottom:3px;line-height:1.4">• ${p}</p>`).join('')}</div>
+      </div>
+      <p style="font-size:12px;color:var(--text2);background:var(--bg3);border-radius:8px;padding:10px;line-height:1.6">${r.comentario_geral}</p>
+    </div>`;
     S.correcoes.unshift({date:new Date().toLocaleDateString('pt-BR'),nota:r.nota_total,tema:tema.slice(0,40)||'Sem tema'});
     S.correcoes=S.correcoes.slice(0,10);save();renderHistoricoCorrecoes();
-  }).catch(e=>{resEl.innerHTML=`<div class="card"><p style="color:var(--red);font-size:13px">❌ ${e.message}</p></div>`;});
+  }).catch(e=>{
+    clearTimeout(timeoutId);
+    resEl.innerHTML=`<div class="card"><p style="color:var(--red);font-size:13px">❌ ${e.message}</p><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="corrigirRedacao()">🔄 Tentar novamente</button></div>`;
+  });
 }
 function renderHistoricoCorrecoes(){
   if(!_sReady())return;
@@ -2736,14 +2269,7 @@ function analyzeFood(){
 ${partes}
 Responda SOMENTE JSON puro, sem markdown:
 {"alimentos":[{"nome":"Arroz branco","quantidade":"4 conchas (200g)","kcal":260,"proteina":5,"carbo":56,"gordura":0.6}],"total_kcal":650,"observacao":"Dica nutricional curta em português"}`;
-      const resp=await fetch('/api/chat',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({messages:[{role:'user',content:prompt}],max_tokens:1000})
-      });
-      const data=await resp.json();
-      if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
-      const raw=data.choices?.[0]?.message?.content||'';
+      const raw=await callGemini(prompt);
       const r=JSON.parse(raw.replace(/```json|```/g,'').trim());
       finish(r);
     }catch(e){ fail(e.message); }
@@ -2816,22 +2342,11 @@ function initAgua(){
 }
 
 // ══════════════ REVISÃO NOTURNA ══════════════
-async function renderNoturno(){
+const DICAS_NOTURNAS=["Revisar o que aprendeu antes de dormir consolida a memória 3x mais rápido 🧠","Dormir pelo menos 7h após estudar é essencial para fixar o conteúdo 💤","Evite telas 30min antes de dormir — use esse tempo para flashcards 📱","A repetição espaçada é mais eficiente do que estudar tudo de uma vez 🔄","Anote 3 coisas que você aprendeu hoje — isso ativa a memória de longo prazo ✍️","Água e sono são tão importantes quanto horas de estudo 💧🌙"];
+function renderNoturno(){
   if(!_sReady())return;
-  const el=document.getElementById('dica-noturna');
-  if(!el)return;
-  el.innerHTML='<span class="loading"></span> Gerando dica personalizada...';
-  const temas=['memória e retenção','sono e consolidação','técnicas de revisão noturna','alimentação e foco','motivação e consistência','organização do estudo','saúde mental do estudante','produtividade','técnica Feynman','espaçamento e repetição','mindset de crescimento','gerenciamento de tempo'];
-  const tema=temas[Math.floor(Math.random()*temas.length)];
-  const hora=new Date().getHours();
-  const periodo=hora<12?'manhã':hora<18?'tarde':'noite';
-  try{
-    const dica=await callGemini(`Você é um especialista em neurociência da aprendizagem. Dê UMA dica prática, surpreendente e pouco conhecida sobre "${tema}" para um estudante que está estudando agora à ${periodo}. A dica deve ser específica, acionável e diferente das dicas comuns. Inclua um emoji no início. Máximo 2 frases. Em português.`);
-    el.textContent=dica;
-  }catch(e){
-    const fallback=['🧠 Ensine o conteúdo para alguém (ou para o espelho) — quem ensina aprende o dobro.','💡 Escreva 3 perguntas sobre o que estudou hoje — amanhã tente respondê-las sem consultar.','🎯 Associe cada conceito novo a algo que já conhece — seu cérebro adora conexões.','⚡ Estude por 25min e descanse 5min — ritmo ultradian é o segredo da elite acadêmica.','🌊 Após estudar, faça uma caminhada de 10min — o movimento consolida memórias.'];
-    el.textContent=fallback[Math.floor(Math.random()*fallback.length)];
-  }
+  const dica=DICAS_NOTURNAS[new Date().getDay()%DICAS_NOTURNAS.length];
+  document.getElementById('dica-noturna').textContent=dica;
 }
 function iniciarRevisaoNoturna(tipo){
   if(tipo==='flashcards'){navigate('flashcards');toast('Modo revisão noturna — 10 cards rápidos! 🌙','info');}
@@ -2859,102 +2374,26 @@ function saveAlarm(){
   const days=[...document.querySelectorAll('#modal-alarm input[type=checkbox]:checked')].map(x=>parseInt(x.value));
   S.alarms.push({time,title,days,active:true});save();closeModal('modal-alarm');renderAlarms();toast('Alarme criado! ⏰','success');
 }
-// ── Sistema de alarme melhorado ──────────────────────────────────
-let _lastAlarmFired = {};
-
-function playAlarmSound() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const playBeep = (freq, start, duration) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0, ctx.currentTime + start);
-      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + start + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
-      osc.start(ctx.currentTime + start);
-      osc.stop(ctx.currentTime + start + duration);
-    };
-    // 3 bipes melodicos
-    playBeep(880, 0, 0.3);
-    playBeep(1100, 0.4, 0.3);
-    playBeep(880, 0.8, 0.3);
-    playBeep(1320, 1.2, 0.5);
-  } catch(e) { console.warn('Som não disponível:', e); }
-}
-
-function sendBrowserNotif(title, body) {
-  if (Notification.permission === 'granted') {
-    try {
-      const n = new Notification(title, {
-        body,
-        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%230a0f1e"/><polygon points="300,60 180,280 256,280 212,452 340,220 260,220 300,60" fill="%2300cfff"/></svg>',
-        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%230a0f1e"/><polygon points="300,60 180,280 256,280 212,452 340,220 260,220 300,60" fill="%2300cfff"/></svg>',
-        vibrate: [200, 100, 200, 100, 200],
-        requireInteraction: true,
-        tag: 'nexus-alarm'
-      });
-      n.onclick = () => { window.focus(); n.close(); };
-    } catch(e) { console.warn('Notificação falhou:', e); }
-  }
-}
-
-function checkAlarms() {
-  if (!_sReady()) return;
-  const now = new Date();
-  const cur = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const day = now.getDay();
-  const key = cur + '_' + now.toDateString();
-  
-  S.alarms
-    .filter(a => a.active && a.time === cur && (!a.days || !a.days.length || a.days.includes(day)))
-    .forEach(a => {
-      const alarmKey = a.time + '_' + a.title + '_' + now.toDateString();
-      if (_lastAlarmFired[alarmKey]) return; // evita disparo duplo
-      _lastAlarmFired[alarmKey] = true;
-      playAlarmSound();
-      sendBrowserNotif('⏰ ' + a.title, 'Nexus Study — Hora do alarme!');
-      toast(`⏰ ${a.title}`, 'success');
-    });
-}
-setInterval(checkAlarms, 15000); // checa a cada 15s para maior precisão
-
-// ── Solicitar permissão de notificação imediatamente ──────────────
-function requestNotif() {
-  if (!('Notification' in window)) { toast('Notificações não suportadas neste navegador', 'error'); return; }
-  Notification.requestPermission().then(p => {
-    const status = document.getElementById('notif-status');
-    const btn = document.getElementById('notif-btn');
-    if (p === 'granted') {
-      if (status) status.textContent = '✅ Notificações ativas!';
-      if (btn) { btn.textContent = '✅ Ativo'; btn.disabled = true; }
-      toast('Notificações ativadas! Os alarmes vão funcionar. ✅', 'success');
-      // Teste imediato
-      setTimeout(() => sendBrowserNotif('✅ Nexus Study', 'Notificações funcionando! Seus alarmes estão ativos.'), 500);
-    } else if (p === 'denied') {
-      toast('Permissão negada. Ative nas configurações do navegador.', 'error');
-    }
+function checkAlarms(){
+  const now=new Date();
+  const cur=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const day=now.getDay();
+  S.alarms.filter(a=>a.active&&a.time===cur&&(!a.days.length||a.days.includes(day))).forEach(a=>{
+    sendBrowserNotif('⏰ Nexus Study',a.title);toast(`⏰ ${a.title}`,'success');
   });
 }
-
-// Atualiza UI de notificação ao carregar
-(function initNotifUI() {
-  const status = document.getElementById('notif-status');
-  const btn = document.getElementById('notif-btn');
-  if (Notification.permission === 'granted') {
-    if (status) status.textContent = '✅ Notificações ativas!';
-    if (btn) { btn.textContent = '✅ Ativo'; btn.disabled = true; }
-  } else if (Notification.permission === 'denied') {
-    if (status) status.textContent = '❌ Bloqueadas — ative nas configurações do navegador';
-    if (btn) { btn.textContent = 'Bloqueado'; btn.disabled = true; }
-  }
-})();
+setInterval(checkAlarms,30000);
 
 // ══════════════ NOTIFICAÇÕES ══════════════
-// notif functions movidas para checkAlarms block acima
+function requestNotif(){
+  if(!('Notification'in window)){toast('Não suportado','error');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){document.getElementById('notif-status').textContent='✅ Ativas!';document.getElementById('notif-btn').textContent='Ativo';document.getElementById('notif-btn').disabled=true;toast('Notificações ativadas!','success');}
+    else toast('Permissão negada','error');
+  });
+}
+function sendBrowserNotif(title,body){if(Notification.permission==='granted')new Notification(title,{body});}
+if(Notification.permission==='granted'){document.getElementById('notif-status').textContent='✅ Ativas!';document.getElementById('notif-btn').textContent='Ativo';document.getElementById('notif-btn').disabled=true;}
 
 // ══════════════ INIT ══════════════
 // Restaura último perfil automaticamente
@@ -2967,7 +2406,7 @@ if(_lastSession&&_profiles.find(p=>p.name===_lastSession)){
 }
 // PWA
 // PWA — Service Worker inline via blob
-// ══════════════ EXERCÍCIOS ══════════════
+
 const EX_PERGUNTAS = [
   { id:'objetivo', texto:'🏆 Qual é o seu principal objetivo com os exercícios?', opcoes:['Perder peso','Ganhar massa muscular','Melhorar condicionamento','Reduzir estresse','Ficar mais ágil/flexível','Manter a saúde'] },
   { id:'nivel', texto:'💪 Qual é o seu nível atual de condicionamento físico?', opcoes:['Sedentário (não pratico nada)','Iniciante (pratico às vezes)','Intermediário (pratico regularmente)','Avançado (treino intenso)'] },
@@ -3103,14 +2542,7 @@ Responda SOMENTE JSON puro, sem markdown:
 Crie os 7 dias da semana. Distribua os treinos conforme os dias informados, marcando os outros como descanso ativo.`;
 
   try {
-    const resp = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], max_tokens: 2000 })
-    });
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error.message);
-    const raw = data.choices?.[0]?.message?.content || '';
+    const raw = await callGemini(prompt);
     const plano = JSON.parse(raw.replace(/```json|```/g, '').trim());
     S.exPerfil = exRespostas;
     S.exPlano = plano;
@@ -3199,7 +2631,7 @@ function mostrarPlanoEx() {
 
   // Progresso
   renderProgressoEx();
-  gerarDicaEx();
+  // Dica só carrega quando usuário clicar
 }
 
 function abrirDetalhesDia(idx) {
@@ -3471,8 +2903,8 @@ async function gerarDicaEx() {
   if (!el) return;
   el.innerHTML = '<span class="loading"></span>';
   const perfil = S.exPerfil ? Object.values(S.exPerfil).join(', ') : 'iniciante';
-  const dicas_temas = ['recuperação muscular','alimentação pré-treino','motivação e consistência','hidratação e performance','sono e hormônios','progressão de carga e overload','respiração durante o exercício','postura e prevenção de lesões','aquecimento e mobilidade','suplementação natural','mente e exercício','periodização do treino','treino em jejum','HIIT vs cardio moderado','importância do descanso ativo'];
-  const tema = dicas_temas[Math.floor(Math.random()*dicas_temas.length)];
+  const dicas_temas = ['recuperação muscular','alimentação pré-treino','motivação','hidratação','sono e descanso','progressão de carga','respiração','postura'];
+  const tema = dicas_temas[new Date().getDate() % dicas_temas.length];
   try {
     const txt = await callGemini(`Dê uma dica prática e motivadora sobre "${tema}" para alguém com este perfil: ${perfil}. Máximo 3 frases, direto ao ponto, em português.`);
     el.innerHTML = txt || 'Continue firme! Cada treino te deixa mais próximo do seu objetivo. 💪';
@@ -3523,7 +2955,7 @@ Responda SOMENTE JSON puro sem markdown:
 {"tema":"${tema}","ramos":[{"titulo":"Ramo 1","cor":"#1e90ff","subitens":[{"texto":"Subitem","detalhes":["detalhe1","detalhe2"]}]}]}`;
   try{
     const txt=await callGemini(prompt);
-    const mm=safeParseJSON(txt);
+    const mm=JSON.parse(txt.replace(/```json|```/g,'').trim());
     renderMapaMental(mm);
     S.mmSalvos.unshift({tema,data:new Date().toLocaleDateString('pt-BR'),mm});
     S.mmSalvos=S.mmSalvos.slice(0,10);save();renderMMSalvos();
@@ -3666,7 +3098,7 @@ Responda SOMENTE JSON puro sem markdown:
 
   try{
     const txt=await callGemini(prompt);
-    const guia=safeParseJSON(txt);
+    const guia=JSON.parse(txt.replace(/```json|```/g,'').trim());
     renderGuiaRedacao(guia);
     toast('Guia gerado!','success');
   }catch(e){document.getElementById('rg-resultado').innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
@@ -3761,15 +3193,7 @@ Responda SOMENTE JSON puro sem markdown:
     const txt=await callGemini(prompt);
     const exp=JSON.parse(txt.replace(/```json|```/g,'').trim());
     renderExperimento(exp,simId);
-    // Para experimentos customizados, pede animação à IA
-    if(custom){
-      toast('Gerando animação personalizada com IA...','info');
-      gerarAnimacaoCustom(expNome).then(anim=>{
-        iniciarSimulacao(simId,area,expNome,anim);
-      });
-    } else {
-      iniciarSimulacao(simId,area,expNome,null);
-    }
+    iniciarSimulacao(simId,area);
     toast('Experimento carregado!','success');
   }catch(e){document.getElementById('lab-resultado').innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
   btn.disabled=false;btn.innerHTML='🔬 Iniciar Experimento';
@@ -3797,11 +3221,11 @@ function renderExperimento(exp,simId){
   document.getElementById('lab-resultado').innerHTML=html;
 }
 
-function iniciarSimulacao(simId,area,expNome,customAnim){
+function iniciarSimulacao(simId,area){
   if(labAnimFrame)cancelAnimationFrame(labAnimFrame);
   const canvas=document.getElementById('lab-canvas');
   const ctx=canvas.getContext('2d');
-  labSimAtual={simId,area,t:0,running:false,particles:[],expNome:expNome||simId,customAnim:customAnim||null};
+  labSimAtual={simId,area,t:0,running:false,particles:[]};
   // Desenha estado inicial
   desenharSimulacao(ctx,labSimAtual);
 }
@@ -3822,40 +3246,6 @@ function animarLab(ctx){
   labAnimFrame=requestAnimationFrame(()=>animarLab(ctx));
 }
 
-// ══════════════ LABORATÓRIO — ANIMAÇÕES COMPLETAS ══════════════
-function txt(ctx,text,x,y,size,color,bold){
-  ctx.fillStyle=color||'#94a3b8';
-  ctx.font=(bold?'bold ':'')+`${size||11}px "Space Grotesk",sans-serif`;
-  ctx.fillText(text,x,y);
-}
-function beaker(ctx,x,y,w,h,cor,label){
-  // corpo
-  ctx.strokeStyle='#475569';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-8,y+h);ctx.lineTo(x+w+8,y+h);ctx.lineTo(x+w,y);ctx.stroke();
-  // borda superior
-  ctx.beginPath();ctx.moveTo(x-14,y);ctx.lineTo(x+w+14,y);ctx.stroke();
-  // líquido
-  if(cor){ctx.fillStyle=cor;ctx.fillRect(x+1,y+h*0.3,w-1,h*0.69);}
-  if(label){txt(ctx,label,x+w/2-ctx.measureText(label).width/2,y+h+16,10,'#94a3b8');}
-}
-function arrow(ctx,x1,y1,x2,y2,cor){
-  ctx.strokeStyle=cor||'#00cfff';ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-  const ang=Math.atan2(y2-y1,x2-x1);
-  ctx.fillStyle=cor||'#00cfff';
-  ctx.beginPath();ctx.moveTo(x2,y2);
-  ctx.lineTo(x2-10*Math.cos(ang-0.4),y2-10*Math.sin(ang-0.4));
-  ctx.lineTo(x2-10*Math.cos(ang+0.4),y2-10*Math.sin(ang+0.4));
-  ctx.closePath();ctx.fill();
-}
-function bubble(ctx,x,y,r,cor){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=cor||'#ffffff22';ctx.fill();}
-function label(ctx,text,x,y,cor,bg){
-  const m=ctx.measureText(text).width;
-  if(bg){ctx.fillStyle=bg;ctx.fillRect(x-4,y-12,m+8,16);ctx.fillStyle=cor||'#e2e8f0';}
-  else ctx.fillStyle=cor||'#e2e8f0';
-  ctx.font='11px "Space Grotesk",sans-serif';ctx.fillText(text,x,y);
-}
-
 function desenharSimulacao(ctx,state){
   const w=ctx.canvas.width,h=ctx.canvas.height;
   ctx.clearRect(0,0,w,h);
@@ -3863,1881 +3253,65 @@ function desenharSimulacao(ctx,state){
   const t=state.t||0;
   const sim=state.simId;
   const area=state.area;
-  const run=state.running;
   const status=document.getElementById('lab-sim-status');
 
-  // ── QUÍMICA ────────────────────────────────────────────────────────────────
-  if(sim==='acidbase'){
-    // Béquer com indicador que muda de cor conforme pH
-    const ph=run?Math.min(14,t/35):7;
-    const cor=ph<7?`hsla(${ph*15+10},85%,55%,0.85)`:ph===7?'rgba(74,222,128,0.7)':`hsla(${220+ph*4},80%,55%,0.8)`;
-    const label_ph=ph<7?'Ácido':ph>7?'Básico':'Neutro';
-    // Béquer principal
-    beaker(ctx,120,30,160,160,cor,'Solução');
-    // Gotas caindo
-    if(run){
-      const drop_y=(t*3)%80;
-      ctx.beginPath();ctx.arc(200,drop_y,4,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
-      // bolhas
-      for(let i=0;i<6;i++){
-        const bx=130+i*26,by=190-(t*1.5+i*25)%130;
-        bubble(ctx,bx,by,3+(i%2)*2,'#ffffff33');
-      }
-    }
-    // Frasco de reagente
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(170,10);ctx.lineTo(185,10);ctx.stroke();
-    ctx.beginPath();ctx.arc(190,10,10,0,Math.PI*2);ctx.fillStyle='#7dd3fc44';ctx.fill();ctx.stroke();
-    // Info
-    const grad=ctx.createLinearGradient(10,180,390,180);
-    grad.addColorStop(0,'#ef4444');grad.addColorStop(0.5,'#4ade80');grad.addColorStop(1,'#3b82f6');
-    ctx.fillStyle=grad;ctx.fillRect(10,190,380,8);
-    ctx.fillStyle='#e2e8f0';ctx.font='bold 14px sans-serif';
-    ctx.fillText(`pH ${ph.toFixed(1)} — ${label_ph}`,w/2-50,210);
-    if(status)status.textContent=run?`pH: ${ph.toFixed(1)} (${label_ph}) — reação acontecendo...`:'▶ Execute para adicionar reagente';
-
-  } else if(sim==='eletrolise'){
-    // Cubeta com água, eletrodos, bolhas O2 e H2
+  if(area==='quimica'||sim==='acidbase'){
+    // Béquer com líquido colorido
+    const ph=state.running?Math.min(14,t/40):7;
+    const cor=ph<7?`hsl(${ph*15},80%,50%)`:ph===7?'#4ade80':`hsl(${200+ph*5},80%,50%)`;
     ctx.strokeStyle='#334155';ctx.lineWidth=2;
-    ctx.beginPath();ctx.rect(60,60,280,130);ctx.stroke();
-    ctx.fillStyle='rgba(96,165,250,0.25)';ctx.fillRect(61,61,278,128);
-    // Eletrodos
-    ctx.fillStyle='#94a3b8';ctx.fillRect(120,50,8,130);ctx.fillRect(272,50,8,130);
-    ctx.fillStyle='#ef4444';txt(ctx,'─',106,48,14,'#ef4444',true);txt(ctx,'Cátodo (─)',86,170,10,'#ef4444');
-    ctx.fillStyle='#3b82f6';txt(ctx,'+',276,48,14,'#3b82f6',true);txt(ctx,'Ânodo (+)',270,170,10,'#3b82f6');
-    // Bolhas H2 (cátodo) e O2 (ânodo)
-    if(run){
-      for(let i=0;i<8;i++){
-        const bx=124+(i%2)*4,by=170-(t*1.8+i*22)%120;
-        bubble(ctx,bx,by,3,'#60a5fa88');
-      }
-      for(let i=0;i<4;i++){
-        const bx=276+(i%2)*4,by=170-(t*0.9+i*32)%120;
-        bubble(ctx,bx,by,4,'#f87171aa');
-      }
-      txt(ctx,'H₂↑',108,30,12,'#60a5fa',true);
-      txt(ctx,'O₂↑',270,30,12,'#f87171',true);
-      txt(ctx,'2H₂O → 2H₂ + O₂',100,210,11,'#94a3b8');
-    }
-    if(status)status.textContent=run?'Eletrólise: água se decompondo em H₂ e O₂':'▶ Execute para ligar a corrente elétrica';
-
-  } else if(sim==='destilacao'){
-    // Balão + coluna + condensador + coletor
-    // Balão
-    ctx.beginPath();ctx.arc(90,150,40,0,Math.PI*2);ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='rgba(251,191,36,0.3)';ctx.fill();
-    // Chama
-    if(run){
-      const flame=Math.sin(t*0.3)*4;
-      ctx.fillStyle='#f97316';ctx.beginPath();ctx.ellipse(90,195+flame,12,14,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#fbbf24';ctx.beginPath();ctx.ellipse(90,197+flame,7,9,0,0,Math.PI*2);ctx.fill();
-    }
-    // Tubo de destilação
-    ctx.strokeStyle='#475569';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(115,130);ctx.lineTo(200,80);ctx.lineTo(300,80);ctx.stroke();
-    // Condensador
-    ctx.strokeStyle='#60a5fa';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(300,80);ctx.lineTo(350,140);ctx.stroke();
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(295,75);ctx.lineTo(355,145);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(305,85);ctx.lineTo(345,135);ctx.stroke();
-    // Gotas condensadas
-    if(run){
-      const drop=(t*2)%60;
-      ctx.beginPath();ctx.arc(352,145+drop,4,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
-    }
-    // Erlenmeyer coletor
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(340,185);ctx.lineTo(330,215);ctx.lineTo(370,215);ctx.lineTo(360,185);ctx.stroke();
-    ctx.fillStyle='rgba(96,165,250,0.3)';ctx.fillRect(331,200,38,14);
-    txt(ctx,'Mistura',65,220,10,'#94a3b8');txt(ctx,'Vapor',145,75,10,'#fbbf24');txt(ctx,'Líquido puro',325,230,10,'#60a5fa');
-    if(status)status.textContent=run?'Destilando: componente mais volátil evaporando primeiro...':'▶ Execute para aquecer a mistura';
-
-  } else if(sim==='titulacao'){
-    // Bureta + erlenmeyer com mudança de cor
-    const vol=run?Math.min(25,t/10):0;
-    const pEq=15;const passou=vol>=pEq;
-    const cor=passou?'rgba(179,136,255,0.6)':'rgba(255,182,193,0.6)';
-    // Bureta
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.rect(175,10,25,150);ctx.stroke();
-    ctx.fillStyle='rgba(96,165,250,0.5)';ctx.fillRect(176,11,23,150-vol*5.5);
-    ctx.beginPath();ctx.moveTo(185,160);ctx.lineTo(185,175);ctx.stroke();
-    txt(ctx,`${vol.toFixed(1)} mL`,158,200,10,'#60a5fa');
-    txt(ctx,'Bureta (NaOH)',148,8,9,'#94a3b8');
-    // Erlenmeyer
-    ctx.beginPath();ctx.moveTo(150,175);ctx.lineTo(120,215);ctx.lineTo(280,215);ctx.lineTo(250,175);ctx.stroke();
-    ctx.fillStyle=cor;ctx.beginPath();ctx.moveTo(151,190);ctx.lineTo(121,215);ctx.lineTo(279,215);ctx.lineTo(249,190);ctx.closePath();ctx.fill();
-    if(passou){
-      ctx.fillStyle='#b388ff';txt(ctx,'Ponto de equivalência!',115,208,11,'#b388ff',true);
-    }
-    // Gotas caindo
-    if(run&&!passou){
-      const dy=(t*4)%60;ctx.beginPath();ctx.arc(185,175+dy,3,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
-    }
-    txt(ctx,'HCl (ácido)',165,230,10,'#94a3b8');
-    if(status)status.textContent=run?(passou?`Ponto de equivalência atingido em ${pEq}mL!`:`Volume adicionado: ${vol.toFixed(1)}mL`):'▶ Execute para iniciar a titulação';
-
-  } else if(sim==='combustao'){
-    // Chama + CO2 + H2O saindo
-    const int=run?0.8+Math.sin(t*0.2)*0.2:0.3;
-    // Superfície
-    ctx.fillStyle='#334155';ctx.fillRect(130,175,140,8);
-    // Vela
-    ctx.fillStyle='#f1f5f9';ctx.fillRect(193,130,14,45);
-    ctx.fillStyle='#94a3b8';ctx.fillRect(191,128,18,6);
-    ctx.fillStyle='#78350f';ctx.fillRect(199,124,2,6);
-    // Chama
-    if(run||!run){
-      const fl=run?Math.sin(t*0.25)*5:0;
-      ctx.fillStyle=`rgba(239,68,68,${int})`;
-      ctx.beginPath();ctx.ellipse(200,118+fl,10,20,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=`rgba(251,191,36,${int+0.2})`;
-      ctx.beginPath();ctx.ellipse(200,122+fl,6,13,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=`rgba(255,255,255,${int})`;
-      ctx.beginPath();ctx.ellipse(200,126+fl,3,6,0,0,Math.PI*2);ctx.fill();
-    }
-    // Partículas CO2 e H2O subindo
-    if(run){
-      for(let i=0;i<6;i++){
-        const px=185+((i*57+t*2)%50),py=100-(t*1.2+i*18)%90;
-        ctx.fillStyle=i%2===0?'#94a3b840':'#60a5fa40';
-        ctx.beginPath();ctx.arc(px,py,i%2===0?5:3,0,Math.PI*2);ctx.fill();
-        txt(ctx,i%2===0?'CO₂':'H₂O',px-8,py-6,9,i%2===0?'#94a3b8':'#60a5fa');
-      }
-      txt(ctx,'C₃H₈ + 5O₂ → 3CO₂ + 4H₂O',60,210,10,'#fbbf24');
-    }
-    if(status)status.textContent=run?'Combustão: carbono + oxigênio → CO₂ + H₂O + energia':'▶ Execute para acender a chama';
-
-  } else if(sim==='precipitado'){
-    // Dois béqueres + reação de precipitação
-    const mix=run?Math.min(1,t/80):0;
-    beaker(ctx,50,50,110,140,'rgba(252,211,77,0.6)','AgNO₃');
-    beaker(ctx,240,50,110,140,'rgba(96,165,250,0.5)','NaCl');
-    // Mistura central com precipitado
-    if(mix>0){
-      beaker(ctx,145,80,110,110,`rgba(240,240,240,${mix*0.9})`,'AgCl↓');
-      // precipitado branco acumulando
-      ctx.fillStyle=`rgba(248,250,252,${mix})`;
-      ctx.fillRect(146,155,108,Math.min(34,mix*50));
-      txt(ctx,'Precipitado branco!',130,212,10,'#f1f5f9',true);
-    }
-    // Setas de despejo
-    if(run){
-      arrow(ctx,160,90,200,100,'#fbbf24');
-      arrow(ctx,240,90,200,100,'#60a5fa');
-    }
-    txt(ctx,'AgNO₃ + NaCl → AgCl↓ + NaNO₃',60,225,10,'#94a3b8');
-    if(status)status.textContent=run?`Precipitado formando... ${Math.round(mix*100)}% concluído`:'▶ Execute para misturar as soluções';
-
-  // ── FÍSICA ─────────────────────────────────────────────────────────────────
-  } else if(sim==='quedalivre'){
-    const g=0.28;const vy=run?g*t:0;const y=run?Math.min(h-40,0.5*g*t*t):20;
-    // Régua lateral
-    for(let i=0;i<=5;i++){
-      ctx.strokeStyle='#1e293b';ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(28,30+i*32);ctx.lineTo(38,30+i*32);ctx.stroke();
-      txt(ctx,`${i*10}m`,5,34+i*32,10,'#475569');
-    }
-    ctx.strokeStyle='#334155';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(35,18);ctx.lineTo(35,h-10);ctx.stroke();
-    // Rastro
-    if(run){
-      for(let i=1;i<=5;i++){
-        const ty=y-i*18;if(ty<0)break;
-        ctx.beginPath();ctx.arc(200,ty,4-i*0.5,0,Math.PI*2);
-        ctx.fillStyle=`rgba(251,191,36,${0.15*i})`;ctx.fill();
-      }
-    }
-    // Objeto
-    ctx.beginPath();ctx.arc(200,20+y,18,0,Math.PI*2);
-    const grd=ctx.createRadialGradient(196,16+y,2,200,20+y,18);
-    grd.addColorStop(0,'#fde68a');grd.addColorStop(1,'#f59e0b');
-    ctx.fillStyle=grd;ctx.fill();
-    ctx.strokeStyle='#d97706';ctx.lineWidth=2;ctx.stroke();
-    // Vetor velocidade
-    if(run&&vy>0){
-      arrow(ctx,200,38+y,200,38+y+Math.min(vy*4,60),'#ef4444');
-      txt(ctx,'v',206,50+y+Math.min(vy*4,60)/2,11,'#ef4444',true);
-    }
-    // Chão
-    ctx.fillStyle='#334155';ctx.fillRect(60,h-8,320,8);
-    txt(ctx,run?`v=${vy.toFixed(1)}m/s  h=${y.toFixed(1)}m  t=${(t/20).toFixed(1)}s`:'Queda livre: apenas gravidade age',w/2-100,h-12,10,'#94a3b8');
-    if(status)status.textContent=run?`↓ v=${vy.toFixed(1)} m/s · distância=${y.toFixed(0)} m`:'▶ Execute para soltar o objeto';
-
-  } else if(sim==='pendulo'){
-    const L=120;const freq=run?0.045:0;const amp=55;
-    const theta=Math.sin(t*freq-Math.PI/2)*amp;
-    const rad=theta*Math.PI/180;
-    const px=200+Math.sin(rad)*L,py=30+Math.cos(rad)*L;
-    // Suporte
-    ctx.fillStyle='#475569';ctx.fillRect(160,20,80,10);
-    ctx.beginPath();ctx.arc(200,30,5,0,Math.PI*2);ctx.fillStyle='#94a3b8';ctx.fill();
-    // Fio com sombra
-    ctx.strokeStyle='#334155';ctx.lineWidth=4;
-    ctx.beginPath();ctx.moveTo(200,30);ctx.lineTo(px+2,py+2);ctx.stroke();
-    ctx.strokeStyle='#94a3b8';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(200,30);ctx.lineTo(px,py);ctx.stroke();
-    // Posição de equilíbrio (tracejado)
-    ctx.setLineDash([4,4]);ctx.strokeStyle='#334155';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(200,30);ctx.lineTo(200,30+L);ctx.stroke();
-    ctx.setLineDash([]);
-    // Bob
-    const grd2=ctx.createRadialGradient(px-4,py-4,2,px,py,16);
-    grd2.addColorStop(0,'#93c5fd');grd2.addColorStop(1,'#1d4ed8');
-    ctx.beginPath();ctx.arc(px,py,16,0,Math.PI*2);ctx.fillStyle=grd2;ctx.fill();
-    ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;ctx.stroke();
-    // Arco de trajetória
-    if(run){
-      ctx.strokeStyle='rgba(96,165,250,0.2)';ctx.lineWidth=1;
-      ctx.beginPath();ctx.arc(200,30,L,-Math.PI/2-amp*Math.PI/180,-Math.PI/2+amp*Math.PI/180);ctx.stroke();
-    }
-    // Energia
-    const Ec=run?Math.cos(rad)*100:0;const Ep=100-Ec;
-    ctx.fillStyle='rgba(239,68,68,0.7)';ctx.fillRect(320,50,15,Ep*1.2);
-    ctx.fillStyle='rgba(96,165,250,0.7)';ctx.fillRect(340,50+(120-Ec*1.2),15,Ec*1.2);
-    txt(ctx,'Ep',320,48,9,'#f87171');txt(ctx,'Ec',340,48,9,'#60a5fa');
-    txt(ctx,run?`θ=${theta.toFixed(1)}° T=${(2*Math.PI/freq/60).toFixed(2)}s`:'Pêndulo simples — energia se converte',w/2-90,210,10,'#94a3b8');
-    if(status)status.textContent=run?`Ângulo: ${theta.toFixed(1)}° · Ep⇄Ec`:'▶ Execute para soltar o pêndulo';
-
-  } else if(sim==='ohm'){
-    // Circuito elétrico: fonte + resistor + amperímetro
-    const V=run?Math.min(12,t/12):0;const R=4;const I=V/R;
-    // Fios do circuito
-    ctx.strokeStyle='#475569';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(60,80);ctx.lineTo(340,80);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(60,160);ctx.lineTo(340,160);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(60,80);ctx.lineTo(60,160);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(340,80);ctx.lineTo(340,160);ctx.stroke();
-    // Fonte de tensão
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.arc(60,120,22,0,Math.PI*2);ctx.fillStyle='#1e293b';ctx.fill();ctx.stroke();
-    txt(ctx,'+',52,114,14,'#4ade80',true);txt(ctx,'─',52,132,14,'#f87171',true);
-    txt(ctx,`${V.toFixed(1)}V`,44,150,9,'#fbbf24');
-    // Resistor (zigue-zague)
-    ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(160,80);
-    for(let i=0;i<8;i++){ctx.lineTo(168+i*10,i%2===0?68:92);}
-    ctx.lineTo(248,80);ctx.stroke();
-    ctx.fillStyle='#1e293b';ctx.fillRect(158,70,10,20);ctx.fillRect(246,70,10,20);
-    txt(ctx,`R=${R}Ω`,190,65,10,'#fbbf24');
-    // Amperímetro
-    ctx.beginPath();ctx.arc(200,160,18,0,Math.PI*2);ctx.fillStyle='#1e293b';ctx.fill();ctx.strokeStyle='#475569';ctx.stroke();
-    txt(ctx,'A',194,165,12,'#94a3b8',true);
-    txt(ctx,`${I.toFixed(2)}A`,186,185,10,'#00cfff');
-    // Elétrons fluindo
-    if(run&&V>0){
-      for(let i=0;i<6;i++){
-        const pos=(t*3+i*60)%400;
-        let ex,ey;
-        if(pos<100){ex=60+pos*2.8;ey=80;}
-        else if(pos<200){ex=340;ey=80+(pos-100)*0.8;}
-        else if(pos<300){ex=340-(pos-200)*2.8;ey=160;}
-        else{ex=60;ey=160-(pos-300)*0.8;}
-        ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);ctx.fillStyle='#60a5fa';ctx.fill();
-        txt(ctx,'e⁻',ex+5,ey-5,8,'#60a5fa');
-      }
-      txt(ctx,`V=${V.toFixed(1)}  I=${I.toFixed(2)}A  R=${R}Ω  → V=IR`,80,210,10,'#fbbf24');
-    }
-    if(status)status.textContent=run?`V=${V.toFixed(1)}V  I=${I.toFixed(2)}A  P=${(V*I).toFixed(1)}W`:'▶ Execute para ligar o circuito';
-
-  } else if(sim==='refracao'){
-    // Raio de luz entrando na água — refração de Snell
-    const ang1=35;const n1=1;const n2=1.33;
-    const ang2=Math.asin(n1*Math.sin(ang1*Math.PI/180)/n2)*180/Math.PI;
-    // Interface
-    ctx.fillStyle='rgba(96,165,250,0.15)';ctx.fillRect(0,h/2,w,h/2);
-    ctx.strokeStyle='#3b82f6';ctx.lineWidth=1;ctx.setLineDash([]);
-    ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
-    txt(ctx,'Ar (n=1.0)',10,h/2-10,10,'#e2e8f0');
-    txt(ctx,'Água (n=1.33)',10,h/2+15,10,'#60a5fa');
-    // Normal (tracejado)
-    ctx.setLineDash([5,5]);ctx.strokeStyle='#475569';
-    ctx.beginPath();ctx.moveTo(200,10);ctx.lineTo(200,h-10);ctx.stroke();
-    ctx.setLineDash([]);
-    // Raio incidente
-    const ix=200-Math.sin(ang1*Math.PI/180)*140;const iy=h/2-Math.cos(ang1*Math.PI/180)*140;
-    ctx.strokeStyle='#fbbf24';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(ix,iy);ctx.lineTo(200,h/2);ctx.stroke();
-    // Raio refletido
-    const rx=200+Math.sin(ang1*Math.PI/180)*80;const ry=h/2-Math.cos(ang1*Math.PI/180)*80;
-    ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(200,h/2);ctx.lineTo(rx,ry);ctx.stroke();
-    // Raio refratado
-    const rfx=200+Math.sin(ang2*Math.PI/180)*120;const rfy=h/2+Math.cos(ang2*Math.PI/180)*120;
-    ctx.strokeStyle='#00cfff';ctx.lineWidth=3;
-    ctx.beginPath();ctx.moveTo(200,h/2);ctx.lineTo(rfx,rfy);ctx.stroke();
-    // Ângulos
-    ctx.strokeStyle='#fbbf24';ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(200,h/2,40,-Math.PI/2,-Math.PI/2+ang1*Math.PI/180);ctx.stroke();
-    ctx.strokeStyle='#00cfff';
-    ctx.beginPath();ctx.arc(200,h/2,40,Math.PI/2,Math.PI/2-ang2*Math.PI/180,true);ctx.stroke();
-    txt(ctx,`θ₁=${ang1}°`,150,h/2-45,10,'#fbbf24');
-    txt(ctx,`θ₂=${ang2.toFixed(1)}°`,215,h/2+55,10,'#00cfff');
-    txt(ctx,`n₁·sin(θ₁) = n₂·sin(θ₂)`,80,210,11,'#94a3b8');
-    if(status)status.textContent=`Lei de Snell: ângulo incidente ${ang1}° → refratado ${ang2.toFixed(1)}°`;
-
-  } else if(sim==='ondas'){
-    // Duas ondas com interferência
-    const f1=run?0.08:0.05;const f2=run?0.12:0.05;const A=35;
-    const phase=t*0.04;
-    // Onda 1
-    ctx.beginPath();ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;
-    for(let x=0;x<w;x++){const y=h/3+A*Math.sin(f1*x-phase);if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-    // Onda 2
-    ctx.beginPath();ctx.strokeStyle='#f87171';ctx.lineWidth=2;
-    for(let x=0;x<w;x++){const y=h/3+A*Math.sin(f2*x-phase*0.7);if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-    // Interferência (soma)
-    ctx.beginPath();ctx.strokeStyle='#4ade80';ctx.lineWidth=2.5;
-    for(let x=0;x<w;x++){
-      const y=2*h/3+A*Math.sin(f1*x-phase)+A*0.6*Math.sin(f2*x-phase*0.7);
-      if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-    }ctx.stroke();
-    // Legenda
-    ctx.fillStyle='#60a5fa';ctx.fillRect(10,10,14,3);txt(ctx,'Onda 1',28,14,10,'#60a5fa');
-    ctx.fillStyle='#f87171';ctx.fillRect(10,22,14,3);txt(ctx,'Onda 2',28,26,10,'#f87171');
-    ctx.fillStyle='#4ade80';ctx.fillRect(10,34,14,3);txt(ctx,'Interferência',28,38,10,'#4ade80');
-    if(status)status.textContent=run?'Interferência construtiva e destrutiva ocorrendo':'▶ Execute para ver as ondas';
-
-  } else if(sim==='colisao'){
-    // Colisão entre dois blocos
-    const hit=run?t>50:false;const pos=run?Math.min(50,t):0;const rebote=run&&t>50?t-50:0;
-    const v1i=4;const v2i=-2;
-    const v1f=(v1i+2*1*v2i)/2; // elástica mesma massa aproximada
-    const v2f=v1i;
-    const x1=60+pos*2-(hit?rebote*Math.abs(v1f)*0.4:0);
-    const x2=280-(hit?rebote*v2f*0.5:0);
-    // Chão
-    ctx.fillStyle='#334155';ctx.fillRect(20,165,360,6);
-    // Bloco 1
-    const grd1=ctx.createLinearGradient(x1,100,x1+60,140);
-    grd1.addColorStop(0,'#3b82f6');grd1.addColorStop(1,'#1d4ed8');
-    ctx.fillStyle=grd1;ctx.fillRect(x1,110,60,55);
-    ctx.strokeStyle='#60a5fa';ctx.lineWidth=1;ctx.strokeRect(x1,110,60,55);
-    txt(ctx,'m=2kg',x1+5,145,9,'#e2e8f0');
-    // Bloco 2
-    const grd2=ctx.createLinearGradient(x2,100,x2+60,140);
-    grd2.addColorStop(0,'#ef4444');grd2.addColorStop(1,'#dc2626');
-    ctx.fillStyle=grd2;ctx.fillRect(x2,110,60,55);
-    ctx.strokeStyle='#f87171';ctx.lineWidth=1;ctx.strokeRect(x2,110,60,55);
-    txt(ctx,'m=2kg',x2+5,145,9,'#e2e8f0');
-    // Vetores
-    if(!hit){arrow(ctx,x1+60,132,x1+80,132,'#60a5fa');txt(ctx,'→v₁',x1+82,136,9,'#60a5fa');}
-    if(hit&&rebote>5){arrow(ctx,x1,132,x1-25,132,'#60a5fa');arrow(ctx,x2+60,132,x2+85,132,'#f87171');}
-    txt(ctx,hit?'Colisão elástica — momentum conservado!':'Dois blocos em colisão',70,200,10,'#94a3b8');
-    if(status)status.textContent=hit?'Colisão! Momentum e energia cinética conservados':'▶ Execute para ver a colisão';
-
-  // ── BIOLOGIA ───────────────────────────────────────────────────────────────
-  } else if(sim==='osmose'){
-    // Célula em meios hipotônico, isotônico, hipertônico
-    const membrana=w/2;const fase=run?Math.floor(t/60)%3:0;
-    const nomes=['Hipotônico','Isotônico','Hipertônico'];
-    const descr=['Água entra → célula incha','Equilíbrio → célula normal','Água sai → célula murcha'];
-    const raios=[42,32,22];const raio=raios[fase];
-    ctx.setLineDash([6,4]);ctx.strokeStyle='#334155';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(membrana,15);ctx.lineTo(membrana,h-15);ctx.stroke();
-    ctx.setLineDash([]);
-    // Célula lado esquerdo
-    const grd3=ctx.createRadialGradient(120,h/2,3,120,h/2,raio);
-    grd3.addColorStop(0,'rgba(96,165,250,0.5)');grd3.addColorStop(1,'rgba(30,64,175,0.3)');
-    ctx.beginPath();ctx.arc(120,h/2,raio,0,Math.PI*2);ctx.fillStyle=grd3;ctx.fill();
-    ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;ctx.stroke();
-    // Núcleo
-    ctx.beginPath();ctx.arc(120,h/2,raio*0.3,0,Math.PI*2);ctx.fillStyle='rgba(139,92,246,0.6)';ctx.fill();
-    // Moléculas de água no meio externo
-    const nMol=fase===0?15:fase===1?8:3;
-    for(let i=0;i<nMol;i++){
-      const ax=180+((i*47+t*0.5)%(membrana-200));
-      const ay=30+((i*37+t*0.3)%(h-60));
-      ctx.beginPath();ctx.arc(ax,ay,3,0,Math.PI*2);ctx.fillStyle='#7dd3fc';ctx.fill();
-    }
-    // Setas de fluxo
-    if(run){
-      const dir=fase===0?-1:fase===2?1:0;
-      if(dir!==0){
-        for(let i=0;i<3;i++){
-          arrow(ctx,membrana+dir*40,h/2-20+i*20,membrana+dir*15,h/2-20+i*20,'#00cfff');
-        }
-      }
-    }
-    // Descrição
-    const bg=fase===0?'rgba(96,165,250,0.1)':fase===1?'rgba(74,222,128,0.1)':'rgba(239,68,68,0.1)';
-    const cor2=fase===0?'#60a5fa':fase===1?'#4ade80':'#f87171';
-    ctx.fillStyle=bg;ctx.fillRect(10,h-35,w-20,30);
-    txt(ctx,nomes[fase],w/2-30,h-20,12,cor2,true);
-    txt(ctx,descr[fase],w/2-ctx.measureText(descr[fase]).width/2,h-8,10,'#94a3b8');
-    if(status)status.textContent=run?`${nomes[fase]}: ${descr[fase]}`:'▶ Execute para ver os 3 meios';
-
-  } else if(sim==='fotossintese'){
-    // Cloroplasto com luz + CO2 → O2 + glicose
-    const energia=run?Math.min(100,t*0.8):0;
-    // Folha/cloroplasto
-    ctx.beginPath();ctx.ellipse(200,h/2,140,70,0.2,0,Math.PI*2);
-    ctx.fillStyle='rgba(34,197,94,0.3)';ctx.fill();
-    ctx.strokeStyle='#16a34a';ctx.lineWidth=2;ctx.stroke();
-    // Granas (empilhamento de tilacoides)
-    for(let i=0;i<4;i++){
-      ctx.beginPath();ctx.ellipse(120+i*28,h/2,12,20,0,0,Math.PI*2);
-      ctx.fillStyle='rgba(21,128,61,0.7)';ctx.fill();
-      ctx.strokeStyle='#15803d';ctx.lineWidth=1;ctx.stroke();
-    }
-    // Raios de luz
-    if(run){
-      ctx.strokeStyle='#fbbf24';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(120,40);ctx.lineTo(100,180);ctx.lineTo(300,180);ctx.lineTo(280,40);ctx.stroke();
+    ctx.fillStyle=cor+'99';ctx.fillRect(101,80,198,99);
+    // Bolhas
+    if(state.running){
       for(let i=0;i<5;i++){
-        const phase2=Math.sin(t*0.05+i)*5;
-        ctx.globalAlpha=0.6+Math.sin(t*0.1+i)*0.4;
-        ctx.beginPath();ctx.moveTo(50+i*20,10);ctx.lineTo(130+i*12,h/2-30+phase2);ctx.stroke();
-      }
-      ctx.globalAlpha=1;
-    }
-    // CO2 entrando
-    for(let i=0;i<3;i++){
-      const cx=run?320+(i*20)-(t*0.5+i*30)%100:350+i*20;
-      txt(ctx,'CO₂',cx,h/2-10+i*18,10,'#94a3b8');
-    }
-    // O2 saindo
-    if(run&&energia>20){
-      for(let i=0;i<3;i++){
-        const ox=340+((t+i*40)%80);const oy=h/2-20+i*20;
-        txt(ctx,'O₂',ox,oy,10,'#4ade80');
+        ctx.beginPath();ctx.arc(120+i*36,(80+99)-(t*1.2+i*20)%99,3,0,Math.PI*2);
+        ctx.fillStyle='#ffffff44';ctx.fill();
       }
     }
-    // Glicose produzida
-    if(energia>10){
-      ctx.fillStyle='rgba(251,191,36,0.2)';ctx.fillRect(150,h/2-15,100,30);
-      txt(ctx,`C₆H₁₂O₆ ${Math.round(energia)}%`,155,h/2+5,10,'#fbbf24');
-    }
-    // Equação
-    txt(ctx,'6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂',50,210,10,'#4ade80');
-    if(status)status.textContent=run?`Fotossíntese: ${energia.toFixed(0)}% de glicose produzida`:'▶ Execute para ver a fotossíntese';
-
-  } else if(sim==='mitose'){
-    // Fases da mitose animadas
-    const fase=run?Math.floor(t/40)%5:0;
-    const fases=['Interfase','Prófase','Metáfase','Anáfase','Telófase'];
-    const cx=200,cy=110,cr=80;
-    // Célula
-    const grd4=ctx.createRadialGradient(cx,cy,5,cx,cy,cr);
-    grd4.addColorStop(0,'rgba(30,58,138,0.4)');grd4.addColorStop(1,'rgba(15,23,42,0.6)');
-    ctx.beginPath();ctx.arc(cx,cy,cr,0,Math.PI*2);ctx.fillStyle=grd4;ctx.fill();
-    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.stroke();
-    // Cromossomos por fase
-    const cores2=['#c084fc','#f472b6','#fb923c','#34d399','#60a5fa'];
-    if(fase===0){ // Interfase — núcleo intacto
-      ctx.beginPath();ctx.arc(cx,cy,35,0,Math.PI*2);ctx.strokeStyle='#7c3aed';ctx.lineWidth=2;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
-      ctx.fillStyle='rgba(124,58,237,0.15)';ctx.fill();
-      txt(ctx,'DNA duplicando...',155,cy+5,10,'#c084fc');
-    } else if(fase===1){ // Prófase
-      for(let i=0;i<4;i++){
-        const px=cx-20+i*14,py=cy-15+Math.sin(i)*20;
-        ctx.beginPath();ctx.moveTo(px,py-15);ctx.lineTo(px,py+15);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
-      }
-      txt(ctx,'Cromossomos condensando',130,cy+60,10,'#c084fc');
-    } else if(fase===2){ // Metáfase
-      for(let i=0;i<4;i++){
-        const px=cx-30+i*20;
-        ctx.beginPath();ctx.moveTo(px,cy-18);ctx.lineTo(px,cy+18);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
-        ctx.beginPath();ctx.moveTo(cx-cr+5,cy);ctx.lineTo(px,cy);ctx.strokeStyle='#47474733';ctx.lineWidth=1;ctx.stroke();
-        ctx.beginPath();ctx.moveTo(cx+cr-5,cy);ctx.lineTo(px,cy);ctx.stroke();
-      }
-      ctx.strokeStyle='#334155';ctx.setLineDash([4,3]);
-      ctx.beginPath();ctx.moveTo(cx,cy-cr+10);ctx.lineTo(cx,cy+cr-10);ctx.stroke();ctx.setLineDash([]);
-      txt(ctx,'Placa metafásica',155,cy+65,10,'#fbbf24');
-    } else if(fase===3){ // Anáfase
-      for(let i=0;i<4;i++){
-        const sep=Math.min(30,t%40);
-        const px=cx-10+i*7;
-        ctx.beginPath();ctx.moveTo(px,cy-sep-10);ctx.lineTo(px,cy-sep+10);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
-        ctx.beginPath();ctx.moveTo(px,cy+sep-10);ctx.lineTo(px,cy+sep+10);ctx.strokeStyle=cores2[i];ctx.lineWidth=4;ctx.stroke();
-      }
-      txt(ctx,'Cromátides separando!',140,cy+65,10,'#4ade80');
-    } else { // Telófase
-      ctx.beginPath();ctx.arc(cx,cy-30,30,0,Math.PI*2);ctx.strokeStyle='#7c3aed';ctx.lineWidth=2;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
-      ctx.beginPath();ctx.arc(cx,cy+30,30,0,Math.PI*2);ctx.stroke();
-      ctx.strokeStyle='#3b82f6';ctx.setLineDash([5,5]);ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(cx-cr+5,cy);ctx.lineTo(cx+cr-5,cy);ctx.stroke();ctx.setLineDash([]);
-      txt(ctx,'2 células filhas formadas',130,cy+65,10,'#60a5fa');
-    }
-    // Indicador de fase
-    txt(ctx,fases[fase],cx-ctx.measureText(fases[fase]).width/2,h-12,13,'#e2e8f0',true);
-    fases.forEach((f,i)=>{
-      ctx.fillStyle=i===fase?'#3b82f6':'#1e293b';
-      ctx.beginPath();ctx.arc(40+i*70,h-20,6,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle=i===fase?'#60a5fa':'#334155';ctx.lineWidth=1;ctx.stroke();
-    });
-    if(status)status.textContent=run?`Fase atual: ${fases[fase]} (${fase+1}/5)`:'▶ Execute para ver as fases da mitose';
-
-  } else if(sim==='dna'){
-    // Extração de DNA — dupla hélice animada
-    const twist=run?t*0.04:0;
-    for(let i=0;i<20;i++){
-      const y=20+i*9;const x1=200+60*Math.sin(twist+i*0.6);const x2=200-60*Math.sin(twist+i*0.6);
-      // Bases nitrogenadas
-      ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);
-      const par=i%4;ctx.strokeStyle=['#f87171','#60a5fa','#4ade80','#fbbf24'][par];ctx.lineWidth=2;ctx.stroke();
-      ctx.beginPath();ctx.arc(x1,y,4,0,Math.PI*2);ctx.fillStyle='#e2e8f0';ctx.fill();
-      ctx.beginPath();ctx.arc(x2,y,4,0,Math.PI*2);ctx.fill();
-    }
-    // Fita de açúcar-fosfato
-    ctx.strokeStyle='#475569';ctx.lineWidth=3;
-    ctx.beginPath();
-    for(let i=0;i<21;i++){const y=20+i*9;const x=200+60*Math.sin(twist+i*0.6);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-    ctx.beginPath();
-    for(let i=0;i<21;i++){const y=20+i*9;const x=200-60*Math.sin(twist+i*0.6);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-    // Legenda bases
-    ['A-T','T-A','G-C','C-G'].forEach((b,i)=>{
-      ctx.fillStyle=['#f87171','#60a5fa','#4ade80','#fbbf24'][i];
-      ctx.fillRect(10,10+i*18,10,10);txt(ctx,b,24,19+i*18,10,['#f87171','#60a5fa','#4ade80','#fbbf24'][i]);
-    });
-    txt(ctx,'Dupla Hélice do DNA',125,210,11,'#94a3b8');
-    if(status)status.textContent=run?'DNA girando — bases nitrogenadas A-T e G-C':'▶ Execute para ver a dupla hélice';
-
-  } else if(sim==='cadeialimentar'){
-    // Cadeia alimentar com setas e energia
-    const itens=[{n:'☀️',l:'Sol',x:60,y:110},
-      {n:'🌿',l:'Planta',x:160,y:110},
-      {n:'🐛',l:'Herbívoro',x:255,y:90},
-      {n:'🦎',l:'Carnívoro',x:340,y:110},
-    ];
-    const energias=[100,10,1,0.1];
-    itens.forEach((it,i)=>{
-      ctx.font='28px serif';ctx.fillText(it.n,it.x-14,it.y+10);
-      txt(ctx,it.l,it.x-ctx.measureText(it.l).width*0.4,it.y+30,10,'#94a3b8');
-      txt(ctx,`${energias[i]}%`,it.x-8,it.y-15,9,'#fbbf24');
-      if(i<itens.length-1){
-        arrow(ctx,it.x+22,it.y,itens[i+1].x-22,itens[i+1].y,run?'#4ade80':'#334155');
-      }
-    });
-    // Fluxo de energia
-    if(run){
-      const ep=(t*2)%280;
-      ctx.beginPath();ctx.arc(60+ep*0.95,140,5,0,Math.PI*2);
-      ctx.fillStyle='#fbbf24';ctx.fill();
-      txt(ctx,'Energia fluindo →',130,170,10,'#fbbf24');
-    }
-    txt(ctx,'Regra dos 10%: apenas 10% da energia passa de nível',40,200,10,'#94a3b8');
-    if(status)status.textContent=run?'Energia fluindo pela cadeia (regra dos 10%)':'▶ Execute para ver o fluxo de energia';
-
-  } else if(sim==='fermentacao'){
-    // Fermentação alcoólica — leveduras + glicose → CO2 + etanol
-    beaker(ctx,100,40,200,150,'rgba(251,191,36,0.3)','Leveduras + Glicose');
-    // Leveduras (bolinhas)
-    for(let i=0;i<8;i++){
-      const lx=115+i*24,ly=130+Math.sin(t*0.05+i)*10;
-      ctx.beginPath();ctx.arc(lx,ly,8,0,Math.PI*2);
-      ctx.fillStyle='#78350f';ctx.fill();
-      ctx.strokeStyle='#92400e';ctx.lineWidth=1;ctx.stroke();
-      // Broto
-      ctx.beginPath();ctx.arc(lx+7,ly-5,4,0,Math.PI*2);ctx.fill();
-    }
-    // Bolhas CO2 subindo
-    if(run){
-      for(let i=0;i<8;i++){
-        const bx=115+i*24,by=140-(t*1.8+i*28)%130;
-        bubble(ctx,bx,by,4,'#94a3b855');
-        if(by<60)txt(ctx,'CO₂',bx-8,by-8,8,'#94a3b8');
-      }
-      // Etanol acumulando
-      ctx.fillStyle='rgba(167,243,208,0.25)';
-      ctx.fillRect(101,170,198,Math.min(18,t/10));
-      txt(ctx,'Etanol formando',135,185,9,'#34d399');
-    }
-    txt(ctx,'C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂',80,210,10,'#fbbf24');
-    if(status)status.textContent=run?'Leveduras convertendo glicose em etanol + CO₂':'▶ Execute para ver a fermentação';
-
-  } else {
-    // ── PERSONALIZADO: usa labCustomAnim se disponível, senão genérico ─────
-    if(state.customAnim){
-      desenharCustomAnim(ctx,state);
-      return;
-    }
-    const nome=(state.expNome||'').toLowerCase();
-    const t2=t*0.04;
-    if(nome.includes('calor')||nome.includes('temperatura')){
-      // Termômetro + partículas acelerando
-      ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.beginPath();ctx.rect(185,20,30,160);ctx.stroke();
-      ctx.beginPath();ctx.arc(200,185,18,0,Math.PI*2);ctx.fillStyle='#ef444433';ctx.fill();ctx.stroke();
-      const temp=run?Math.min(140,t*0.7):0;
-      ctx.fillStyle='#ef4444';ctx.fillRect(194,165-temp,12,temp);
-      ctx.beginPath();ctx.arc(200,185,14,0,Math.PI*2);ctx.fill();
-      txt(ctx,`${Math.round(temp/140*100)}°C`,210,185,12,'#f87171');
-      // Partículas
-      for(let i=0;i<12;i++){
-        const vel=run?1+temp/30:0.2;
-        const px=60+((i*47+t*vel)%280);const py=50+((i*33+t*vel*0.7)%120);
-        ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fillStyle=`hsl(${10+temp},80%,60%)`;ctx.fill();
-      }
-    } else if(nome.includes('mag')||nome.includes('campo')){
-      // Campo magnético — linhas de força
-      const cx2=200,cy2=h/2;
-      for(let a=0;a<Math.PI*2;a+=Math.PI/6){
-        for(let r2=30;r2<120;r2+=25){
-          const px=cx2+r2*Math.cos(a+t2*0.3);const py=cy2+r2*Math.sin(a+t2*0.3)*0.6;
-          ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);
-          ctx.fillStyle=`hsl(${200+a*30},70%,60%)`;ctx.fill();
-        }
-      }
-      ctx.beginPath();ctx.arc(cx2,cy2,12,0,Math.PI*2);
-      ctx.fillStyle='#f87171';ctx.fill();txt(ctx,'N',cx2-4,cy2+4,11,'#fff',true);
-      ctx.beginPath();ctx.arc(cx2+80,cy2,12,0,Math.PI*2);
-      ctx.fillStyle='#60a5fa';ctx.fill();txt(ctx,'S',cx2+76,cy2+4,11,'#fff',true);
-    } else if(nome.includes('gas')||nome.includes('pressao')||nome.includes('pressão')){
-      // Lei dos gases — partículas em recipiente
-      if(!state.particles||!state.particles.length){
-        state.particles=Array.from({length:20},(_,i)=>({x:80+Math.random()*240,y:30+Math.random()*150,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3}));
-      }
-      ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.strokeRect(70,25,260,160);
-      const speed=run?1+t/100:0.3;
-      state.particles.forEach(p=>{
-        if(run){p.x+=p.vx*speed;p.y+=p.vy*speed;
-          if(p.x<75||p.x>325){p.vx*=-1;}if(p.y<30||p.y>180){p.vy*=-1;}}
-        ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);
-        ctx.fillStyle=`hsl(${200+speed*20},70%,60%)`;ctx.fill();
-      });
-      txt(ctx,run?`P·V=nRT  T=${Math.round(20+t/3)}K`:'Lei dos gases ideais: PV=nRT',80,210,10,'#94a3b8');
-    } else {
-      // Animação genérica elegante — partículas em órbita
-      const n=8;
-      for(let i=0;i<n;i++){
-        const a=t2+i*(Math.PI*2/n);
-        const r2=60+Math.sin(t2*0.7+i)*20;
-        const px=w/2+r2*Math.cos(a);const py=h/2+r2*0.6*Math.sin(a);
-        ctx.beginPath();ctx.arc(px,py,8,0,Math.PI*2);
-        ctx.fillStyle=`hsl(${190+i*25},80%,60%)`;ctx.fill();
-        if(i>0){
-          const a2=t2+(i-1)*(Math.PI*2/n);
-          const r3=60+Math.sin(t2*0.7+i-1)*20;
-          const px2=w/2+r3*Math.cos(a2);const py2=h/2+r3*0.6*Math.sin(a2);
-          ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px2,py2);
-          ctx.strokeStyle=`hsla(${190+i*25},60%,50%,0.3)`;ctx.lineWidth=1;ctx.stroke();
-        }
-      }
-      ctx.beginPath();ctx.arc(w/2,h/2,10,0,Math.PI*2);
-      ctx.fillStyle='#1e90ff';ctx.fill();
-      txt(ctx,state.expNome||'Simulação',w/2-50,h-15,11,'#94a3b8');
-    }
-    if(status)status.textContent=run?'Simulação em andamento...':'▶ Execute para animar';
-  }
-}
-
-
-// ══════════════ MAPA MENTAL VISUAL (canvas) ══════════════
-async function gerarMapaMentalVisual(){
-  const tema=document.getElementById('mm-tema').value.trim();
-  if(!tema){toast('Digite um tema','error');return;}
-  const btn=document.getElementById('mm-btn-visual');
-  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando desenho...';
-
-  try{
-    const txt=await callGemini(`Crie um mapa mental sobre "${tema}" com no máximo 6 ramos.
-Responda SOMENTE JSON puro sem markdown:
-{"tema":"${tema}","ramos":[{"label":"Ramo","cor":"#1e90ff","filhos":["filho1","filho2","filho3"]}]}`);
-    const mm=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
-    renderMapaMentalCanvas(mm);
-    toast('Mapa visual gerado! 🎨','success');
-  }catch(e){toast('Erro: '+e.message,'error');}
-  btn.disabled=false;btn.innerHTML='🎨 Gerar Mapa Visual (desenho)';
-}
-
-function renderMapaMentalCanvas(mm){
-  // Cria canvas acima do resultado texto
-  const container=document.getElementById('mm-resultado');
-  const cores=['#1e90ff','#00e676','#ffab40','#b388ff','#ff5252','#00cfff','#ffd740'];
-  const W=700,H=480;
-  let svg=`<div class="card glow-card" style="margin-bottom:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h3 style="font-size:13px;color:var(--text2)">🎨 Mapa Mental Visual</h3>
-      <button class="btn btn-ghost btn-sm" onclick="downloadMapaSVG()">⬇ Salvar SVG</button>
-    </div>
-    <div style="overflow-x:auto;border-radius:12px;background:#060d1f;border:1px solid var(--border)">
-    <svg id="mm-svg" viewBox="0 0 ${W} ${H}" width="100%" xmlns="http://www.w3.org/2000/svg" style="min-width:340px;display:block">
-    <defs>
-      <radialGradient id="cgrd" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#1e3a6e"/>
-        <stop offset="100%" stop-color="#0a1628"/>
-      </radialGradient>
-    </defs>
-    <rect width="${W}" height="${H}" fill="#060d1f"/>`;
-
-  const cx=W/2,cy=H/2;
-  const ramos=mm.ramos||[];
-  const n=ramos.length||1;
-  const R_branch=150,R_child=85;
-
-  // Nó central
-  const cw=Math.min(160,mm.tema.length*8+40);
-  svg+=`<ellipse cx="${cx}" cy="${cy}" rx="${cw/2}" ry="32" fill="url(#cgrd)" stroke="#1e90ff" stroke-width="2"/>`;
-  svg+=`<text x="${cx}" y="${cy+5}" text-anchor="middle" fill="#e8f0fe" font-size="13" font-weight="bold" font-family="sans-serif">${mm.tema}</text>`;
-
-  ramos.forEach((r,i)=>{
-    const ang=(2*Math.PI/n)*i - Math.PI/2;
-    const bx=cx+Math.cos(ang)*R_branch;
-    const by=cy+Math.sin(ang)*R_branch;
-    const cor=r.cor||cores[i%cores.length];
-    // Linha centro→ramo
-    svg+=`<line x1="${cx}" y1="${cy}" x2="${bx}" y2="${by}" stroke="${cor}" stroke-width="2.5" stroke-opacity="0.6"/>`;
-    // Nó do ramo
-    const bw=Math.min(120,r.label.length*7+28);
-    svg+=`<rect x="${bx-bw/2}" y="${by-18}" width="${bw}" height="36" rx="10" fill="${cor}22" stroke="${cor}" stroke-width="1.5"/>`;
-    svg+=`<text x="${bx}" y="${by+5}" text-anchor="middle" fill="${cor}" font-size="11" font-weight="bold" font-family="sans-serif">${r.label}</text>`;
-
-    const filhos=r.filhos||[];
-    const nf=filhos.length||1;
-    const spread=Math.min(Math.PI*0.7,nf*0.38);
-    filhos.forEach((f,j)=>{
-      const fang=filhos.length===1?ang:ang-spread/2+(spread/(nf-1||1))*j;
-      const dist=R_child+Math.max(0,(nf-2)*12);
-      const fx=bx+Math.cos(fang)*dist,fy=by+Math.sin(fang)*dist;
-      const fw=Math.min(110,String(f).length*6.5+20);
-      svg+=`<line x1="${bx}" y1="${by}" x2="${fx}" y2="${fy}" stroke="${cor}" stroke-width="1.2" stroke-opacity="0.35"/>`;
-      svg+=`<rect x="${fx-fw/2}" y="${fy-12}" width="${fw}" height="24" rx="6" fill="#0a1628" stroke="${cor}" stroke-width="1" stroke-opacity="0.5"/>`;
-      svg+=`<text x="${fx}" y="${fy+4}" text-anchor="middle" fill="#8ab4d4" font-size="10" font-family="sans-serif">${String(f).slice(0,18)}</text>`;
-    });
-  });
-  svg+=`</svg></div></div>`;
-
-  // Prepend visual antes do resultado texto
-  const existing=container.querySelector('#mm-visual-card');
-  if(existing)existing.remove();
-  const div=document.createElement('div');div.id='mm-visual-card';div.innerHTML=svg;
-  container.prepend(div);
-}
-
-function downloadMapaSVG(){
-  const svg=document.getElementById('mm-svg');
-  if(!svg)return;
-  const blob=new Blob([svg.outerHTML],{type:'image/svg+xml'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mapa-mental.svg';a.click();
-  toast('SVG salvo!','success');
-}
-
-// ══════════════ LABORATÓRIO — ANIMAÇÃO PERSONALIZADA COM IA ══════════════
-async function gerarAnimacaoCustom(expNome){
-  // Pede à IA uma descrição de animação em formato estruturado
-  try{
-    const txt=await callGemini(`Para o experimento científico "${expNome}", descreva uma animação simples em formato JSON para ser renderizada num canvas 400x220.
-Responda SOMENTE JSON puro sem markdown:
-{
-  "tipo": "reacao|ondas|particulas|termico|eletrico",
-  "cor_principal": "#hexcolor",
-  "cor_secundaria": "#hexcolor",
-  "descricao_curta": "O que acontece visualmente",
-  "elementos": [
-    {"tipo": "recipiente|particula|seta|onda|termometro|chama", "label": "nome", "x": 200, "y": 110}
-  ],
-  "status_texto": "O que mostrar no status durante animação"
-}`);
-    const anim=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
-    return anim;
-  }catch(e){return null;}
-}
-
-function desenharCustomAnim(ctx,state){
-  const w=ctx.canvas.width,h=ctx.canvas.height;
-  const anim=state.customAnim;
-  const t=state.t||0;
-  const run=state.running;
-  const cor1=anim.cor_principal||'#1e90ff';
-  const cor2=anim.cor_secundaria||'#00cfff';
-  const status=document.getElementById('lab-sim-status');
-
-  if(anim.tipo==='reacao'){
-    // Béquer com reação colorida
+    ctx.fillStyle='#94a3b8';ctx.font='12px sans-serif';ctx.fillText(`pH: ${ph.toFixed(1)}`,170,150);
+    if(status) status.textContent=state.running?`pH mudando: ${ph.toFixed(1)} — ${ph<7?'Ácido':ph>7?'Básico':'Neutro'}`:'Clique em Executar para ver a reação';
+  } else if(sim==='pendulo'){
+    const amp=60;const freq=0.04;
+    const angulo=Math.sin(t*freq)*amp*(state.running?1:1);
+    const rad=angulo*Math.PI/180;
+    const px=200+Math.sin(rad)*150,py=40+Math.cos(rad)*150;
     ctx.strokeStyle='#475569';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(130,40);ctx.lineTo(110,185);ctx.lineTo(290,185);ctx.lineTo(270,40);ctx.stroke();
-    const nivel=run?Math.min(130,t*0.6):60;
-    ctx.fillStyle=cor1+'88';ctx.fillRect(111,185-nivel,178,nivel);
-    if(run){
-      for(let i=0;i<6;i++){
-        ctx.beginPath();ctx.arc(130+i*28,(185-nivel/2)-(t*1.5+i*22)%nivel,3+i%2,0,Math.PI*2);
-        ctx.fillStyle=cor2+'99';ctx.fill();
-      }
-      ctx.fillStyle=cor2;ctx.font='bold 13px sans-serif';
-      ctx.fillText(anim.descricao_curta||'Reação...',80,210);
-    }
+    ctx.beginPath();ctx.moveTo(200,40);ctx.lineTo(px,py);ctx.stroke();
+    ctx.beginPath();ctx.arc(px,py,16,0,Math.PI*2);
+    ctx.fillStyle='#1e90ff';ctx.fill();ctx.strokeStyle='#00cfff';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#475569';ctx.beginPath();ctx.arc(200,40,6,0,Math.PI*2);ctx.fill();
+    if(status) status.textContent=state.running?`Ângulo: ${angulo.toFixed(1)}°`:'Clique para animar o pêndulo';
+  } else if(sim==='quedalivre'){
+    const g=0.3;const y=state.running?Math.min(160,0.5*g*t*t):20;
     ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';
-    ctx.fillText(anim.elementos?.[0]?.label||expNome,155,205);
-  } else if(anim.tipo==='particulas'){
-    if(!state._pts){state._pts=Array.from({length:25},()=>({x:80+Math.random()*240,y:30+Math.random()*150,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3}));}
-    ctx.strokeStyle='#334155';ctx.lineWidth=2;ctx.strokeRect(70,20,260,165);
-    state._pts.forEach(p=>{
-      if(run){p.x+=p.vx;p.y+=p.vy;if(p.x<75||p.x>325)p.vx*=-1;if(p.y<25||p.y>180)p.vy*=-1;}
-      ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);
-      ctx.fillStyle=cor1+'cc';ctx.fill();
-    });
-    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';
-    ctx.fillText(anim.descricao_curta||state.expNome,80,210);
-  } else if(anim.tipo==='termico'){
-    // Termômetro
-    ctx.strokeStyle='#475569';ctx.lineWidth=2;ctx.beginPath();ctx.rect(185,20,30,155);ctx.stroke();
-    ctx.beginPath();ctx.arc(200,180,18,0,Math.PI*2);ctx.fillStyle=cor1+'33';ctx.fill();ctx.stroke();
-    const temp=run?Math.min(140,t*0.6):10;
-    ctx.fillStyle=cor1;ctx.fillRect(194,160-temp,12,temp);
-    ctx.beginPath();ctx.arc(200,180,14,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#e2e8f0';ctx.font='bold 12px sans-serif';ctx.fillText(`${Math.round(temp/1.4)}°C`,210,183);
-    for(let i=0;i<10;i++){const lx=80+i*22,ly=h/2+Math.sin(t*0.06+i)*30;
-      ctx.beginPath();ctx.arc(lx,ly,5,0,Math.PI*2);ctx.fillStyle=`hsl(${10+temp},75%,55%)`;ctx.fill();}
-    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText(anim.descricao_curta||'',80,210);
-  } else if(anim.tipo==='ondas'){
-    for(let k=0;k<3;k++){
-      ctx.beginPath();ctx.strokeStyle=k===0?cor1:k===1?cor2:'#4ade80';ctx.lineWidth=2;
-      for(let x=0;x<w;x++){const y=h/3*(k+0.8)+35*Math.sin((x*0.04+t*0.05)+(k*Math.PI/1.5));
-        if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();
-    }
-    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText(anim.descricao_curta||state.expNome,80,210);
+    for(let i=0;i<=5;i++){ctx.fillText(`${i*40}m`,10,40+i*30);ctx.strokeStyle='#1e293b';ctx.beginPath();ctx.moveTo(30,40+i*30);ctx.lineTo(w-20,40+i*30);ctx.stroke();}
+    ctx.beginPath();ctx.arc(200,20+y,18,0,Math.PI*2);
+    ctx.fillStyle='#f59e0b';ctx.fill();
+    const vel=state.running?g*t:0;
+    if(status) status.textContent=state.running?`v = ${vel.toFixed(1)} m/s · h = ${y.toFixed(1)}m`:'Clique para soltar o objeto';
+  } else if(sim==='osmose'){
+    const membrana=200;
+    ctx.strokeStyle='#475569';ctx.lineWidth=2;
+    ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(membrana,20);ctx.lineTo(membrana,h-20);ctx.stroke();ctx.setLineDash([]);
+    const nEsq=state.running?Math.max(5,20-Math.floor(t/8)):20;
+    const nDir=state.running?Math.min(35,20+Math.floor(t/8)):20;
+    const drawParticles=(n,xmin,xmax,cor)=>{for(let i=0;i<n;i++){const x=xmin+((i*73+t*2)%(xmax-xmin-20));const y=30+((i*47+t)%(h-60));ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=cor;ctx.fill();}};
+    drawParticles(nEsq,10,membrana-10,'#60a5fa');
+    drawParticles(nDir,membrana+10,w-10,'#60a5fa99');
+    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText('Alta conc.',20,h-10);ctx.fillText('Baixa conc.',membrana+10,h-10);
+    if(status) status.textContent=state.running?`Moléculas migrando: ${20-nEsq} passaram`:'Osmose: moléculas do maior para menor concentração';
   } else {
-    // eletrico ou genérico
-    for(let i=0;i<10;i++){
-      const a=(t*0.04)+(i*Math.PI*2/10);const r=60+Math.sin(a*2)*20;
-      const px=w/2+r*Math.cos(a),py=h/2+r*0.65*Math.sin(a);
-      ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=i%2===0?cor1:cor2;ctx.fill();
-      if(i>0){const a2=t*0.04+((i-1)*Math.PI*2/10);const r2=60+Math.sin(a2*2)*20;
-        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(w/2+r2*Math.cos(a2),h/2+r2*0.65*Math.sin(a2));
-        ctx.strokeStyle=cor1+'44';ctx.lineWidth=1;ctx.stroke();}
+    // Genérico animado
+    const cores=['#1e90ff','#00e676','#ffab40','#b388ff'];
+    for(let i=0;i<8;i++){
+      const x=50+i*45,y=h/2+Math.sin(t*0.05+i)*40;
+      ctx.beginPath();ctx.arc(x,y,10,0,Math.PI*2);
+      ctx.fillStyle=cores[i%4];ctx.fill();
     }
-    ctx.beginPath();ctx.arc(w/2,h/2,12,0,Math.PI*2);ctx.fillStyle=cor1;ctx.fill();
-    ctx.fillStyle='#94a3b8';ctx.font='11px sans-serif';ctx.fillText(anim.descricao_curta||state.expNome,80,210);
-  }
-  if(status)status.textContent=run?(anim.status_texto||'Simulação em andamento...'):'▶ Execute para animar';
-}
-
-// ══════════════ CALENDÁRIO DE PROVAS ══════════════
-const VESTIBULARES_BR = [
-  // Federais grandes
-  {nome:'FUVEST',data:'2025-12-01',info:'USP — São Paulo'},
-  {nome:'UNICAMP',data:'2025-10-19',info:'COMVEST — Campinas SP'},
-  {nome:'UNESP',data:'2025-11-23',info:'1ª Fase — São Paulo'},
-  {nome:'UNIFESP',data:'2025-11-30',info:'São Paulo'},
-  {nome:'UFMG',data:'2025-11-16',info:'Belo Horizonte MG'},
-  {nome:'UFRJ',data:'2026-01-05',info:'Rio de Janeiro'},
-  {nome:'UFF',data:'2026-01-11',info:'Niterói RJ'},
-  {nome:'UERJ',data:'2025-09-14',info:'Rio de Janeiro'},
-  {nome:'UFRGS',data:'2026-01-18',info:'Porto Alegre RS'},
-  {nome:'UFSC',data:'2026-01-11',info:'Florianópolis SC'},
-  {nome:'UFPR',data:'2025-11-16',info:'Curitiba PR'},
-  {nome:'UFG',data:'2025-11-09',info:'Goiânia GO'},
-  {nome:'UFBA',data:'2026-01-04',info:'Salvador BA'},
-  {nome:'UFC',data:'2026-01-11',info:'Fortaleza CE'},
-  {nome:'UFPE',data:'2026-01-18',info:'Recife PE'},
-  {nome:'UFRN',data:'2026-01-11',info:'Natal RN'},
-  {nome:'UFPB',data:'2026-01-18',info:'João Pessoa PB'},
-  {nome:'UFMA',data:'2026-01-11',info:'São Luís MA'},
-  {nome:'UFU',data:'2025-11-23',info:'Uberlândia MG'},
-  {nome:'UFJF',data:'2026-01-04',info:'Juiz de Fora MG'},
-  {nome:'UFLA',data:'2026-01-18',info:'Lavras MG'},
-  {nome:'UEL',data:'2025-10-05',info:'Londrina PR'},
-  {nome:'UEM',data:'2025-10-12',info:'Maringá PR'},
-  {nome:'UEPG',data:'2025-10-19',info:'Ponta Grossa PR'},
-  {nome:'UNIOESTE',data:'2025-11-02',info:'Cascavel PR'},
-  {nome:'UDESC',data:'2025-11-16',info:'Florianópolis SC'},
-  {nome:'UFRR',data:'2026-01-11',info:'Boa Vista RR'},
-  {nome:'UNIFAP',data:'2026-01-18',info:'Macapá AP'},
-  {nome:'UFAM',data:'2026-01-04',info:'Manaus AM'},
-  {nome:'UFPA',data:'2026-01-11',info:'Belém PA'},
-  {nome:'UFMT',data:'2026-01-18',info:'Cuiabá MT'},
-  {nome:'UFMS',data:'2026-01-04',info:'Campo Grande MS'},
-  {nome:'UFTO',data:'2026-01-11',info:'Palmas TO'},
-  {nome:'UFRO',data:'2026-01-18',info:'Porto Velho RO'},
-  {nome:'UFAC',data:'2026-01-11',info:'Rio Branco AC'},
-  {nome:'UFPI',data:'2026-01-11',info:'Teresina PI'},
-  {nome:'UFAL',data:'2026-01-18',info:'Maceió AL'},
-  {nome:'UFS',data:'2026-01-11',info:'Aracaju SE'},
-  {nome:'UFC Sobral',data:'2026-01-18',info:'Sobral CE'},
-  {nome:'UFOB',data:'2026-01-11',info:'Barreiras BA'},
-  {nome:'UFRB',data:'2026-01-18',info:'Cruz das Almas BA'},
-  {nome:'UESC',data:'2025-11-16',info:'Ilhéus BA'},
-  {nome:'UEFS',data:'2025-11-09',info:'Feira de Santana BA'},
-  {nome:'UESB',data:'2025-11-02',info:'Vitória da Conquista BA'},
-  {nome:'UNEB',data:'2025-10-19',info:'Salvador BA'},
-  {nome:'UECE',data:'2025-10-12',info:'Fortaleza CE'},
-  {nome:'URCA',data:'2025-10-05',info:'Crato CE — Universidade Regional do Cariri'},
-  {nome:'UVA',data:'2025-10-19',info:'Sobral CE'},
-  {nome:'UERN',data:'2026-01-11',info:'Mossoró RN'},
-  {nome:'UEPB',data:'2026-01-18',info:'Campina Grande PB'},
-  {nome:'UFCG',data:'2026-01-11',info:'Campina Grande PB'},
-  {nome:'UFPEL',data:'2026-01-18',info:'Pelotas RS'},
-  {nome:'FURG',data:'2026-01-11',info:'Rio Grande RS'},
-  {nome:'UFSM',data:'2026-01-18',info:'Santa Maria RS'},
-  {nome:'UCS',data:'2025-11-09',info:'Caxias do Sul RS'},
-  {nome:'UNIJUÍ',data:'2025-11-02',info:'Ijuí RS'},
-  {nome:'UNIVALI',data:'2025-10-26',info:'Itajaí SC'},
-  {nome:'FURB',data:'2025-11-09',info:'Blumenau SC'},
-  {nome:'UNISUL',data:'2025-11-02',info:'Florianópolis SC'},
-  {nome:'UTFPR',data:'2025-11-16',info:'Curitiba PR'},
-  {nome:'UNICENTRO',data:'2025-10-19',info:'Guarapuava PR'},
-  {nome:'UENP',data:'2025-10-26',info:'Jacarezinho PR'},
-  {nome:'UEG',data:'2025-11-02',info:'Anápolis GO'},
-  {nome:'UFJ',data:'2026-01-11',info:'Jataí GO'},
-  {nome:'UFT',data:'2026-01-18',info:'Palmas TO'},
-  {nome:'UFRPE',data:'2026-01-11',info:'Recife PE'},
-  {nome:'UNIVASF',data:'2026-01-18',info:'Petrolina PE'},
-  {nome:'UPE',data:'2025-11-02',info:'Recife PE'},
-  {nome:'UFOPA',data:'2026-01-11',info:'Santarém PA'},
-  {nome:'UNIFESSPA',data:'2026-01-18',info:'Marabá PA'},
-  {nome:'UEPA',data:'2025-11-09',info:'Belém PA'},
-  {nome:'UEAM',data:'2026-01-11',info:'Manaus AM'},
-  {nome:'UEA',data:'2025-10-19',info:'Manaus AM'},
-  {nome:'UNIMONTES',data:'2026-01-11',info:'Montes Claros MG'},
-  {nome:'UFSJ',data:'2026-01-18',info:'São João del Rei MG'},
-  {nome:'UFVJM',data:'2026-01-11',info:'Diamantina MG'},
-  {nome:'UFV',data:'2026-01-18',info:'Viçosa MG'},
-  {nome:'UFOP',data:'2026-01-11',info:'Ouro Preto MG'},
-  {nome:'UFTM',data:'2026-01-18',info:'Uberaba MG'},
-  {nome:'UNIUBE',data:'2025-11-09',info:'Uberaba MG'},
-  {nome:'UNITAU',data:'2025-10-26',info:'Taubaté SP'},
-  {nome:'UNIARA',data:'2025-11-02',info:'Araraquara SP'},
-  {nome:'UFSCAR',data:'2026-01-11',info:'São Carlos SP'},
-  {nome:'UNIFEI',data:'2026-01-18',info:'Itajubá MG'},
-  // Particulares grandes
-  {nome:'PUC-SP',data:'2025-11-30',info:'São Paulo'},
-  {nome:'PUC-MG',data:'2025-10-27',info:'Belo Horizonte MG'},
-  {nome:'PUC-RIO',data:'2025-12-07',info:'Rio de Janeiro'},
-  {nome:'PUC-RS',data:'2025-11-16',info:'Porto Alegre RS'},
-  {nome:'PUC-PR',data:'2025-11-09',info:'Curitiba PR'},
-  {nome:'PUC-Campinas',data:'2025-11-02',info:'Campinas SP'},
-  {nome:'Mackenzie',data:'2025-11-09',info:'São Paulo'},
-  {nome:'FAAP',data:'2025-11-16',info:'São Paulo'},
-  {nome:'FEI',data:'2025-11-02',info:'São Paulo'},
-  {nome:'ESPM',data:'2025-10-26',info:'São Paulo'},
-  {nome:'Insper',data:'2025-10-12',info:'São Paulo'},
-  {nome:'FGV-SP',data:'2026-01-11',info:'São Paulo'},
-  {nome:'FGV-RIO',data:'2026-01-18',info:'Rio de Janeiro'},
-  {nome:'UNIP',data:'2025-10-19',info:'São Paulo'},
-  {nome:'ANHANGUERA',data:'2025-10-26',info:'Nacional'},
-  {nome:'KROTON',data:'2025-11-02',info:'Nacional'},
-  {nome:'ESTÁCIO',data:'2025-11-09',info:'Nacional'},
-  {nome:'UNOPAR',data:'2025-10-19',info:'Londrina PR'},
-  {nome:'UNP',data:'2025-10-26',info:'Natal RN'},
-  {nome:'UNINASSAU',data:'2025-11-02',info:'Recife PE'},
-  {nome:'UNIFOR',data:'2025-10-19',info:'Fortaleza CE'},
-  {nome:'UNICHRISTUS',data:'2025-10-26',info:'Fortaleza CE'},
-  {nome:'FANOR',data:'2025-11-02',info:'Fortaleza CE'},
-  {nome:'UNIATENEU',data:'2025-10-19',info:'Fortaleza CE'},
-  // Militares
-  {nome:'ITA',data:'2025-12-14',info:'Inst. Tecnológico de Aeronáutica — SP'},
-  {nome:'IME',data:'2025-09-28',info:'Inst. Militar de Engenharia — RJ'},
-  {nome:'ESPCEX',data:'2025-10-05',info:'Escola Preparatória de Cadetes do Exército'},
-  {nome:'AFA',data:'2025-10-19',info:'Academia da Força Aérea — SP'},
-  {nome:'AMAN',data:'2025-09-21',info:'Academia Militar das Agulhas Negras — RJ'},
-  {nome:'EN',data:'2025-10-12',info:'Escola Naval — RJ'},
-  {nome:'ESAG',data:'2025-10-26',info:'Escola de Saúde do Exército'},
-  // Programas nacionais
-  {nome:'SISU',data:'2026-01-22',info:'Sistema de Seleção Unificada — MEC'},
-  {nome:'PROUNI',data:'2026-01-20',info:'Programa Universidade para Todos — MEC'},
-  {nome:'FIES',data:'2026-02-01',info:'Financiamento Estudantil — MEC'},
-  {nome:'ENEM',data:'2025-11-02',info:'Dia 1 — Linguagens e Humanas'},
-  {nome:'ENEM Dia 2',data:'2025-11-09',info:'Dia 2 — Matemática e Ciências'},
-  {nome:'VUNESP',data:'2025-11-02',info:'Fundação Vunesp — SP'},
-  {nome:'ACAFE',data:'2025-11-09',info:'Associação Catarinense — SC'},
-  {nome:'CEFET-MG',data:'2025-11-09',info:'Centro Federal Tecnológico — MG'},
-  {nome:'IFSP',data:'2025-11-16',info:'Instituto Federal — SP'},
-  {nome:'IFCE',data:'2025-11-09',info:'Instituto Federal — CE'},
-  {nome:'IFBA',data:'2025-11-02',info:'Instituto Federal — BA'},
-  {nome:'IFPE',data:'2025-11-16',info:'Instituto Federal — PE'},
-  {nome:'IFRN',data:'2025-11-09',info:'Instituto Federal — RN'},
-];
-
-let calMesAtual = new Date().getMonth();
-let calAnoAtual = new Date().getFullYear();
-let calCorSel = '#1e90ff';
-
-function applyDefCal(d){
-  if(!d.calEventos) d.calEventos = [];
-  // Sempre garante ENEM fixo
-  const temEnem1 = d.calEventos.find(e=>e.id==='enem-fixo-1');
-  if(!temEnem1) d.calEventos.push({id:'enem-fixo-1',nome:'ENEM — Dia 1',data:'2025-11-02',tipo:'enem',cor:'#ff5252',obs:'Linguagens, Ciências Humanas e Redação',fixo:true});
-  const temEnem2 = d.calEventos.find(e=>e.id==='enem-fixo-2');
-  if(!temEnem2) d.calEventos.push({id:'enem-fixo-2',nome:'ENEM — Dia 2',data:'2025-11-09',tipo:'enem',cor:'#ff5252',obs:'Matemática e Ciências da Natureza',fixo:true});
-  return d;
-}
-
-function initCalendario(){
-  if(!_sReady())return;
-  applyDefCal(S);
-  renderCalGrade();
-  renderCalProximas();
-  renderCalVestibulares('');
-}
-
-function filtrarVestibulares(){
-  const q = document.getElementById('cal-busca').value;
-  renderCalVestibulares(q);
-}
-
-function renderCalVestibulares(q){
-  const el = document.getElementById('cal-vestibulares-list');
-  const lista = VESTIBULARES_BR.filter(v=>!q||v.nome.toLowerCase().includes(q.toLowerCase())||v.info.toLowerCase().includes(q.toLowerCase()));
-  el.innerHTML = lista.map(v=>{
-    const jaAdd = S.calEventos?.find(e=>e.nome.includes(v.nome));
-    return `<div onclick="adicionarVestibular('${v.nome}','${v.data}','${v.info}',this)"
-      style="padding:5px 10px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid ${jaAdd?'var(--green)':'var(--border)'};background:${jaAdd?'rgba(0,230,118,.08)':'var(--bg3)'};color:${jaAdd?'var(--green)':'var(--text2)'};transition:all .2s">
-      ${jaAdd?'✓ ':''} ${v.nome} <span style="color:var(--text3);font-size:10px">${v.info}</span>
-    </div>`;
-  }).join('');
-}
-
-function adicionarVestibular(nome,data,info,el){
-  if(!_sReady())return;
-  const jaAdd = S.calEventos?.find(e=>e.nome===nome&&e.tipo==='vestibular');
-  if(jaAdd){
-    S.calEventos = S.calEventos.filter(e=>!(e.nome===nome&&e.tipo==='vestibular'));
-    save();toast(`${nome} removido do calendário`,'info');
-  } else {
-    S.calEventos.push({id:'vest-'+Date.now(),nome,data,tipo:'vestibular',cor:'#1e90ff',obs:info,fixo:false});
-    save();toast(`${nome} adicionado! 📅 Indo para ${new Date(data+'T00:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}...`,'success');
-    // Navegar para o mês da prova
-    const dataObj=new Date(data+'T00:00:00');
-    calMesAtual=dataObj.getMonth();
-    calAnoAtual=dataObj.getFullYear();
-  }
-  renderCalGrade();renderCalProximas();
-  renderCalVestibulares(document.getElementById('cal-busca').value||'');
-}
-
-function calNavMes(dir){
-  calMesAtual+=dir;
-  if(calMesAtual>11){calMesAtual=0;calAnoAtual++;}
-  if(calMesAtual<0){calMesAtual=11;calAnoAtual--;}
-  renderCalGrade();
-}
-
-function renderCalGrade(){
-  if(!_sReady())return;
-  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  document.getElementById('cal-mes-label').textContent=`${meses[calMesAtual]} ${calAnoAtual}`;
-  const grid=document.getElementById('cal-grid');
-  const primeiro=new Date(calAnoAtual,calMesAtual,1).getDay();
-  const dias=new Date(calAnoAtual,calMesAtual+1,0).getDate();
-  const hoje=new Date();
-  let html='';
-  for(let i=0;i<primeiro;i++) html+=`<div></div>`;
-  for(let d=1;d<=dias;d++){
-    const dataStr=`${calAnoAtual}-${String(calMesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const eventos=(S.calEventos||[]).filter(e=>e.data===dataStr);
-    const isHoje=d===hoje.getDate()&&calMesAtual===hoje.getMonth()&&calAnoAtual===hoje.getFullYear();
-    const dots=eventos.map(e=>`<div style="width:5px;height:5px;border-radius:50%;background:${e.cor||'#1e90ff'};margin:0 1px;flex-shrink:0"></div>`).join('');
-    html+=`<div onclick="clickDiaCal('${dataStr}')" style="min-height:38px;border-radius:7px;padding:4px;text-align:center;cursor:pointer;border:1px solid ${isHoje?'var(--blue2)':eventos.length?'var(--border2)':'transparent'};background:${isHoje?'rgba(30,144,255,.15)':eventos.length?'rgba(30,144,255,.06)':'transparent'};transition:all .2s;position:relative" onmouseenter="this.style.background='rgba(30,144,255,.1)'" onmouseleave="this.style.background='${isHoje?'rgba(30,144,255,.15)':eventos.length?'rgba(30,144,255,.06)':'transparent'}'">
-      <div style="font-size:12px;font-weight:${isHoje?'700':'400'};color:${isHoje?'var(--blue2)':'var(--text)'}">${d}</div>
-      <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:1px;margin-top:2px">${dots}</div>
-    </div>`;
-  }
-  grid.innerHTML=html;
-}
-
-function clickDiaCal(dataStr){
-  const eventos=(S.calEventos||[]).filter(e=>e.data===dataStr);
-  const hoje=new Date();hoje.setHours(0,0,0,0);
-  const data=new Date(dataStr+'T00:00:00');
-  const diff=Math.round((data-hoje)/(1000*60*60*24));
-  const diffTexto=diff>0?`Faltam ${diff>30?Math.ceil(diff/30)+' meses e '+(diff%30)+' dias':diff+' dias'}`:(diff===0?'Hoje!':'Passou há '+Math.abs(diff)+' dias');
-  if(!eventos.length){
-    // Abrir modal para adicionar
-    document.getElementById('cal-ev-data').value=dataStr;
-    openModal('modal-cal-evento');
-    return;
-  }
-  // Mostrar detalhes
-  const info=eventos.map(e=>`<div style="background:var(--bg3);border:1px solid ${e.cor||'#1e90ff'};border-radius:10px;padding:12px;margin-bottom:8px">
-    <div style="display:flex;justify-content:space-between;align-items:start">
-      <div><div style="font-weight:700;font-size:14px;color:${e.cor||'#1e90ff'}">${e.nome}</div>
-      ${e.obs?`<div style="font-size:12px;color:var(--text2);margin-top:3px">${e.obs}</div>`:''}
-      <div style="font-size:13px;font-weight:600;margin-top:6px">${diffTexto}</div></div>
-      ${!e.fixo?`<button onclick="removerEventoCal('${e.id}','${e.data}')" class="btn btn-danger btn-sm" style="font-size:10px">✕</button>`:'<span class="badge badge-red" style="font-size:10px">FIXO</span>'}
-    </div>
-  </div>`).join('');
-  const overlay=document.createElement('div');
-  overlay.className='modal-overlay open';overlay.innerHTML=`<div class="modal" style="max-width:400px"><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button><h2>${new Date(dataStr+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</h2><div style="margin-top:14px">${info}</div></div>`;
-  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
-  document.body.appendChild(overlay);
-}
-
-function removerEventoCal(id,dataStr){
-  S.calEventos=S.calEventos.filter(e=>e.id!==id);save();
-  document.querySelectorAll('.modal-overlay:not(#modal-cal-evento):not(#modal-confirm-del):not(#modal-rotina):not(#modal-meta):not(#modal-alarm):not(#modal-ex-dia)').forEach(o=>o.remove());
-  renderCalGrade();renderCalProximas();toast('Evento removido','info');
-  // Se ainda há eventos no dia, reabre o popup; senão abre modal para adicionar
-  if(dataStr){
-    setTimeout(()=>{
-      const restantes=(S.calEventos||[]).filter(e=>e.data===dataStr);
-      if(restantes.length) clickDiaCal(dataStr);
-      else { document.getElementById('cal-ev-data').value=dataStr; openModal('modal-cal-evento'); }
-    },150);
+    if(status) status.textContent=state.running?'Simulação em andamento...':'Clique em Executar para animar';
   }
 }
-
-function renderCalProximas(){
-  if(!_sReady())return;
-  const hoje=new Date();hoje.setHours(0,0,0,0);
-  const proximas=(S.calEventos||[]).filter(e=>new Date(e.data+'T00:00:00')>=hoje).sort((a,b)=>new Date(a.data)-new Date(b.data)).slice(0,8);
-  const cd=document.getElementById('cal-countdown');
-  const pr=document.getElementById('cal-proximas');
-  if(!proximas.length){cd.innerHTML='<p style="font-size:13px;color:var(--text3)">Nenhuma prova futura</p>';pr.innerHTML='';return;}
-  const prox=proximas[0];const diff=Math.round((new Date(prox.data+'T00:00:00')-hoje)/(1000*60*60*24));
-  const semanas=Math.floor(diff/7);const dias=diff%7;
-  cd.innerHTML=`<div style="text-align:center;padding:10px 0">
-    <div style="font-family:var(--font2);font-size:42px;font-weight:800;color:${prox.cor||'var(--blue2)'};">${diff}</div>
-    <div style="font-size:13px;color:var(--text2)">dias para</div>
-    <div style="font-size:16px;font-weight:700;margin:4px 0">${prox.nome}</div>
-    <div style="font-size:12px;color:var(--text3)">${semanas>0?semanas+'sem '+dias+'d':diff+'d'} · ${new Date(prox.data+'T00:00:00').toLocaleDateString('pt-BR')}</div>
-  </div>`;
-  pr.innerHTML=proximas.map(e=>{
-    const d=Math.round((new Date(e.data+'T00:00:00')-hoje)/(1000*60*60*24));
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <div style="width:8px;height:8px;border-radius:50%;background:${e.cor||'#1e90ff'};flex-shrink:0"></div>
-      <div style="flex:1"><div style="font-size:13px;font-weight:600">${e.nome}</div>
-      <div style="font-size:11px;color:var(--text3)">${new Date(e.data+'T00:00:00').toLocaleDateString('pt-BR')}</div></div>
-      <span class="badge badge-blue" style="font-size:10px">${d}d</span>
-    </div>`;
-  }).join('');
-}
-
-function selCor(el){
-  document.querySelectorAll('.cal-cor-opt').forEach(e=>e.style.border='2px solid transparent');
-  el.style.border='3px solid white';calCorSel=el.dataset.cor;
-}
-
-function salvarEventoCal(){
-  const nome=document.getElementById('cal-ev-nome').value.trim();
-  const data=document.getElementById('cal-ev-data').value;
-  if(!nome||!data){toast('Preencha nome e data','error');return;}
-  S.calEventos.push({id:'ev-'+Date.now(),nome,data,tipo:document.getElementById('cal-ev-tipo').value,cor:calCorSel,obs:document.getElementById('cal-ev-obs').value,fixo:false});
-  save();closeModal('modal-cal-evento');renderCalGrade();renderCalProximas();
-  document.getElementById('cal-ev-nome').value='';document.getElementById('cal-ev-obs').value='';
-  toast('Prova adicionada! 📅','success');
-}
-
-// ══════════════ ESTATÍSTICAS ══════════════
-function initEstatisticas(){
-  if(!_sReady())return;
-  renderStatsEnemArea();renderStatsStreaks();renderChartCanvas();
-}
-
-function renderChartCanvas(){
-  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  const cards=[],pomos=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date(Date.now()-i*86400000).toDateString();
-    cards.push(S.stats.activity[d]||0);
-    pomos.push(S.stats.pomoDays[d]||0);
-  }
-  ['chart-cards','chart-pomo'].forEach((id,ci)=>{
-    const canvas=document.getElementById(id);if(!canvas)return;
-    const ctx=canvas.getContext('2d');
-    const data=ci===0?cards:pomos;const maxV=Math.max(...data,1);
-    const W=canvas.offsetWidth||300,H=120;
-    canvas.width=W;canvas.height=H;
-    ctx.clearRect(0,0,W,H);ctx.fillStyle='#060d1f';ctx.fillRect(0,0,W,H);
-    const bw=(W-40)/(data.length);
-    data.forEach((v,i)=>{
-      const bh=Math.max(4,(v/maxV)*(H-30));
-      const x=20+i*bw+bw*0.1,y=H-20-bh;
-      const grd=ctx.createLinearGradient(0,y,0,H-20);
-      grd.addColorStop(0,ci===0?'#1e90ff':'#00cfff');grd.addColorStop(1,ci===0?'#0050c8':'#007fa3');
-      ctx.fillStyle=grd;ctx.beginPath();
-      ctx.roundRect(x,y,bw*0.8,bh,4);ctx.fill();
-      ctx.fillStyle='#475569';ctx.font='9px sans-serif';ctx.textAlign='center';
-      ctx.fillText(dias[(new Date().getDay()-6+i+7)%7],x+bw*0.4,H-6);
-      if(v>0){ctx.fillStyle='#e2e8f0';ctx.fillText(v,x+bw*0.4,y-3);}
-    });
-  });
-}
-
-function renderStatsEnemArea(){
-  const el=document.getElementById('stats-enem-area');if(!el)return;
-  const areas={cn:'Ciências da Natureza',ch:'Ciências Humanas',lc:'Linguagens',mt:'Matemática'};
-  el.innerHTML=Object.entries(areas).map(([k,n])=>{
-    const hist=(S.enemHistory||[]).filter(h=>h.area===k);
-    if(!hist.length)return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${n}</span><span style="color:var(--text3)">sem dados</span></div><div class="progress"><div class="progress-bar" style="width:0%"></div></div></div>`;
-    const avg=Math.round(hist.reduce((s,h)=>s+h.pct,0)/hist.length);
-    const col=avg>=70?'var(--green)':avg>=50?'var(--orange)':'var(--red)';
-    return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span>${n}</span><span style="font-weight:600;color:${col}">${avg}% (${hist.length} simulados)</span></div><div class="progress"><div class="progress-bar" style="width:${avg}%;background:${col}"></div></div></div>`;
-  }).join('');
-}
-
-function renderStatsStreaks(){
-  const el=document.getElementById('stats-streaks');if(!el)return;
-  const melhorStreak=Math.max(S.streak||0,...Object.values(S.stats?.pomoDays||{}).map(()=>1));
-  el.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.streak||0}🔥</div><div class="stat-label">Streak atual</div></div>
-      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.stats?.pomo||0}</div><div class="stat-label">Total Pomodoros</div></div>
-      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.stats?.cards||0}</div><div class="stat-label">Cards revisados</div></div>
-      <div class="stat-card"><div class="stat-num" style="font-size:24px">${S.stats?.quiz||0}</div><div class="stat-label">Questões respondidas</div></div>
-    </div>
-    <div style="margin-top:12px;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.7">
-      📅 Estudando desde: ${S.lastStudyDate?new Date(S.lastStudyDate).toLocaleDateString('pt-BR'):'sem dados'}<br>
-      ✅ Taxa de acerto ENEM: ${S.stats?.quiz>0?Math.round(S.stats.quizCorrect/S.stats.quiz*100)+'%':'sem dados'}<br>
-      📚 Decks de flashcards: ${[...new Set((S.flashcards||[]).map(c=>c.deck))].length}
-    </div>`;
-}
-
-async function gerarAnaliseIA(){
-  const el=document.getElementById('stats-analise-ia');
-  el.style.display='block';el.innerHTML='<span class="loading"></span> Analisando seu desempenho...';
-  const dados=`Cards: ${S.stats?.cards||0}, Pomodoros: ${S.stats?.pomo||0}, Quiz: ${S.stats?.quiz||0}, Acerto: ${S.stats?.quiz>0?Math.round(S.stats.quizCorrect/S.stats.quiz*100)+'%':'0%'}, Streak: ${S.streak||0} dias, Flashcards: ${(S.flashcards||[]).length}, Histórico ENEM: ${(S.enemHistory||[]).slice(0,3).map(h=>`${h.area}:${h.pct}%`).join(', ')||'sem dados'}`;
-  try{
-    const txt=await callGemini(`Você é um orientador educacional. Analise estes dados de estudo de um estudante e forneça: 1) Diagnóstico do desempenho atual, 2) Pontos fortes identificados, 3) Áreas que precisam de atenção, 4) Plano de ação para as próximas 2 semanas, 5) Motivação personalizada. Dados: ${dados}. Seja específico, empático e motivador. Em português.`);
-    el.innerHTML=txt.replace(/\n/g,'<br>');
-  }catch(e){el.innerHTML='❌ '+e.message;}
-}
-
-// ══════════════ DESAFIOS / GAMIFICAÇÃO ══════════════
-const NIVEIS_DESAFIO=[
-  {xp:0,titulo:'Estudante Iniciante',icon:'🥉'},
-  {xp:100,titulo:'Aprendiz Dedicado',icon:'🥈'},
-  {xp:300,titulo:'Estudante Avançado',icon:'🥇'},
-  {xp:600,titulo:'Mestre do Estudo',icon:'🏆'},
-  {xp:1000,titulo:'Lenda Acadêmica',icon:'👑'},
-  {xp:2000,titulo:'Gênio do Conhecimento',icon:'⚡'},
-];
-
-const DESAFIOS_FIXOS=[
-  {id:'d1',nome:'Revisar 10 flashcards',xp:20,icone:'🧠',tipo:'cards',meta:10},
-  {id:'d2',nome:'Completar 3 pomodoros',xp:30,icone:'⏱️',tipo:'pomo',meta:3},
-  {id:'d3',nome:'Responder 5 questões ENEM',xp:25,icone:'📝',tipo:'quiz',meta:5},
-  {id:'d4',nome:'Escrever no diário',xp:15,icone:'📓',tipo:'diario',meta:1},
-  {id:'d5',nome:'Gerar um mapa mental',xp:20,icone:'🗺️',tipo:'mapa',meta:1},
-  {id:'d6',nome:'Estudar 45 minutos',xp:40,icone:'🎯',tipo:'tempo',meta:45},
-  {id:'d7',nome:'Ler 3 notícias de atualidade',xp:15,icone:'📰',tipo:'noticias',meta:3},
-  {id:'d8',nome:'Criar 5 flashcards novos',xp:25,icone:'✏️',tipo:'criar',meta:5},
-];
-
-function initDesafios(){
-  if(!_sReady())return;
-  if(!S.desafios){S.desafios={xp:0,diarios:[],semanais:[],lastReset:'',conquistas:[]};}
-  const hoje=new Date().toDateString();
-  if(S.desafios.lastReset!==hoje){
-    S.desafios.diarios=DESAFIOS_FIXOS.sort(()=>Math.random()-.5).slice(0,3).map(d=>({...d,feito:false,progresso:0}));
-    S.desafios.lastReset=hoje;
-    save();
-  }
-  renderDesafios();
-}
-
-function renderDesafios(){
-  if(!S.desafios)return;
-  // Nível
-  const xp=S.desafios.xp||0;
-  let nivel=0;
-  for(let i=NIVEIS_DESAFIO.length-1;i>=0;i--){if(xp>=NIVEIS_DESAFIO[i].xp){nivel=i;break;}}
-  const n=NIVEIS_DESAFIO[nivel];
-  const prox=NIVEIS_DESAFIO[Math.min(nivel+1,NIVEIS_DESAFIO.length-1)];
-  const pct=Math.min(100,Math.round((xp-n.xp)/(prox.xp-n.xp)*100));
-  document.getElementById('desafio-nivel-icon').textContent=n.icon;
-  document.getElementById('desafio-nivel').textContent=`Nível ${nivel+1}`;
-  document.getElementById('desafio-titulo-nivel').textContent=n.titulo;
-  document.getElementById('desafio-xp-bar').style.width=pct+'%';
-  document.getElementById('desafio-xp-atual').textContent=xp;
-  document.getElementById('desafio-xp-prox').textContent=prox.xp;
-  // Diários
-  const dd=document.getElementById('desafios-diarios');
-  dd.innerHTML=(S.desafios.diarios||[]).map((d,i)=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:22px">${d.icone}</span>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;${d.feito?'text-decoration:line-through;color:var(--text3)':''}">${d.nome}</div>
-        <div style="font-size:11px;color:var(--text3)">+${d.xp} XP</div>
-      </div>
-      ${d.feito?'<span class="badge badge-green">✓ Feito</span>':`<button class="btn btn-ghost btn-sm" onclick="concluirDesafio(${i})">Concluir</button>`}
-    </div>`).join('');
-  // Semanais
-  const ds=document.getElementById('desafios-semanais');
-  const semanais=[
-    {nome:'Completar 5 simulados ENEM',xp:100,icone:'📊',progresso:Math.min(5,S.enemHistory?.length||0),meta:5},
-    {nome:'Estudar 7 dias seguidos',xp:150,icone:'🔥',progresso:Math.min(7,S.streak||0),meta:7},
-    {nome:'Revisar 50 flashcards',xp:80,icone:'🧠',progresso:Math.min(50,S.stats?.cards||0),meta:50},
-    {nome:'Escrever 3 redações',xp:120,icone:'✍️',progresso:Math.min(3,S.correcoes?.length||0),meta:3},
-  ];
-  ds.innerHTML=semanais.map(d=>{
-    const pct=Math.min(100,Math.round(d.progresso/d.meta*100));
-    return `<div style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-        <span>${d.icone} ${d.nome}</span>
-        <span style="color:var(--blue2);font-weight:600">${d.progresso}/${d.meta} · +${d.xp}XP</span>
-      </div>
-      <div class="progress"><div class="progress-bar" style="width:${pct}%;${pct>=100?'background:var(--green)':''}"></div></div>
-    </div>`;
-  }).join('');
-  // Conquistas
-  const dc=document.getElementById('desafios-conquistas');
-  const conquistasAtuais=CONQUISTAS.filter(c=>c.check());
-  dc.innerHTML=conquistasAtuais.length?conquistasAtuais.map(c=>`
-    <div style="background:rgba(255,215,64,.08);border:1px solid rgba(255,215,64,.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:28px">${c.icon}</span>
-      <div><div style="font-size:13px;font-weight:600;color:var(--yellow)">${c.name}</div><div style="font-size:11px;color:var(--text2)">${c.desc}</div></div>
-    </div>`).join(''):'<p style="font-size:13px;color:var(--text3)">Complete desafios para desbloquear conquistas!</p>';
-}
-
-function concluirDesafio(i){
-  S.desafios.diarios[i].feito=true;
-  const xp=S.desafios.diarios[i].xp;
-  S.desafios.xp=(S.desafios.xp||0)+xp;
-  save();renderDesafios();toast(`+${xp} XP! 🎉`,'success');
-}
-
-async function gerarDesafioIA(){
-  const btn=event.target;btn.disabled=true;btn.innerHTML='<span class="loading"></span>';
-  const perfil=`Cards:${S.stats?.cards||0}, Pomodoros:${S.stats?.pomo||0}, Streak:${S.streak||0}, Matéria fraca:${Object.entries(S.stats?.enemPerf||{}).sort(([,a],[,b])=>(a.c/a.t||0)-(b.c/b.t||0))[0]?.[0]||'?'}`;
-  try{
-    const txt=await callGemini(`Crie 1 desafio de estudo personalizado e criativo para um estudante com este perfil: ${perfil}. O desafio deve ser específico, motivador e alcançável em 1 dia. Formato: EMOJI Nome do desafio (1 linha, máximo 60 caracteres). Depois 1 linha de instrução. Em português.`);
-    const dd=document.getElementById('desafios-diarios');
-    const div=document.createElement('div');
-    div.style.cssText='background:rgba(179,136,255,.08);border:1px solid rgba(179,136,255,.3);border-radius:10px;padding:12px;margin-top:10px';
-    div.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:4px">🤖 Desafio Personalizado</div><div style="font-size:13px;color:var(--text);line-height:1.6">${txt}</div><button onclick="S.desafios.xp=(S.desafios.xp||0)+50;save();renderDesafios();this.parentElement.remove();toast('+50 XP!','success')" class="btn btn-ghost btn-sm" style="margin-top:8px;font-size:11px;color:var(--purple);border-color:rgba(179,136,255,.4)">✅ Marcar como concluído (+50 XP)</button>`;
-    dd.after(div);
-  }catch(e){toast('Erro ao gerar desafio','error');}
-  btn.disabled=false;btn.innerHTML='🤖 Gerar desafio personalizado';
-}
-
-// ══════════════ NOTÍCIAS COM IA ══════════════
-let noticiasSessao=[];
-async function carregarNoticias(){
-  const filtro=document.getElementById('noticias-filtro').value;
-  const grid=document.getElementById('noticias-grid');
-  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px"><span class="loading"></span><p style="margin-top:10px;font-size:13px;color:var(--text2)">Buscando notícias com IA...</p></div>';
-  const temaMap={geral:'ENEM 2025, vestibulares e educação brasileira',enem:'ENEM 2025 inscrições, resultados e novidades do MEC',redacao:'temas relevantes para redação ENEM 2025: atualidades brasileiras e mundiais',ciencia:'ciência e tecnologia que podem cair no ENEM',social:'questões sociais e desigualdade no Brasil para redação',politica:'política e economia brasileira para o ENEM',ambiental:'meio ambiente e sustentabilidade para redação ENEM'};
-  try{
-    const txt=await callGemini(`Você é um jornalista educacional brasileiro. Gere 6 notícias fictícias mas realistas e educativas sobre: ${temaMap[filtro]||temaMap.geral}. As notícias devem ser relevantes para estudantes do ENEM 2025, informativas e baseadas em tendências reais.
-Responda SOMENTE JSON puro:
-{"noticias":[{"titulo":"Título da notícia","resumo":"2-3 frases de resumo informativo","categoria":"Categoria","relevancia":"Por que importa para o ENEM","emoji":"🎓","data":"data fictícia recente"}]}`);
-    const data=JSON.parse(txt.replace(/\`\`\`json|\`\`\`/g,'').trim());
-    noticiasSessao=data.noticias||[];
-    renderNoticias();
-  }catch(e){grid.innerHTML=`<p style="color:var(--red);font-size:13px;padding:20px">❌ ${e.message}</p>`;}
-}
-
-function renderNoticias(){
-  const grid=document.getElementById('noticias-grid');
-  if(!noticiasSessao.length){grid.innerHTML='<p style="color:var(--text3);font-size:13px">Clique em Atualizar para carregar notícias</p>';return;}
-  grid.innerHTML=noticiasSessao.map((n,i)=>`
-    <div class="card" style="cursor:pointer;transition:all .2s;border-color:${i===0?'var(--blue3)':'var(--border)'}" onclick="expandirNoticia(${i})" onmouseenter="this.style.borderColor='var(--blue2)'" onmouseleave="this.style.borderColor='${i===0?'var(--blue3)':'var(--border)'}'">
-      <div style="display:flex;align-items:start;gap:12px">
-        <span style="font-size:28px;flex-shrink:0">${n.emoji||'📰'}</span>
-        <div style="flex:1">
-          <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-            <span class="badge badge-blue" style="font-size:10px">${n.categoria||'ENEM'}</span>
-            <span style="font-size:10px;color:var(--text3)">${n.data||'Hoje'}</span>
-          </div>
-          <h3 style="font-size:14px;font-weight:700;line-height:1.4;margin-bottom:6px">${n.titulo}</h3>
-          <p style="font-size:12px;color:var(--text2);line-height:1.6">${n.resumo}</p>
-          <div style="margin-top:8px;background:rgba(30,144,255,.07);border-radius:6px;padding:7px 10px;font-size:11px;color:var(--blue2)">
-            📌 <strong>Relevância ENEM:</strong> ${n.relevancia}
-          </div>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-function expandirNoticia(i){
-  const n=noticiasSessao[i];if(!n)return;
-  const ov=document.createElement('div');ov.className='modal-overlay open';
-  ov.innerHTML=`<div class="modal" style="max-width:550px">
-    <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
-    <div style="font-size:32px;margin-bottom:10px">${n.emoji}</div>
-    <span class="badge badge-blue">${n.categoria}</span>
-    <h2 style="font-size:17px;margin:10px 0">${n.titulo}</h2>
-    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px">${n.resumo}</p>
-    <div style="background:rgba(30,144,255,.08);border:1px solid var(--blue3);border-radius:10px;padding:12px;font-size:13px;line-height:1.7">
-      🎯 <strong style="color:var(--blue2)">Por que cai no ENEM:</strong><br>${n.relevancia}
-    </div>
-    <button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="usarNoticiaTema('${n.titulo.replace(/'/g,"\\'")}')">✍️ Usar como tema de redação</button>
-  </div>`;
-  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
-  document.body.appendChild(ov);
-}
-
-function usarNoticiaTema(titulo){
-  document.querySelectorAll('.modal-overlay').forEach(o=>o.remove());
-  navigate('redacao');
-  document.getElementById('tema-text').textContent=titulo;
-  document.getElementById('tema-result').style.display='block';
-  toast('Tema carregado na redação!','success');
-}
-
-// ══════════════ TUTOR IA ══════════════
-let tutorHistorico=[];
-
-function initTutor(){
-  renderTutorSugestoes();
-  if(!tutorHistorico.length) adicionarBolhaTutor('ia','Olá! 👋 Sou seu tutor de estudos. Pode me perguntar qualquer coisa sobre as matérias do ENEM, como resolver exercícios, pedir explicações ou tirar dúvidas. Em qual matéria posso te ajudar hoje?');
-}
-
-const SUGESTOES_TUTOR=['Explique mitose e meiose','Como resolver equação do 2° grau?','O que foi a Revolução Francesa?','Diferença entre ironia e sarcasmo','Lei de Ohm explicada','Tema para redação ENEM','Como estruturar uma dissertação?','O que é fotossíntese?'];
-
-function renderTutorSugestoes(){
-  const el=document.getElementById('tutor-sugestoes');if(!el)return;
-  el.innerHTML=SUGESTOES_TUTOR.map(s=>`<button class="ex-opcao-btn" onclick="usarSugestaoTutor('${s.replace(/'/g,"\\'")}')">💬 ${s}</button>`).join('');
-}
-
-function usarSugestaoTutor(texto){
-  document.getElementById('tutor-input').value=texto;
-  enviarTutor();
-}
-
-function adicionarBolhaTutor(tipo,texto){
-  const chat=document.getElementById('tutor-chat');if(!chat)return;
-  const div=document.createElement('div');
-  div.className=tipo==='ia'?'ex-bubble-ia':'ex-bubble-user';
-  div.innerHTML=texto.replace(/\n/g,'<br>');
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-async function enviarTutor(){
-  const input=document.getElementById('tutor-input');
-  const texto=input.value.trim();if(!texto)return;
-  const materia=document.getElementById('tutor-materia').value;
-  input.value='';
-  adicionarBolhaTutor('user',texto);
-  tutorHistorico.push({role:'user',content:texto});
-  const loading=document.createElement('div');
-  loading.className='ex-bubble-ia';loading.innerHTML='<span class="loading"></span> Pensando...';
-  document.getElementById('tutor-chat').appendChild(loading);
-  document.getElementById('tutor-chat').scrollTop=document.getElementById('tutor-chat').scrollHeight;
-  const sistema=`Você é um tutor especializado em ${materia==='geral'?'todas as matérias do ENEM':materia}. Responda de forma didática, clara e objetiva. Use exemplos práticos. Se for matemática ou ciências, mostre o passo a passo. Use emojis para deixar mais dinâmico. Máximo 300 palavras por resposta. Em português brasileiro.`;
-  const msgs=tutorHistorico.slice(-6).map(m=>m);
-  try{
-    const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({max_tokens:1500,
-        messages:[{role:'user',content:sistema+'\n\nPergunta: '+texto}]})});
-    const data=await resp.json();
-    const txt=data.choices?.[0]?.message?.content||'Desculpe, não consegui responder. Tente novamente.';
-    loading.remove();
-    adicionarBolhaTutor('ia',txt);
-    tutorHistorico.push({role:'assistant',content:txt});
-    if(tutorHistorico.length>20)tutorHistorico=tutorHistorico.slice(-16);
-  }catch(e){loading.remove();adicionarBolhaTutor('ia','❌ Erro: '+e.message);}
-}
-
-function limparTutor(){
-  tutorHistorico=[];
-  document.getElementById('tutor-chat').innerHTML='';
-  initTutor();
-}
-
-// ══════════════ DIÁRIO → PDF ══════════════
-async function exportarDiarioPDF(){
-  if(!_sReady()||!S.diario.length){toast('Nenhuma entrada no diário','error');return;}
-  const btn=event.target;btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando...';
-  const linhas=S.diario.map(e=>`
-    <div style="margin-bottom:18px;padding:14px;border:1px solid #ddd;border-radius:8px;page-break-inside:avoid">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-        <strong>${e.date}</strong><span style="font-size:18px">${e.humor||''}</span>
-      </div>
-      <p><strong>📚 O que estudei:</strong> ${e.estudou}</p>
-      ${e.duvidas?`<p style="margin-top:6px"><strong>❓ Dúvidas:</strong> ${e.duvidas}</p>`:''}
-      ${e.nota?`<p style="margin-top:6px"><strong>📝 Notas:</strong> ${e.nota}</p>`:''}
-    </div>`).join('');
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Diário de Estudos</title><style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:20px;color:#333}h1{color:#1e3a8a;border-bottom:2px solid #1e3a8a;padding-bottom:8px}p{line-height:1.6;margin:4px 0}</style></head><body><h1>📓 Diário de Estudos — Nexus Study</h1><p style="color:#666;margin-bottom:20px">Exportado em ${new Date().toLocaleDateString('pt-BR')}</p>${linhas}</body></html>`;
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='diario-estudos.html';a.click();
-  btn.disabled=false;btn.innerHTML='📥 Exportar PDF';
-  toast('Diário exportado! Abra o arquivo e use Ctrl+P para salvar como PDF.','success');
-}
-
-// ══════════════ REDAÇÃO — CONTADOR DE LINHAS ══════════════
-document.addEventListener('input',e=>{
-  if(e.target.id==='redacao-text'){
-    const ta=e.target;
-    const texto=ta.value;
-    const palavras=texto.trim().split(/\s+/).filter(Boolean).length;
-    // Calcula linhas reais baseado na largura do textarea
-    const lineHeight=parseInt(getComputedStyle(ta).lineHeight)||20;
-    const paddingTop=parseInt(getComputedStyle(ta).paddingTop)||9;
-    // Mede altura real do conteúdo
-    const clone=document.createElement('textarea');
-    clone.style.cssText='position:absolute;visibility:hidden;height:auto;width:'+ta.offsetWidth+'px;font:'+getComputedStyle(ta).font+';padding:'+getComputedStyle(ta).padding+';white-space:pre-wrap;word-wrap:break-word;';
-    clone.value=texto;document.body.appendChild(clone);
-    const scrollH=clone.scrollHeight-paddingTop*2;document.body.removeChild(clone);
-    const linhas=Math.max(1,Math.round(scrollH/lineHeight));
-    const el=document.getElementById('redacao-linha-info');
-    if(el)el.textContent=`${linhas} linha${linhas!==1?'s':''} · ${palavras} palavra${palavras!==1?'s':''} · Ideal: 25–30 linhas`;
-    const wc=document.getElementById('word-count');
-    if(wc)wc.textContent=palavras;
-  }
-});
-
-// ══════════════ REVISÃO INTELIGENTE ══════════════
-async function gerarPlanoRevisao(){
-  if(!_sReady())return;
-  document.getElementById('revisao-loading').style.display='block';
-  document.getElementById('revisao-resultado').innerHTML='';
-  const acertos=S.stats?.quizCorrect||0,total=S.stats?.quiz||0;
-  const acertoTxt=total>0?`${Math.round(acertos/total*100)}% acerto em ${total} questões`:'sem simulados';
-  const decks=[...new Set((S.flashcards||[]).map(c=>c.deck))];
-  const diffCards=(S.flashcards||[]).filter(c=>c.level===1).map(c=>c.deck);
-  const hist=(S.enemHistory||[]).slice(0,5).map(h=>`${h.area}:${h.pct}%`).join(', ')||'sem dados';
-  const dias=(S.diario||[]).slice(0,5).map(d=>d.estudou).join('; ')||'sem entradas';
-  const prompt=`Você é um orientador educacional especialista em ENEM. Analise o perfil deste estudante e crie um plano de revisão personalizado.
-
-DADOS DO ESTUDANTE:
-- Flashcards: ${(S.flashcards||[]).length} cards em ${decks.length} decks: ${decks.join(', ')||'nenhum'}
-- Cards difíceis: ${diffCards.join(', ')||'nenhum'}
-- Pomodoros: ${S.stats?.pomo||0} sessões
-- Simulados ENEM: ${acertoTxt}
-- Histórico por área: ${hist}
-- Último estudo: ${dias.slice(0,200)}
-- Streak: ${S.streak||0} dias
-
-Responda SOMENTE JSON puro:
-{
-  "diagnostico": "Análise em 2 frases do ponto atual do estudante",
-  "pontos_fortes": ["área1", "área2"],
-  "pontos_fracos": ["área1", "área2"],
-  "plano_hoje": [
-    {"tempo": "20 min", "atividade": "O que fazer", "motivo": "Por que essa prioridade", "como": "Ferramenta no Nexus para usar"},
-    {"tempo": "30 min", "atividade": "...", "motivo": "...", "como": "..."},
-    {"tempo": "15 min", "atividade": "...", "motivo": "...", "como": "..."}
-  ],
-  "plano_semana": ["Seg: ...", "Ter: ...", "Qua: ...", "Qui: ...", "Sex: ..."],
-  "alerta": "Ponto crítico que precisa de atenção urgente",
-  "motivacao": "Frase motivacional personalizada"
-}`;
-  try{
-    const txt=await callGemini(prompt);
-    const r=JSON.parse(txt.replace(/```json|```/g,'').trim());
-    document.getElementById('revisao-loading').style.display='none';
-    document.getElementById('revisao-resultado').innerHTML=`
-      <div class="card glow-card" style="margin-bottom:14px;border-color:var(--blue3)">
-        <h3 style="font-size:14px;font-weight:700;margin-bottom:10px">🔍 Diagnóstico</h3>
-        <p style="font-size:13px;color:var(--text);line-height:1.7">${r.diagnostico}</p>
-        <div class="grid2" style="margin-top:12px">
-          <div style="background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:8px;padding:10px">
-            <p style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px">✅ Pontos Fortes</p>
-            ${(r.pontos_fortes||[]).map(p=>`<p style="font-size:12px;color:var(--text2)">• ${p}</p>`).join('')}
-          </div>
-          <div style="background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:10px">
-            <p style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:5px">⚠️ Precisam Atenção</p>
-            ${(r.pontos_fracos||[]).map(p=>`<p style="font-size:12px;color:var(--text2)">• ${p}</p>`).join('')}
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px">📋 Plano para Hoje</h3>
-        ${(r.plano_hoje||[]).map((p,i)=>`
-          <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
-            <div style="background:var(--blue3);color:#fff;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;align-self:start">${p.tempo}</div>
-            <div><div style="font-size:13px;font-weight:600">${p.atividade}</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px">${p.motivo}</div>
-            <div style="font-size:11px;color:var(--blue2);margin-top:2px">→ ${p.como}</div></div>
-          </div>`).join('')}
-      </div>
-      <div class="card" style="margin-bottom:14px">
-        <h3 style="font-size:14px;font-weight:700;margin-bottom:10px">📅 Plano da Semana</h3>
-        ${(r.plano_semana||[]).map(d=>`<p style="font-size:12px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--border);line-height:1.5">${d}</p>`).join('')}
-      </div>
-      ${r.alerta?`<div style="background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.25);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;color:var(--red)">🚨 <strong>Alerta:</strong> ${r.alerta}</div>`:''}
-      <div style="background:rgba(179,136,255,.08);border:1px solid rgba(179,136,255,.25);border-radius:10px;padding:12px;font-size:13px;color:var(--purple);line-height:1.6">💜 ${r.motivacao}</div>`;
-  }catch(e){
-    document.getElementById('revisao-loading').style.display='none';
-    document.getElementById('revisao-resultado').innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;
-  }
-}
-
-// ══════════════ GERADOR DE PROVAS ══════════════
-function toggleGerTipo(){
-  const tipo=document.getElementById('ger-tipo').value;
-  document.getElementById('ger-tema-box').style.display=tipo==='tema'?'block':'none';
-  document.getElementById('ger-vest-box').style.display=tipo==='vestibular'?'block':'none';
-}
-
-async function gerarProva(){
-  const tipo=document.getElementById('ger-tipo').value;
-  const area=document.getElementById('ger-area').value;
-  const qtd=parseInt(document.getElementById('ger-qtd').value)||5;
-  const dif=document.getElementById('ger-dif').value;
-  const tema=document.getElementById('ger-tema').value;
-  const vest=document.getElementById('ger-vestibular')?.value||'FUVEST';
-  const btn=document.getElementById('btn-gerar-prova');
-  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Gerando...';
-  const res=document.getElementById('ger-resultado');
-
-  let estilo='';
-  if(tipo==='tema') estilo=`sobre: ${tema||area}`;
-  else if(tipo==='enem') estilo=`estilo ENEM, área ${area}`;
-  else if(tipo==='vestibular') estilo=`estilo ${vest}, área ${area}`;
-  else estilo=`estilo ENEM/vestibular misto, área ${area}`;
-
-  // Gera questões em lotes de 3 para não estourar tokens
-  const loteSize=3;
-  const lotes=Math.ceil(qtd/loteSize);
-  const todasQuestoes=[];
-  let tituloProva='Prova Gerada';
-
-  res.innerHTML=`<div class="card"><div style="text-align:center;padding:20px"><span class="loading"></span><p style="margin-top:10px;color:var(--text2)">Gerando questão 0/${qtd}...</p></div></div>`;
-
-  for(let lote=0;lote<lotes;lote++){
-    const numNeste=Math.min(loteSize,qtd-lote*loteSize);
-    const inicio=lote*loteSize+1;
-    res.querySelector('p').textContent=`Gerando questões ${inicio}-${inicio+numNeste-1} de ${qtd}...`;
-
-    const prompt=`Crie ${numNeste} questão(ões) de múltipla escolha ${estilo}, dificuldade ${dif}, numerando a partir do ${inicio}.
-JSON PURO sem markdown:
-{"titulo":"Nome da prova","questoes":[{"numero":${inicio},"enunciado":"enunciado completo","A":"alternativa A","B":"alternativa B","C":"alternativa C","D":"alternativa D","E":"alternativa E","gabarito":"B","explicacao":"Por que B é correto","nivel":"${dif}","fonte":"Elaborada"}]}`;
-
-    try{
-      const txt=await callGemini(prompt,null,null,1200);
-      const data=safeParseJSON(txt);
-      if(lote===0) tituloProva=data.titulo||'Prova Gerada';
-      const qs=(data.questoes||[]).map(q=>({
-        numero:q.numero||inicio,
-        enunciado:q.enunciado||'',
-        alternativas:{A:q.A||'',B:q.B||'',C:q.C||'',D:q.D||'',E:q.E||''},
-        gabarito:q.gabarito||'A',
-        explicacao:q.explicacao||'',
-        nivel:q.nivel||dif,
-        fonte:q.fonte||'Elaborada'
-      }));
-      todasQuestoes.push(...qs);
-    }catch(e){
-      toast(`Erro no lote ${lote+1}: ${e.message}`,'error');
-    }
-    // Pausa entre lotes para não sobrecarregar
-    if(lote<lotes-1) await new Promise(r=>setTimeout(r,800));
-  }
-
-  if(!todasQuestoes.length){
-    res.innerHTML=`<div class="card"><p style="color:var(--red)">❌ Não foi possível gerar as questões. Tente com menos questões.</p></div>`;
-    btn.disabled=false;btn.innerHTML='📄 Gerar Prova';
-    return;
-  }
-
-  renderProvaGerada({titulo:tituloProva,area,questoes:todasQuestoes});
-  toast(`✅ ${todasQuestoes.length} questões geradas!`,'success');
-  btn.disabled=false;btn.innerHTML='📄 Gerar Prova';
-}
-
-let provaRespostas={},provaGabarito={},provaFinalizada=false;
-
-function renderProvaGerada(prova){
-  const res=document.getElementById('ger-resultado');
-  provaRespostas={};provaGabarito={};provaFinalizada=false;
-  prova.questoes?.forEach((q,i)=>{provaGabarito[i]=q.gabarito;});
-  res.innerHTML=`<div class="card glow-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div><h2 style="font-family:var(--font2);font-size:16px">${prova.titulo||'Prova Gerada'}</h2>
-      <span class="badge badge-blue">${prova.area}</span></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" onclick="imprimirProva()">🖨️ Imprimir</button>
-        <button class="btn btn-primary btn-sm" onclick="corrigirProvaGerada()">✅ Corrigir</button>
-      </div>
-    </div>
-    <div id="prova-questoes">
-    ${prova.questoes?.map((q,i)=>`
-      <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:11px;font-weight:700;color:var(--blue2)">QUESTÃO ${q.numero||i+1}</span>
-          <div><span class="badge badge-${q.nivel==='fácil'?'green':q.nivel==='difícil'?'red':'orange'}" style="font-size:9px">${q.nivel||'médio'}</span>
-          <span style="font-size:10px;color:var(--text3);margin-left:4px">${q.fonte||''}</span></div>
-        </div>
-        <p style="font-size:13px;line-height:1.7;margin-bottom:10px">${q.enunciado}</p>
-        ${Object.entries(q.alternativas||{}).map(([alt,txt])=>`
-          <div class="quiz-option" id="prova-opt-${i}-${alt}" onclick="selecionarRespostaProva(${i},'${alt}',this)" style="margin-bottom:5px">
-            <strong>${alt})</strong> ${txt}
-          </div>`).join('')}
-        <div id="prova-expl-${i}" style="display:none" class="quiz-explain"></div>
-      </div>`).join('')}
-    </div>
-  </div>`;
-}
-
-function selecionarRespostaProva(qi,alt,el){
-  if(provaFinalizada)return;
-  const opts=document.querySelectorAll(`[id^="prova-opt-${qi}-"]`);
-  opts.forEach(o=>{o.classList.remove('selected');});
-  el.classList.add('selected');
-  provaRespostas[qi]=alt;
-}
-
-function corrigirProvaGerada(){
-  if(!Object.keys(provaRespostas).length){toast('Responda pelo menos uma questão','error');return;}
-  provaFinalizada=true;
-  let acertos=0;
-  Object.entries(provaGabarito).forEach(([qi,gabarito])=>{
-    const resp=provaRespostas[qi];
-    const optCorreta=document.getElementById(`prova-opt-${qi}-${gabarito}`);
-    const optSel=resp?document.getElementById(`prova-opt-${qi}-${resp}`):null;
-    if(optCorreta)optCorreta.classList.add('correct');
-    if(resp&&resp!==gabarito&&optSel)optSel.classList.add('wrong');
-    if(resp===gabarito)acertos++;
-    const expl=document.getElementById(`prova-expl-${qi}`);
-    if(expl){
-      const q=Object.values(provaGabarito);
-      expl.style.display='block';
-      expl.textContent=`✅ Gabarito: ${gabarito}`;
-    }
-  });
-  const total=Object.keys(provaGabarito).length;
-  const pct=Math.round(acertos/total*100);
-  toast(`${acertos}/${total} corretas (${pct}%) 🎯`,'success');
-}
-
-function imprimirProva(){
-  const conteudo=document.getElementById('ger-resultado')?.innerHTML||'';
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:20px;color:#333}.quiz-option{margin:5px 0;padding:8px;border:1px solid #ddd;border-radius:6px}</style></head><body>${conteudo}</body></html>`);
-  w.document.close();w.print();
-}
-
-// ══════════════ SIMULADOR NOTA ENEM + TRI + CHANCES ══════════════
-function calcSimulador(){
-  const lc=parseInt(document.getElementById('sim-lc').value)||0;
-  const ch=parseInt(document.getElementById('sim-ch').value)||0;
-  const cn=parseInt(document.getElementById('sim-cn').value)||0;
-  const mt=parseInt(document.getElementById('sim-mt').value)||0;
-  const red=parseInt(document.getElementById('sim-red').value)||0;
-  if(!lc&&!ch&&!cn&&!mt)return;
-  // Fórmula aproximada TRI (simplificada)
-  const estimarTRI=(acertos,total)=>{
-    const pct=acertos/total;
-    if(pct<=0)return 300;if(pct>=1)return 950;
-    // Curva S aproximada do TRI
-    const base=300,range=650;
-    const x=(pct-0.5)*8;
-    const sig=1/(1+Math.exp(-x));
-    return Math.round(base+range*sig);
-  };
-  const notaLC=estimarTRI(lc,45);
-  const notaCH=estimarTRI(ch,45);
-  const notaCN=estimarTRI(cn,45);
-  const notaMT=estimarTRI(mt,45);
-  const media=(notaLC+notaCH+notaCN+notaMT+red)/5;
-  const el=document.getElementById('sim-resultado-nota');
-  const cor=media>=700?'var(--green)':media>=550?'var(--orange)':'var(--red)';
-  el.innerHTML=`<div class="card glow-card" style="border-color:${cor}">
-    <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">📊 Nota Estimada (TRI)</h3>
-    <div style="text-align:center;margin-bottom:14px">
-      <div style="font-family:var(--font2);font-size:46px;font-weight:800;color:${cor}">${Math.round(media)}</div>
-      <div style="font-size:12px;color:var(--text2)">média geral</div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:7px">
-      ${[['Linguagens',notaLC,lc,45],['Humanas',notaCH,ch,45],['Natureza',notaCN,cn,45],['Matemática',notaMT,mt,45],['Redação',red,red,1000]].map(([n,nota,ac,tot])=>{
-        const p=Math.min(100,Math.round((nota/1000)*100));const c=nota>=700?'var(--green)':nota>=550?'var(--orange)':'var(--red)';
-        return`<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span>${n}</span><span style="font-weight:700;color:${c}">${nota}${n!=='Redação'?' ('+ac+'/45)':''}</span></div><div class="progress"><div class="progress-bar" style="width:${p}%;background:${c}"></div></div></div>`;
-      }).join('')}
-    </div>
-    <p style="font-size:11px;color:var(--text3);margin-top:10px">* Estimativa baseada na curva TRI simplificada. Não representa a nota oficial do ENEM.</p>
-  </div>`;
-}
-
-document.addEventListener('change',e=>{
-  if(e.target.id==='sim-fonte'){
-    document.getElementById('sim-manual-box').style.display=e.target.value==='manual'?'block':'none';
-  }
-});
-
-async function calcularChances(){
-  const fonte=document.getElementById('sim-fonte').value;
-  let media=0;
-  if(fonte==='simulador'){
-    const lc=parseInt(document.getElementById('sim-lc').value)||0;
-    const ch=parseInt(document.getElementById('sim-ch').value)||0;
-    const cn=parseInt(document.getElementById('sim-cn').value)||0;
-    const mt=parseInt(document.getElementById('sim-mt').value)||0;
-    const red=parseInt(document.getElementById('sim-red').value)||0;
-    const estimarTRI=(a,t)=>{const p=a/t;if(p<=0)return 300;if(p>=1)return 950;const x=(p-0.5)*8;const s=1/(1+Math.exp(-x));return Math.round(300+650*s);};
-    media=(estimarTRI(lc,45)+estimarTRI(ch,45)+estimarTRI(cn,45)+estimarTRI(mt,45)+red)/5;
-  }else if(fonte==='historico'){
-    const hist=S.enemHistory||[];
-    if(!hist.length){toast('Faça simulados primeiro','error');return;}
-    media=hist.reduce((s,h)=>s+h.pct*10,0)/hist.length;
-  }else{
-    media=parseInt(document.getElementById('sim-nota-manual').value)||0;
-  }
-  if(!media){toast('Insira suas notas primeiro','error');return;}
-  const el=document.getElementById('sim-resultado-chances');
-  el.innerHTML='<div class="empty"><span class="loading"></span><p style="margin-top:10px">Calculando chances...</p></div>';
-  try{
-    const txt=await callGemini(`Baseado na nota média de ENEM de ${Math.round(media)} pontos, analise as chances de aprovação em cursos universitários brasileiros.
-Responda SOMENTE JSON puro:
-{"analise":{"nota":${Math.round(media)},"nivel":"${media>=750?'Excelente':media>=650?'Muito Bom':media>=550?'Bom':media>=450?'Regular':'Abaixo da média'}","cursos_alcancaveis":[{"curso":"Nome do curso","instituicao":"Universidade","nota_corte":700,"chance":"Alta/Média/Baixa","dica":"Dica específica"}],"cursos_desafio":[{"curso":"Nome","instituicao":"Univ.","nota_corte":800,"distancia_pts":50}],"recomendacao":"O que fazer para melhorar as chances"}}`);
-    const r=safeParseJSON(txt).analise||safeParseJSON(txt);
-    el.innerHTML=`<div class="card">
-      <h3 style="font-size:13px;margin-bottom:14px;color:var(--text2)">🎓 Chances de Aprovação — ${Math.round(media)} pts</h3>
-      <span class="badge badge-${media>=700?'green':media>=550?'orange':'red'}" style="margin-bottom:12px;display:inline-block">${r.nivel}</span>
-      <h4 style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">✅ Cursos ao seu alcance</h4>
-      ${(r.cursos_alcancaveis||[]).map(c=>`
-        <div style="padding:8px 0;border-bottom:1px solid var(--border)">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">
-            <div><span style="font-size:13px;font-weight:600">${c.curso}</span> <span style="font-size:11px;color:var(--text2)">— ${c.instituicao}</span></div>
-            <span class="badge badge-${c.chance==='Alta'?'green':c.chance==='Média'?'orange':'red'}" style="font-size:10px">${c.chance}</span>
-          </div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">Corte: ~${c.nota_corte} pts · ${c.dica}</div>
-        </div>`).join('')}
-      ${r.cursos_desafio?.length?`<h4 style="font-size:12px;font-weight:700;color:var(--orange);margin:12px 0 8px">🎯 Cursos desafio</h4>
-      ${r.cursos_desafio.map(c=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span style="font-size:12px">${c.curso} — ${c.instituicao}</span><span style="font-size:11px;color:var(--orange)">+${c.distancia_pts} pts</span></div>`).join('')}`:''}
-      <div style="margin-top:12px;background:var(--bg3);border-radius:8px;padding:10px;font-size:12px;color:var(--text2);line-height:1.6">💡 ${r.recomendacao}</div>
-    </div>`;
-  }catch(e){el.innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
-}
-
-// ══════════════ SCANNER DE QUESTÕES ══════════════
-let scannerFile=null;
-function handleScannerFile(){
-  const f=document.getElementById('scanner-file').files[0];if(!f)return;scannerFile=f;
-  const r=new FileReader();
-  r.onload=e=>{
-    document.getElementById('scanner-img').src=e.target.result;
-    document.getElementById('scanner-preview').style.display='block';
-    document.getElementById('scanner-placeholder').style.display='none';
-  };r.readAsDataURL(f);
-}
-
-async function resolverQuestao(){
-  const modo=document.getElementById('scanner-modo').value;
-  const texto=document.getElementById('scanner-texto').value.trim();
-  if(!scannerFile&&!texto){toast('Envie uma foto ou cole o texto da questão','error');return;}
-  const btn=document.getElementById('btn-scanner');
-  btn.disabled=true;btn.innerHTML='<span class="loading"></span> Resolvendo...';
-  const res=document.getElementById('scanner-resultado');
-  res.innerHTML='<div class="empty"><span class="loading"></span><p style="margin-top:10px">A IA está resolvendo...</p></div>';
-  const modoPrompt={
-    completo:'Resolva completamente e explique todo o raciocínio',
-    passo:'Resolva passo a passo de forma didática, numerando cada etapa',
-    rapido:'Dê a resposta correta e uma explicação objetiva em 3-4 linhas',
-    dica:'Dê apenas uma dica que ajude o estudante a encontrar a resposta, SEM revelar a resposta'
-  }[modo];
-
-  const prompt=`Você é um professor especialista. ${modoPrompt}. ${texto?'Questão:\n'+texto:'Analise a questão na imagem.'}\n\nForneça: identificação da matéria, resolução completa, e resposta final destacada. Em português.`;
-
-  try{
-    let resposta;
-    if(scannerFile){
-      const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(scannerFile);});
-      resposta=await callGemini(prompt,b64,scannerFile.type||'image/jpeg');
-    }else{
-      resposta=await callGemini(prompt);
-    }
-    res.innerHTML=`<div class="card glow-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <h3 style="font-size:13px;color:var(--text2)">🤖 Resolução da IA</h3>
-        <span class="badge badge-${modo==='dica'?'orange':'blue'}">${{completo:'Completo',passo:'Passo a Passo',rapido:'Rápido',dica:'Dica'}[modo]}</span>
-      </div>
-      <div style="font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap">${resposta}</div>
-      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('scanner-modo').value='completo';resolverQuestao()">📖 Ver resolução completa</button>
-        <button class="btn btn-ghost btn-sm" onclick="criarFlashcardDaQuestao('${resposta.slice(0,100).replace(/'/g,'')}')">🧠 Salvar como flashcard</button>
-      </div>
-    </div>`;
-  }catch(e){res.innerHTML=`<div class="card"><p style="color:var(--red)">❌ ${e.message}</p></div>`;}
-  btn.disabled=false;btn.innerHTML='🔍 Resolver com IA';
-}
-
-function criarFlashcardDaQuestao(resumo){
-  navigate('flashcards');
-  setTimeout(()=>{
-    fcTab('criar',null);
-    document.getElementById('fc-q').value='Questão escaneada';
-    document.getElementById('fc-a').value=resumo+'...';
-    document.getElementById('fc-new-deck').value='Scanner';
-    toast('Questão carregada como flashcard — edite e salve!','success');
-  },300);
-}
-
-// ══════════════ INIT DAS NOVAS PÁGINAS ══════════════
-// Atualizar applyDef com novos campos
-const _applyDefOrig=applyDef;
 
 if('serviceWorker' in navigator){
   const swCode=`
@@ -5767,96 +3341,4 @@ self.addEventListener('fetch',e=>{
   navigator.serviceWorker.register(url).catch(()=>{});
 }
 </script>
-</main>
-<!-- ══ MOBILE BOTTOM NAV ══ -->
-<div id="mobile-nav">
-  <div class="mob-nav-inner">
-    <div class="mob-nav-item active" data-page="dashboard" onclick="navigate('dashboard');setMobNav(this)">
-      <span class="mni">🏠</span><span>Início</span>
-    </div>
-    <div class="mob-nav-item" data-page="flashcards" onclick="navigate('flashcards');setMobNav(this)">
-      <span class="mni">🧠</span><span>Cards</span>
-    </div>
-    <div class="mob-nav-item" data-page="pomodoro" onclick="navigate('pomodoro');setMobNav(this)">
-      <span class="mni">⏱️</span><span>Foco</span>
-    </div>
-    <div class="mob-nav-item" data-page="enem" onclick="navigate('enem');setMobNav(this)">
-      <span class="mni">📝</span><span>ENEM</span>
-    </div>
-    <div class="mob-nav-item" data-page="rotinas" onclick="navigate('rotinas');setMobNav(this)">
-      <span class="mni">📋</span><span>Rotinas</span>
-    </div>
-    <div class="mob-nav-item" onclick="toggleMobMenu()">
-      <span class="mni">⋯</span><span>Mais</span>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MOBILE MENU OVERLAY ══ -->
-<div id="mob-menu-overlay" onclick="toggleMobMenu()"></div>
-<div id="mob-menu-panel">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-    <h3 style="font-size:15px;font-weight:700">Todas as ferramentas</h3>
-    <button onclick="toggleMobMenu()" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;padding:4px">✕</button>
-  </div>
-  <div class="mob-menu-grid">
-    <div class="mob-menu-item" data-page="metas" onclick="navigate('metas');toggleMobMenu()"><span>🎯</span>Metas</div>
-    <div class="mob-menu-item" data-page="diario" onclick="navigate('diario');toggleMobMenu()"><span>📓</span>Diário</div>
-    <div class="mob-menu-item" data-page="redacao" onclick="navigate('redacao');toggleMobMenu()"><span>✍️</span>Redação</div>
-    <div class="mob-menu-item" data-page="calorias" onclick="navigate('calorias');toggleMobMenu()"><span>🍽️</span>Calorias</div>
-    <div class="mob-menu-item" data-page="exercicios" onclick="navigate('exercicios');toggleMobMenu()"><span>💪</span>Treinos</div>
-    <div class="mob-menu-item" data-page="mapamental" onclick="navigate('mapamental');toggleMobMenu()"><span>🗺️</span>Mapa Mental</div>
-    <div class="mob-menu-item" data-page="livros" onclick="navigate('livros');toggleMobMenu()"><span>📖</span>Livros</div>
-    <div class="mob-menu-item" data-page="redacaoguia" onclick="navigate('redacaoguia');toggleMobMenu()"><span>🖊️</span>Guia Red.</div>
-    <div class="mob-menu-item" data-page="laboratorio" onclick="navigate('laboratorio');toggleMobMenu()"><span>🧪</span>Laboratório</div>
-    <div class="mob-menu-item" data-page="noturno" onclick="navigate('noturno');toggleMobMenu()"><span>🌙</span>Noturno</div>
-    <div class="mob-menu-item" data-page="alarmes" onclick="navigate('alarmes');toggleMobMenu()"><span>🔔</span>Alarmes</div>
-    <div class="mob-menu-item" data-page="calendario" onclick="navigate('calendario');toggleMobMenu()"><span>📅</span>Calendário</div>
-    <div class="mob-menu-item" data-page="estatisticas" onclick="navigate('estatisticas');toggleMobMenu()"><span>📊</span>Estatísticas</div>
-    <div class="mob-menu-item" data-page="desafios" onclick="navigate('desafios');toggleMobMenu()"><span>🏆</span>Desafios</div>
-    <div class="mob-menu-item" data-page="noticias" onclick="navigate('noticias');toggleMobMenu()"><span>📰</span>Notícias</div>
-    <div class="mob-menu-item" data-page="tutor" onclick="navigate('tutor');toggleMobMenu()"><span>🤖</span>Tutor IA</div>
-    <div class="mob-menu-item" data-page="revisao" onclick="navigate('revisao');toggleMobMenu()"><span>🔄</span>Revisão IA</div>
-    <div class="mob-menu-item" data-page="gerador" onclick="navigate('gerador');toggleMobMenu()"><span>📄</span>Gerar Prova</div>
-    <div class="mob-menu-item" data-page="simuladornota" onclick="navigate('simuladornota');toggleMobMenu()"><span>🎯</span>Simulador</div>
-    <div class="mob-menu-item" data-page="scanner" onclick="navigate('scanner');toggleMobMenu()"><span>📸</span>Scanner</div>
-    <div class="mob-menu-item" onclick="doLogout();toggleMobMenu()"><span>🔄</span>Trocar perfil</div>
-  </div>
-</div>
-
-<script>
-// ══ MOBILE NAV ══
-function setMobNav(el) {
-  document.querySelectorAll('.mob-nav-item').forEach(i => i.classList.remove('active'));
-  if (el) el.classList.add('active');
-  // Atualiza menu overlay também
-  document.querySelectorAll('.mob-menu-item').forEach(i => {
-    i.classList.toggle('active', el && i.dataset.page === el.dataset.page);
-  });
-}
-
-function toggleMobMenu() {
-  const overlay = document.getElementById('mob-menu-overlay');
-  const panel = document.getElementById('mob-menu-panel');
-  const isOpen = panel.classList.contains('open');
-  overlay.classList.toggle('open', !isOpen);
-  panel.classList.toggle('open', !isOpen);
-  if (!isOpen) document.body.style.overflow = 'hidden';
-  else document.body.style.overflow = '';
-}
-
-// Sobrescrever navigate para atualizar mobile nav
-const _navigateOriginal = navigate;
-window.navigate = function(page) {
-  _navigateOriginal(page);
-  // Atualiza mobile nav
-  const mobItem = document.querySelector(`.mob-nav-item[data-page="${page}"]`);
-  setMobNav(mobItem);
-  // Fecha menu se aberto
-  const panel = document.getElementById('mob-menu-panel');
-  if (panel.classList.contains('open')) toggleMobMenu();
-  // Scroll to top
-  window.scrollTo(0, 0);
-};
-</script>
-</body></html>
+</main></body></html>
