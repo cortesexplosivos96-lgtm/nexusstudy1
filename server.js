@@ -8,13 +8,22 @@ const DEEPSEEK_KEY   = process.env.DEEPSEEK_API_KEY || '';
 const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
 
 // ── Modelos com fallback automático ──────────────────────────────────────────
+// Atualizado em Abril/2026 — modelos verificados como ativos no OpenRouter
 const MODELOS_TEXTO = [
-  'google/gemma-3-27b-it:free',
-  'mistralai/mistral-7b-instruct:free',
-  'meta-llama/llama-3.2-3b-instruct:free',
-  'qwen/qwen-2-7b-instruct:free',
+  'google/gemma-3-12b-it:free',           // Gemma 3 12B — estável
+  'google/gemma-3-27b-it:free',           // Gemma 3 27B — fallback (pode ter 429)
+  'mistralai/mistral-small-3.1-24b-instruct:free', // Mistral Small 3.1 — multimodal
+  'meta-llama/llama-3.3-70b-instruct:free',        // Llama 3.3 70B
+  'qwen/qwen2.5-72b-instruct:free',       // Qwen 2.5 72B
 ];
-const MODEL_VISAO = 'meta-llama/llama-3.2-11b-vision-instruct:free';
+
+// Modelos de visão em ordem de fallback
+const MODELOS_VISAO = [
+  'qwen/qwen2.5-vl-7b-instruct:free',     // Qwen VL — visão gratuita ativa
+  'qwen/qwen2.5-vl-32b-instruct:free',    // Qwen VL 32B — fallback maior
+  'google/gemma-3-12b-it:free',           // Gemma 3 suporta visão
+  'mistralai/mistral-small-3.1-24b-instruct:free', // Mistral Small suporta visão
+];
 
 // ── Rate limit simples: máx 1 req/seg ────────────────────────────────────────
 let ultimaReq = 0;
@@ -84,6 +93,28 @@ async function chamarOpenRouter(body, modelo) {
   }, json);
 }
 
+// ── Tenta lista de modelos com fallback ───────────────────────────────────────
+async function tentarModelos(payload, listaModelos, tipoLog = 'texto') {
+  for (const modelo of listaModelos) {
+    try {
+      console.log(`[${tipoLog}] Tentando:`, modelo);
+      const r = await chamarOpenRouter(payload, modelo);
+      if (r.status === 200) {
+        console.log(`[${tipoLog}] ✅ Sucesso:`, modelo);
+        return r;
+      }
+      let msg = '';
+      try { msg = JSON.parse(r.raw)?.error?.message || ''; } catch {}
+      console.error(`[${tipoLog}] ❌ ${modelo} falhou (${r.status}): ${msg.slice(0, 120)}`);
+      // 429 = sobrecarga, espera um pouco mais antes de tentar próximo
+      await new Promise(res => setTimeout(res, r.status === 429 ? 1500 : 500));
+    } catch (e) {
+      console.error(`[${tipoLog}] Erro em ${modelo}:`, e.message);
+    }
+  }
+  return null;
+}
+
 // ── Roteador principal com fallback ───────────────────────────────────────────
 async function chamarIA(body) {
   await aguardarRateLimit();
@@ -91,16 +122,15 @@ async function chamarIA(body) {
   const payload = { ...body };
   delete payload.model;
 
-  // Com imagem → modelo de visão
+  // ── Com imagem → modelos de visão com fallback ──────────────────────────────
   if (temImagem(payload)) {
     if (!OPENROUTER_KEY) throw new Error('Configure OPENROUTER_API_KEY no Railway para análise de imagens.');
-    const r = await chamarOpenRouter(payload, MODEL_VISAO);
-    if (r.status === 200) return r;
-    console.error('Visão falhou:', r.raw.slice(0, 200));
+    const r = await tentarModelos(payload, MODELOS_VISAO, 'visão');
+    if (r) return r;
     throw new Error('Análise de imagem indisponível no momento. Tente descrever o prato em texto.');
   }
 
-  // DeepSeek primeiro se tiver chave
+  // ── DeepSeek primeiro se tiver chave ───────────────────────────────────────
   if (DEEPSEEK_KEY) {
     try {
       const r = await chamarDeepSeek(payload);
@@ -111,24 +141,10 @@ async function chamarIA(body) {
     }
   }
 
-  // OpenRouter com fallback automático entre modelos
+  // ── OpenRouter com fallback automático entre modelos ───────────────────────
   if (OPENROUTER_KEY) {
-    for (const modelo of MODELOS_TEXTO) {
-      try {
-        console.log('Tentando modelo:', modelo);
-        const r = await chamarOpenRouter(payload, modelo);
-        if (r.status === 200) {
-          console.log('Sucesso com modelo:', modelo);
-          return r;
-        }
-        const parsed = JSON.parse(r.raw || '{}');
-        const msg = parsed?.error?.message || '';
-        console.error(`Modelo ${modelo} falhou (${r.status}): ${msg}`);
-        await new Promise(res => setTimeout(res, 600));
-      } catch (e) {
-        console.error(`Erro em ${modelo}:`, e.message);
-      }
-    }
+    const r = await tentarModelos(payload, MODELOS_TEXTO, 'texto');
+    if (r) return r;
     throw new Error('Todos os modelos falharam. Tente novamente em alguns segundos.');
   }
 
@@ -180,7 +196,8 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('   OpenRouter:', OPENROUTER_KEY ? '✅ configurado' : '❌ não configurado');
   console.log('   Modelos texto (em ordem de tentativa):');
   MODELOS_TEXTO.forEach((m, i) => console.log(`     ${i + 1}. ${m}`));
-  console.log('   Modelo visão:', MODEL_VISAO);
+  console.log('   Modelos visão (em ordem de tentativa):');
+  MODELOS_VISAO.forEach((m, i) => console.log(`     ${i + 1}. ${m}`));
   console.log('');
   if (!DEEPSEEK_KEY && !OPENROUTER_KEY) {
     console.error('⚠️  ATENÇÃO: Nenhuma chave configurada! O site não vai funcionar.');
