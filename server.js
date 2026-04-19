@@ -5,13 +5,18 @@ const path  = require('path');
 
 const PORT           = process.env.PORT             || 8080;
 const DEEPSEEK_KEY   = process.env.DEEPSEEK_API_KEY || '';
-const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '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';
+const OPENROUTER_KEY = process.env.OPENROUTER_API_KEY || '';
 
-// ── Modelos válidos e estáveis (verificados abril 2026) ───────────────────────
-const MODEL_TEXTO = 'meta-llama/llama-3.3-70b-instruct:free';
-const MODEL_VISAO = 'meta-llama/llama-3.2-11b-vision-instruct:free'; // único free com visão estável
+// ── Modelos com fallback automático ──────────────────────────────────────────
+const MODELOS_TEXTO = [
+  'google/gemma-3-27b-it:free',
+  'mistralai/mistral-7b-instruct:free',
+  'meta-llama/llama-3.2-3b-instruct:free',
+  'qwen/qwen-2-7b-instruct:free',
+];
+const MODEL_VISAO = 'meta-llama/llama-3.2-11b-vision-instruct:free';
 
-// ── Rate limit simples: máx 1 req/seg ─────────────────────────────────────────
+// ── Rate limit simples: máx 1 req/seg ────────────────────────────────────────
 let ultimaReq = 0;
 async function aguardarRateLimit() {
   const agora = Date.now();
@@ -58,7 +63,6 @@ function httpPost(hostname, path, headers, json) {
 // ── DeepSeek ──────────────────────────────────────────────────────────────────
 async function chamarDeepSeek(body) {
   const payload = { ...body, model: 'deepseek-chat' };
-  // Remove campos que a DeepSeek não aceita
   delete payload['HTTP-Referer'];
   delete payload['X-Title'];
   const json = JSON.stringify(payload);
@@ -84,21 +88,19 @@ async function chamarOpenRouter(body, modelo) {
 async function chamarIA(body) {
   await aguardarRateLimit();
 
-  // Limpa campos que o frontend manda mas a API não precisa
   const payload = { ...body };
-  delete payload.model; // servidor decide o modelo, ignora o do frontend
+  delete payload.model;
 
-  // Com imagem → OpenRouter com modelo de visão
+  // Com imagem → modelo de visão
   if (temImagem(payload)) {
     if (!OPENROUTER_KEY) throw new Error('Configure OPENROUTER_API_KEY no Railway para análise de imagens.');
     const r = await chamarOpenRouter(payload, MODEL_VISAO);
     if (r.status === 200) return r;
-    // Fallback: tenta sem imagem com descrição
     console.error('Visão falhou:', r.raw.slice(0, 200));
     throw new Error('Análise de imagem indisponível no momento. Tente descrever o prato em texto.');
   }
 
-  // Texto → DeepSeek (prioridade se tiver chave)
+  // DeepSeek primeiro se tiver chave
   if (DEEPSEEK_KEY) {
     try {
       const r = await chamarDeepSeek(payload);
@@ -109,24 +111,28 @@ async function chamarIA(body) {
     }
   }
 
-  // OpenRouter como fallback (ou principal se não tiver DeepSeek)
+  // OpenRouter com fallback automático entre modelos
   if (OPENROUTER_KEY) {
-    const r = await chamarOpenRouter(payload, MODEL_TEXTO);
-    if (r.status === 200) return r;
-    // Tenta modelo alternativo se 429 ou 404
-    const parsed = JSON.parse(r.raw || '{}');
-    const msg = parsed?.error?.message || '';
-    console.error('OpenRouter falhou:', r.status, msg);
-    if (r.status === 429 || r.status === 404) {
-      console.log('Tentando modelo alternativo...');
-      await new Promise(res => setTimeout(res, 2000));
-      const r2 = await chamarOpenRouter(payload, 'google/gemma-3-27b-it:free');
-      if (r2.status === 200) return r2;
+    for (const modelo of MODELOS_TEXTO) {
+      try {
+        console.log('Tentando modelo:', modelo);
+        const r = await chamarOpenRouter(payload, modelo);
+        if (r.status === 200) {
+          console.log('Sucesso com modelo:', modelo);
+          return r;
+        }
+        const parsed = JSON.parse(r.raw || '{}');
+        const msg = parsed?.error?.message || '';
+        console.error(`Modelo ${modelo} falhou (${r.status}): ${msg}`);
+        await new Promise(res => setTimeout(res, 600));
+      } catch (e) {
+        console.error(`Erro em ${modelo}:`, e.message);
+      }
     }
-    return r; // retorna o erro para o frontend mostrar
+    throw new Error('Todos os modelos falharam. Tente novamente em alguns segundos.');
   }
 
-  throw new Error('Nenhuma chave de IA configurada. Adicione DEEPSEEK_API_KEY ou OPENROUTER_API_KEY no Railway → Variables.');
+  throw new Error('Nenhuma chave de IA configurada. Adicione OPENROUTER_API_KEY no Railway → Variables.');
 }
 
 // ── Servidor HTTP ─────────────────────────────────────────────────────────────
@@ -172,7 +178,8 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('✅ Nexus Study rodando na porta', PORT);
   console.log('   DeepSeek:', DEEPSEEK_KEY ? '✅ configurado' : '❌ não configurado');
   console.log('   OpenRouter:', OPENROUTER_KEY ? '✅ configurado' : '❌ não configurado');
-  console.log('   Modelo texto:', DEEPSEEK_KEY ? 'deepseek-chat' : MODEL_TEXTO);
+  console.log('   Modelos texto (em ordem de tentativa):');
+  MODELOS_TEXTO.forEach((m, i) => console.log(`     ${i + 1}. ${m}`));
   console.log('   Modelo visão:', MODEL_VISAO);
   console.log('');
   if (!DEEPSEEK_KEY && !OPENROUTER_KEY) {
